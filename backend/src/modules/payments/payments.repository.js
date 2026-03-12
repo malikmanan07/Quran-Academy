@@ -39,7 +39,15 @@ export const findById = async (id) => {
 };
 
 export const findByStudentId = async (studentId) => {
-  return db.select().from(payments).where(eq(payments.studentId, studentId))
+  return db.select({
+    id: payments.id, studentId: payments.studentId, studentName: users.name,
+    courseId: payments.courseId, courseName: courses.name, amount: payments.amount, 
+    status: payments.status, dueDate: payments.dueDate, paidAt: payments.paidAt, 
+    createdAt: payments.createdAt
+  }).from(payments)
+    .leftJoin(users, eq(payments.studentId, users.id))
+    .leftJoin(courses, eq(payments.courseId, courses.id))
+    .where(eq(payments.studentId, studentId))
     .orderBy(desc(payments.createdAt));
 };
 

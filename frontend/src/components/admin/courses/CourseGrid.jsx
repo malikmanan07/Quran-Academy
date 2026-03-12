@@ -1,4 +1,6 @@
 import GridSkeleton from '../../common/GridSkeleton';
+import EmptyState from '../../common/EmptyState';
+import CourseCard from './CourseCard';
 
 const CourseGrid = ({ courses, loading, onEdit, onDelete }) => {
   if (loading) return <GridSkeleton items={8} />;

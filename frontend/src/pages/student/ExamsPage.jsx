@@ -19,9 +19,17 @@ const ExamsPage = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      try { const { data } = await getExamsByStudent(); setExams(data.exams || []); }
-      catch { /* silent */ }
-      setLoading(false);
+      setLoading(true);
+      try { 
+        const res = await getExamsByStudent();
+        // Extract from response.data (axios) -> .data (backend) -> .exams
+        const list = res.data?.data?.exams || res.data?.exams || [];
+        setExams(list);
+      } catch (err) {
+        console.error('ExamsPage fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     if (user?.id) fetch();
   }, [user]);

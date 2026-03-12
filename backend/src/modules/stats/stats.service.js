@@ -22,7 +22,15 @@ export const getStats = async () => {
   }).from(users).where(and(eq(users.role, 'student'), isNull(users.deletedAt)))
     .orderBy(desc(users.createdAt)).limit(5);
 
-  const recentPayments = await db.select().from(payments)
+  const recentPayments = await db.select({
+    id: payments.id,
+    amount: payments.amount,
+    status: payments.status,
+    month: payments.month,
+    createdAt: payments.createdAt,
+    studentName: users.name
+  }).from(payments)
+    .leftJoin(users, eq(payments.studentId, users.id))
     .orderBy(desc(payments.createdAt)).limit(5);
 
   const today = new Date().toISOString().split('T')[0];

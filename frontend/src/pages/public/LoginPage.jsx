@@ -48,8 +48,10 @@ const LoginPage = () => {
   const onSubmit = async (data) => {
     try {
       const result = await handleLogin(data);
-      const user = result.user || result.data?.user;
+      const user = result.user;
       
+      if (!user) return;
+
       if (user.status === 'pending') {
         navigate('/pending-approval');
         return;

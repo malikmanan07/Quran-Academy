@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import http from '../../services/http';
 import PageHeader from '../../components/common/PageHeader';
 import UsersFilters from '../../components/admin/users/UsersFilters';
 import UsersTable from '../../components/admin/users/UsersTable';
@@ -10,10 +11,9 @@ import AppPagination from '../../components/common/AppPagination';
 import TableSkeleton from '../../components/common/TableSkeleton';
 
 const UsersPage = () => {
-  const fetchUsers = async (params) => {
-    const { data } = await http.get('/admin/users', { params });
-    return { data };
-  };
+  const fetchUsers = useCallback(async (params) => {
+    return http.get('/admin/users', { params });
+  }, []);
 
   const { 
     data: users, 

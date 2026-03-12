@@ -13,9 +13,17 @@ const ProgressPage = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      try { const { data } = await getProgressByStudent(); setProgress(data.progress || []); }
-      catch { /* silent */ }
-      setLoading(false);
+      setLoading(true);
+      try { 
+        const res = await getProgressByStudent();
+        // Extract from response.data (axios) -> .data (backend) -> .progress
+        const list = res.data?.data?.progress || res.data?.progress || [];
+        setProgress(list);
+      } catch (err) {
+        console.error('ProgressPage fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     if (user?.id) fetch();
   }, [user]);

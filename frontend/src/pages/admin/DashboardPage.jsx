@@ -17,10 +17,15 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const { data } = await http.get('/stats/admin');
-        setStats(data);
-      } catch { /* silent */ }
-      setLoading(false);
+        const response = await http.get('/stats/admin');
+        // Extract data correctly: axios response has .data (body), 
+        // backend body has .data (actual stats payload)
+        setStats(response.data?.data || response.data);
+      } catch (err) {
+        console.error('Failed to fetch dashboard stats:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchStats();
   }, []);

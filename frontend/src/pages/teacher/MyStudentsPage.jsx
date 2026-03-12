@@ -16,11 +16,17 @@ const MyStudentsPage = () => {
 
   useEffect(() => {
     const fetch = async () => {
+      setLoading(true);
       try {
-        const { data } = await getAllStudents();
-        setStudents(data.students || []);
-      } catch { /* silent */ }
-      setLoading(false);
+        const res = await getAllStudents();
+        // Extract from response.data (axios) -> .data (backend) -> .students
+        const list = res.data?.data?.students || res.data?.students || [];
+        setStudents(list);
+      } catch (err) {
+        console.error('MyStudentsPage fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     fetch();
   }, []);

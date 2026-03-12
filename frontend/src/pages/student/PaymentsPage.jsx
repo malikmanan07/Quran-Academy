@@ -12,9 +12,17 @@ const PaymentsPage = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      try { const { data } = await getPaymentsByStudent(); setPayments(data.payments || []); }
-      catch { /* silent */ }
-      setLoading(false);
+      setLoading(true);
+      try { 
+        const res = await getPaymentsByStudent();
+        // Extract from response.data (axios) -> .data (backend) -> .payments
+        const list = res.data?.data?.payments || res.data?.payments || [];
+        setPayments(list);
+      } catch (err) {
+        console.error('PaymentsPage fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     if (user?.id) fetch();
   }, [user]);

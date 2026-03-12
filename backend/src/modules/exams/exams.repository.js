@@ -36,7 +36,9 @@ export const findById = async (id) => {
 };
 
 export const findByStudentId = async (studentId) =>
-  db.select().from(exams).where(eq(exams.studentId, studentId)).orderBy(desc(exams.date));
+  db.select({ ...exams, studentName: users.name }).from(exams)
+    .leftJoin(users, eq(exams.studentId, users.id))
+    .where(eq(exams.studentId, studentId)).orderBy(desc(exams.date));
 
 export const create = async (data) => {
   const result = await db.insert(exams).values(data).returning();

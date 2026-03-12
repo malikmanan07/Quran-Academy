@@ -15,12 +15,25 @@ const seed = async () => {
     const existingAdmin = await db.select().from(users).where(eq(users.email, 'admin@quranacademy.com')).limit(1);
     
     let adminId, teacherId, studentId;
+    const adminHash = await bcrypt.hash('Admin@123', 10);
 
     if (existingAdmin.length > 0) {
-      console.log('⚠️ Already seeded, skipping admin user');
-      adminId = existingAdmin[0].id;
+      // Update existing admin to ensure correct password, status, and not deleted
+      const [updatedAdmin] = await db.update(users).set({
+        password: adminHash,
+        status: 'active',
+        deletedAt: null,
+        role: 'admin',
+        name: 'Super Admin',
+      }).where(eq(users.email, 'admin@quranacademy.com')).returning();
+      adminId = updatedAdmin.id;
+      console.log('✅ Admin updated (password re-hashed, status set to active)');
+      console.log('   Admin ID:', updatedAdmin.id);
+      console.log('   Email:', updatedAdmin.email);
+      console.log('   Role:', updatedAdmin.role);
+      console.log('   Status:', updatedAdmin.status);
+      console.log('   DeletedAt:', updatedAdmin.deletedAt);
     } else {
-      const adminHash = await bcrypt.hash('Admin@123', 10);
       const [admin] = await db.insert(users).values({
         name: 'Super Admin',
         email: 'admin@quranacademy.com',
@@ -30,6 +43,10 @@ const seed = async () => {
       }).returning();
       adminId = admin.id;
       console.log('✅ Admin created');
+      console.log('   Admin ID:', admin.id);
+      console.log('   Email:', admin.email);
+      console.log('   Role:', admin.role);
+      console.log('   Status:', admin.status);
     }
 
     // 2. Sample Teacher

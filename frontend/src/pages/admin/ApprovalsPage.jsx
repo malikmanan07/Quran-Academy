@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import http from '../../services/http';
 import PageHeader from '../../components/common/PageHeader';
 import ApprovalFilters from '../../components/admin/approvals/ApprovalFilters';
 import PendingUsersList from '../../components/admin/approvals/PendingUsersList';
@@ -10,12 +11,11 @@ import AppPagination from '../../components/common/AppPagination';
 import TableSkeleton from '../../components/common/TableSkeleton';
 
 const ApprovalsPage = () => {
-  const fetchPending = async (params) => {
-    const { data } = await http.get('/admin/users', { 
+  const fetchPending = useCallback(async (params) => {
+    return http.get('/admin/users', { 
       params: { ...params, status: 'pending' } 
     });
-    return { data };
-  };
+  }, []);
 
   const { 
     data: users, 

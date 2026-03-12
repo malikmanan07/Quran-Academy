@@ -18,10 +18,15 @@ const SchedulePage = () => {
   const fetch = async () => {
     setLoading(true);
     try {
-      const { data } = await getClassesByTeacher();
-      setClasses(data.classes || []);
-    } catch { /* silent */ }
-    setLoading(false);
+      const res = await getClassesByTeacher();
+      // Extract from response.data (axios) -> .data (backend) -> .classes
+      const list = res.data?.data?.classes || res.data?.classes || [];
+      setClasses(list);
+    } catch (err) {
+      console.error('SchedulePage fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => { if (user?.id) fetch(); }, [user]);

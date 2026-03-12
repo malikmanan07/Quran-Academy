@@ -35,10 +35,14 @@ export const findById = async (id) => {
 };
 
 export const findByStudentId = async (studentId) =>
-  db.select().from(progress).where(eq(progress.studentId, studentId)).orderBy(desc(progress.createdAt));
+  db.select({ ...progress, studentName: users.name }).from(progress)
+    .leftJoin(users, eq(progress.studentId, users.id))
+    .where(eq(progress.studentId, studentId)).orderBy(desc(progress.createdAt));
 
 export const findByTeacherId = async (teacherId) =>
-  db.select().from(progress).where(eq(progress.teacherId, teacherId)).orderBy(desc(progress.createdAt));
+  db.select({ ...progress, studentName: users.name }).from(progress)
+    .leftJoin(users, eq(progress.studentId, users.id))
+    .where(eq(progress.teacherId, teacherId)).orderBy(desc(progress.createdAt));
 
 export const create = async (data) => {
   const result = await db.insert(progress).values(data).returning();

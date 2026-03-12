@@ -18,10 +18,20 @@ export const registerUser = async (data) => {
 
 export const loginUser = async ({ email, password }) => {
   const user = await authRepo.findByEmail(email);
+
+  if (env.NODE_ENV !== 'production') {
+    console.log('[Auth Debug] Login attempt for:', email);
+    console.log('[Auth Debug] User found:', user ? `Yes (id=${user.id}, role=${user.role}, status=${user.status})` : 'No');
+  }
+
   if (!user) throw new AppError('Invalid email or password', 401);
-  if (user.deletedAt) throw new AppError('Account has been deactivated', 403);
 
   const match = await bcrypt.compare(password, user.password);
+
+  if (env.NODE_ENV !== 'production') {
+    console.log('[Auth Debug] Password match:', match);
+  }
+
   if (!match) throw new AppError('Invalid email or password', 401);
 
   if (user.status === 'pending') throw new AppError('Your account is pending approval', 403);

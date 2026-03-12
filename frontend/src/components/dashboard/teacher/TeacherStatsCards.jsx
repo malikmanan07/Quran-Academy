@@ -1,4 +1,8 @@
-const TeacherStatsCards = ({ data }) => {
+import StatCardSkeleton from '../../common/StatCardSkeleton';
+
+const TeacherStatsCards = ({ data, loading }) => {
+  if (loading) return <StatCardSkeleton />;
+
   const cards = [
     { label: 'My Students', value: data.students || 0, icon: '👨‍🎓', color: 'bg-[#1B3A5C]/10 text-[#1B3A5C]' },
     { label: "Today's Classes", value: data.todayClasses || 0, icon: '📅', color: 'bg-[#00B4D8]/10 text-[#00B4D8]' },

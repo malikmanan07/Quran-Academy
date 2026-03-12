@@ -1,10 +1,8 @@
 {
-  "id": "ad40b585-c53e-4efa-80a1-d7992f8a343d",
-  "prevId": "00000000-0000-0000-0000-000000000000",
-  "version": "5",
-  "dialect": "pg",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "attendance": {
+    "public.attendance": {
       "name": "attendance",
       "schema": "",
       "columns": {
@@ -52,34 +50,37 @@
         "attendance_class_id_classes_id_fk": {
           "name": "attendance_class_id_classes_id_fk",
           "tableFrom": "attendance",
-          "tableTo": "classes",
           "columnsFrom": [
             "class_id"
           ],
+          "tableTo": "classes",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "attendance_student_id_users_id_fk": {
           "name": "attendance_student_id_users_id_fk",
           "tableFrom": "attendance",
-          "tableTo": "users",
           "columnsFrom": [
             "student_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "classes": {
+    "public.classes": {
       "name": "classes",
       "schema": "",
       "columns": {
@@ -163,47 +164,50 @@
         "classes_teacher_id_users_id_fk": {
           "name": "classes_teacher_id_users_id_fk",
           "tableFrom": "classes",
-          "tableTo": "users",
           "columnsFrom": [
             "teacher_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "classes_student_id_users_id_fk": {
           "name": "classes_student_id_users_id_fk",
           "tableFrom": "classes",
-          "tableTo": "users",
           "columnsFrom": [
             "student_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "classes_course_id_courses_id_fk": {
           "name": "classes_course_id_courses_id_fk",
           "tableFrom": "classes",
-          "tableTo": "courses",
           "columnsFrom": [
             "course_id"
           ],
+          "tableTo": "courses",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "course_material": {
+    "public.course_material": {
       "name": "course_material",
       "schema": "",
       "columns": {
@@ -269,34 +273,37 @@
         "course_material_course_id_courses_id_fk": {
           "name": "course_material_course_id_courses_id_fk",
           "tableFrom": "course_material",
-          "tableTo": "courses",
           "columnsFrom": [
             "course_id"
           ],
+          "tableTo": "courses",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "course_material_uploaded_by_users_id_fk": {
           "name": "course_material_uploaded_by_users_id_fk",
           "tableFrom": "course_material",
-          "tableTo": "users",
           "columnsFrom": [
             "uploaded_by"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "courses": {
+    "public.courses": {
       "name": "courses",
       "schema": "",
       "columns": {
@@ -354,9 +361,12 @@
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "exams": {
+    "public.exams": {
       "name": "exams",
       "schema": "",
       "columns": {
@@ -440,47 +450,50 @@
         "exams_student_id_users_id_fk": {
           "name": "exams_student_id_users_id_fk",
           "tableFrom": "exams",
-          "tableTo": "users",
           "columnsFrom": [
             "student_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "exams_teacher_id_users_id_fk": {
           "name": "exams_teacher_id_users_id_fk",
           "tableFrom": "exams",
-          "tableTo": "users",
           "columnsFrom": [
             "teacher_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "exams_course_id_courses_id_fk": {
           "name": "exams_course_id_courses_id_fk",
           "tableFrom": "exams",
-          "tableTo": "courses",
           "columnsFrom": [
             "course_id"
           ],
+          "tableTo": "courses",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "payments": {
+    "public.payments": {
       "name": "payments",
       "schema": "",
       "columns": {
@@ -552,21 +565,24 @@
         "payments_student_id_users_id_fk": {
           "name": "payments_student_id_users_id_fk",
           "tableFrom": "payments",
-          "tableTo": "users",
           "columnsFrom": [
             "student_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "progress": {
+    "public.progress": {
       "name": "progress",
       "schema": "",
       "columns": {
@@ -637,34 +653,37 @@
         "progress_student_id_users_id_fk": {
           "name": "progress_student_id_users_id_fk",
           "tableFrom": "progress",
-          "tableTo": "users",
           "columnsFrom": [
             "student_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         },
         "progress_teacher_id_users_id_fk": {
           "name": "progress_teacher_id_users_id_fk",
           "tableFrom": "progress",
-          "tableTo": "users",
           "columnsFrom": [
             "teacher_id"
           ],
+          "tableTo": "users",
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
+          "onUpdate": "no action",
+          "onDelete": "no action"
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
+      "uniqueConstraints": {},
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     },
-    "users": {
+    "public.users": {
       "name": "users",
       "schema": "",
       "columns": {
@@ -750,19 +769,28 @@
       "uniqueConstraints": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "nullsNotDistinct": false,
           "columns": [
             "email"
-          ]
+          ],
+          "nullsNotDistinct": false
         }
-      }
+      },
+      "policies": {},
+      "isRLSEnabled": false,
+      "checkConstraints": {}
     }
   },
   "enums": {},
   "schemas": {},
   "_meta": {
-    "columns": {},
     "schemas": {},
-    "tables": {}
-  }
+    "tables": {},
+    "columns": {}
+  },
+  "id": "ad40b585-c53e-4efa-80a1-d7992f8a343d",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "sequences": {},
+  "policies": {},
+  "views": {},
+  "roles": {}
 }

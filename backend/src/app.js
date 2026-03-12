@@ -32,7 +32,7 @@ app.use(morgan('dev'));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 2000, // Increased for development
   message: { success: false, message: 'Too many requests, try again later.' },
 });
 app.use('/api', limiter);

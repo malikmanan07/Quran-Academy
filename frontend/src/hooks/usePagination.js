@@ -33,6 +33,9 @@ export const usePagination = (totalItems, currentPage, pageSize) => {
       let middleRange = [leftSiblingIndex, currentPage, rightSiblingIndex];
       return [1, '...', ...middleRange, '...', totalPages];
     }
+
+    // Default fallback to show all pages if no other conditions match
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
   }, [totalPages, currentPage]);
 
   return { totalPages, hasNext, hasPrev, paginationRange };

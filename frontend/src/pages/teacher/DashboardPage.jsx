@@ -13,19 +13,27 @@ const DashboardPage = () => {
   const [classes, setClasses] = useState([]);
   const [students, setStudents] = useState([]);
   const [progress, setProgress] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetch = async () => {
+      setLoading(true);
       try {
-        const [c, s, p] = await Promise.all([
-          getClassesByTeacher().catch(() => ({ data: { classes: [] } })),
-          getAllStudents().catch(() => ({ data: { students: [] } })),
-          getAllProgress().catch(() => ({ data: { progress: [] } })),
+        const [cRes, sRes, pRes] = await Promise.all([
+          getClassesByTeacher().catch(() => ({ data: { data: { classes: [] } } })),
+          getAllStudents().catch(() => ({ data: { data: { students: [] } } })),
+          getAllProgress().catch(() => ({ data: { data: { progress: [] } } })),
         ]);
-        setClasses(c.data.classes || []);
-        setStudents(s.data.students || []);
-        setProgress(p.data.progress || []);
-      } catch { /* silent */ }
+        
+        // Extract from response.data (axios) -> .data (backend payload)
+        setClasses(cRes.data?.data?.classes || cRes.data?.classes || []);
+        setStudents(sRes.data?.data?.students || sRes.data?.students || []);
+        setProgress(pRes.data?.data?.progress || pRes.data?.progress || []);
+      } catch (err) {
+        console.error('Teacher Dashboard fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
     };
     if (user?.id) fetch();
   }, [user]);
@@ -40,13 +48,13 @@ const DashboardPage = () => {
         <h1 className="text-xl sm:text-2xl font-bold text-[#1A1A2E]">Welcome back, {user?.name} 👋</h1>
         <p className="text-sm text-[#4A5568]">{todayStr}</p>
       </div>
-      <TeacherStatsCards data={{ students: students.length, todayClasses: todayClasses.length, pendingReports: 0, monthlyClasses: classes.length }} />
+      <TeacherStatsCards loading={loading} data={{ students: students.length, todayClasses: todayClasses.length, pendingReports: 0, monthlyClasses: classes.length }} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <TodaySchedule classes={todayClasses} />
-        <MyStudentsList students={students} />
+        <TodaySchedule classes={todayClasses} loading={loading} />
+        <MyStudentsList students={students} loading={loading} />
       </div>
       <div className="mt-6">
-        <RecentProgress reports={progress} />
+        <RecentProgress reports={progress} loading={loading} />
       </div>
     </div>
   );

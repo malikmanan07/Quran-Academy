@@ -1,4 +1,8 @@
-const StudentStatsCards = ({ data }) => {
+import StatCardSkeleton from '../../common/StatCardSkeleton';
+
+const StudentStatsCards = ({ data, loading }) => {
+  if (loading) return <StatCardSkeleton />;
+  
   const cards = [
     { label: 'Classes Attended', value: data.attended || 0, icon: '✅', color: 'bg-green-100 text-green-700' },
     { label: 'Pending Payments', value: data.pendingPayments || 0, icon: '⚠️', color: 'bg-red-100 text-red-700' },

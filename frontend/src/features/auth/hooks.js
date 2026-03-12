@@ -12,9 +12,13 @@ export const useLogin = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data } = await loginUser(credentials);
-      login(data.user, data.token);
-      return data;
+      const response = await loginUser(credentials);
+      // Backend wraps response as: { success, message, data: { token, user } }
+      // Axios wraps that in: { data: <response body> }
+      // So actual payload is at response.data.data
+      const payload = response.data?.data || response.data;
+      login(payload.user, payload.token);
+      return payload;
     } catch (err) {
       const msg = handleApiError(err);
       setError(msg);

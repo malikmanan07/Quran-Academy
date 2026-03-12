@@ -1,9 +1,11 @@
 import db from '../../config/db.js';
 import { users } from '../../db/schema/index.js';
-import { eq, isNull } from 'drizzle-orm';
+import { eq, and, isNull } from 'drizzle-orm';
 
 export const findByEmail = async (email) => {
-  const result = await db.select().from(users).where(eq(users.email, email));
+  const result = await db.select().from(users).where(
+    and(eq(users.email, email), isNull(users.deletedAt))
+  );
   return result[0] || null;
 };
 

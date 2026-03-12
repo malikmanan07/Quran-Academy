@@ -21,16 +21,29 @@ export const useSearch = (fetchFn, initialParams = {}) => {
         search: debouncedSearch,
         ...filters
       };
-      const result = await fetchFn(params);
       
-      // Standard response format handling
-      const responseData = result.data?.data || result.data || [];
-      const meta = result.data?.meta || {};
+      const response = await fetchFn(params);
       
-      setData(Array.isArray(responseData) ? responseData : (responseData.users || responseData.data || []));
-      setTotal(meta.total || 0);
+      // Extraction logic: find the payload (usually response.data.data or response.data)
+      const body = response.data || response;
+      const payload = body.data || body;
+      const meta = body.meta || {};
+      
+      // Intelligent data finder: find the first array in the payload
+      let dataArray = [];
+      if (Array.isArray(payload)) {
+        dataArray = payload;
+      } else if (typeof payload === 'object' && payload !== null) {
+        // Find any direct array property (users, students, etc.)
+        const foundArray = Object.values(payload).find(val => Array.isArray(val));
+        dataArray = foundArray || [];
+      }
+      
+      setData(dataArray);
+      setTotal(meta.total || dataArray.length || 0);
     } catch (error) {
       console.error('Error fetching data:', error);
+      setData([]);
     } finally {
       setLoading(false);
     }
