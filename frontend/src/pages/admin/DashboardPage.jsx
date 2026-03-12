@@ -6,7 +6,8 @@ import RecentStudents from '../../components/dashboard/admin/RecentStudents';
 import RecentPayments from '../../components/dashboard/admin/RecentPayments';
 import UpcomingClasses from '../../components/dashboard/admin/UpcomingClasses';
 import QuickActions from '../../components/dashboard/admin/QuickActions';
-import Loader from '../../components/common/Loader';
+import StatCardSkeleton from '../../components/common/StatCardSkeleton';
+import TableSkeleton from '../../components/common/TableSkeleton';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -28,8 +29,6 @@ const DashboardPage = () => {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  if (loading) return <div className="p-12"><Loader text="Loading dashboard..." /></div>;
-
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
@@ -39,15 +38,31 @@ const DashboardPage = () => {
         </div>
       </div>
 
-      <StatsCards data={stats} />
+      {loading ? (
+        <StatCardSkeleton />
+      ) : (
+        <StatsCards data={stats} />
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <RecentStudents students={stats?.recentStudents || []} loading={loading} />
-        <RecentPayments payments={stats?.recentPayments || []} loading={loading} />
+        {loading ? (
+          <TableSkeleton rows={5} cols={3} />
+        ) : (
+          <RecentStudents students={stats?.recentStudents || []} loading={loading} />
+        )}
+        {loading ? (
+          <TableSkeleton rows={5} cols={3} />
+        ) : (
+          <RecentPayments payments={stats?.recentPayments || []} loading={loading} />
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        <UpcomingClasses classes={stats?.todayClasses || []} />
+        {loading ? (
+          <TableSkeleton rows={3} cols={4} />
+        ) : (
+          <UpcomingClasses classes={stats?.todayClasses || []} />
+        )}
         <QuickActions />
       </div>
     </div>

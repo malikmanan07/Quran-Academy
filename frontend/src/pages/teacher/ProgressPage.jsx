@@ -9,54 +9,89 @@ import AppButton from '../../components/common/AppButton';
 import { getAllProgress, createProgress, updateProgress, deleteProgress } from '../../features/progress/api';
 import { getAllStudents } from '../../features/students/api';
 import handleApiError from '../../utils/handleApiError';
+import { useSearch } from '../../hooks/useSearch';
+import SearchInput from '../../components/common/SearchInput';
+import AppPagination from '../../components/common/AppPagination';
+import TableSkeleton from '../../components/common/TableSkeleton';
 
 const ProgressPage = () => {
   const { user } = useAuth();
-  const [progress, setProgress] = useState([]);
+  const { 
+    data: progress, 
+    loading, 
+    total, 
+    page, 
+    setPage, 
+    pageSize, 
+    setPageSize, 
+    search, 
+    setSearch, 
+    refresh 
+  } = useSearch(getAllProgress);
+
   const [students, setStudents] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editReport, setEditReport] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const { toast, showToast } = useToast();
 
-  const fetch = async () => {
-    setLoading(true);
+  const fetchStudents = async () => {
     try {
-      const [p, s] = await Promise.all([getAllProgress(), getAllStudents()]);
-      setProgress(p.data.progress || []);
+      const s = await getAllStudents({ limit: 1000 });
       setStudents(s.data.students || []);
     } catch { /* silent */ }
-    setLoading(false);
   };
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { fetchStudents(); }, []);
 
   const onSubmit = async (data) => {
     setSaving(true);
     try {
       if (editReport) { await updateProgress(editReport.id, data); showToast('Report updated'); }
       else { await createProgress({ ...data, teacherId: user?.id }); showToast('Report added'); }
-      setShowModal(false); setEditReport(null); fetch();
+      setShowModal(false); setEditReport(null); refresh();
     } catch (err) { showToast(handleApiError(err), 'error'); }
     setSaving(false);
   };
 
   const confirmDelete = async () => {
-    try { await deleteProgress(deleteTarget.id); showToast('Report deleted'); setDeleteTarget(null); fetch(); }
+    try { await deleteProgress(deleteTarget.id); showToast('Report deleted'); setDeleteTarget(null); refresh(); }
     catch (err) { showToast(handleApiError(err), 'error'); }
   };
+
 
   return (
     <div>
       <Toast toast={toast} />
-      <PageHeader title="Progress Reports" subtitle={`${progress.length} reports`}
+      <PageHeader title="Progress Reports" subtitle={`${total} reports`}
         actionLabel="Add Report" onAction={() => { setEditReport(null); setShowModal(true); }} />
-      <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
-        <ProgressTable progress={progress} loading={loading}
-          onEdit={(r) => { setEditReport(r); setShowModal(true); }} onDelete={setDeleteTarget} />
+      
+      <div className="mb-6">
+        <SearchInput 
+          value={search} 
+          onChange={setSearch} 
+          placeholder="Search reports..." 
+          className="w-full md:w-96"
+        />
       </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
+        {loading ? (
+          <TableSkeleton rows={pageSize} cols={5} />
+        ) : (
+          <ProgressTable progress={progress} loading={loading}
+            onEdit={(r) => { setEditReport(r); setShowModal(true); }} onDelete={setDeleteTarget} />
+        )}
+      </div>
+
+      <AppPagination 
+        total={total} 
+        page={page} 
+        pageSize={pageSize} 
+        onPageChange={setPage} 
+        onPageSizeChange={setPageSize} 
+      />
       <ProgressModal show={showModal} onClose={() => { setShowModal(false); setEditReport(null); }}
         report={editReport} onSubmit={onSubmit} loading={saving} students={students} />
       <AppModal show={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Confirm Delete" size="sm">

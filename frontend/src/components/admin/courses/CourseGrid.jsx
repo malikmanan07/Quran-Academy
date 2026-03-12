@@ -1,9 +1,7 @@
-import CourseCard from './CourseCard';
-import EmptyState from '../../common/EmptyState';
-import Loader from '../../common/Loader';
+import GridSkeleton from '../../common/GridSkeleton';
 
 const CourseGrid = ({ courses, loading, onEdit, onDelete }) => {
-  if (loading) return <Loader />;
+  if (loading) return <GridSkeleton items={8} />;
   if (!courses.length) return <EmptyState title="No Courses" message="Create your first course to get started." />;
 
   return (

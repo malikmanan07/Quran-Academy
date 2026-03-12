@@ -1,16 +1,35 @@
 import db from '../../config/db.js';
 import { payments } from '../../db/schema/index.js';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, ilike, or } from 'drizzle-orm';
+import { users, courses } from '../../db/schema/index.js';
 
-export const findAll = async ({ status, page = 1, limit = 20 } = {}) => {
+export const findAll = async ({ status, search, page = 1, limit = 20 } = {}) => {
   const conditions = [];
   if (status) conditions.push(eq(payments.status, status));
+  if (search) {
+    conditions.push(or(
+      ilike(users.name, `%${search}%`),
+      ilike(courses.name, `%${search}%`)
+    ));
+  }
   const where = conditions.length ? and(...conditions) : undefined;
   const offset = (page - 1) * limit;
 
-  const data = await db.select().from(payments).where(where)
-    .orderBy(desc(payments.createdAt)).limit(limit).offset(offset);
-  const [{ count }] = await db.select({ count: sql`count(*)` }).from(payments).where(where);
+  const data = await db.select({
+    id: payments.id, studentId: payments.studentId, studentName: users.name,
+    courseName: courses.name, amount: payments.amount, status: payments.status,
+    dueDate: payments.dueDate, paidAt: payments.paidAt, createdAt: payments.createdAt
+  }).from(payments)
+    .leftJoin(users, eq(payments.studentId, users.id))
+    .leftJoin(courses, eq(payments.courseId, courses.id))
+    .where(where).orderBy(desc(payments.createdAt)).limit(limit).offset(offset);
+
+  const [{ count }] = await db.select({ count: sql`count(*)` })
+    .from(payments)
+    .leftJoin(users, eq(payments.studentId, users.id))
+    .leftJoin(courses, eq(payments.courseId, courses.id))
+    .where(where);
+
   return { data, total: Number(count) };
 };
 

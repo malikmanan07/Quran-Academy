@@ -8,67 +8,90 @@ import AppModal from '../../components/common/AppModal';
 import AppButton from '../../components/common/AppButton';
 import { getAllTeachers, addTeacher, updateTeacher, deleteTeacher } from '../../features/teachers/api';
 import handleApiError from '../../utils/handleApiError';
+import { useSearch } from '../../hooks/useSearch';
+import SearchInput from '../../components/common/SearchInput';
+import AppPagination from '../../components/common/AppPagination';
+import TableSkeleton from '../../components/common/TableSkeleton';
 
 const TeachersPage = () => {
-  const [teachers, setTeachers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { 
+    data: teachers, 
+    loading, 
+    total, 
+    page, 
+    setPage, 
+    pageSize, 
+    setPageSize, 
+    search, 
+    setSearch, 
+    setFilters,
+    refresh 
+  } = useSearch(getAllTeachers);
+
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editTeacher, setEditTeacher] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
   const { toast, showToast } = useToast();
-
-  const fetch = async () => {
-    setLoading(true);
-    try { const { data } = await getAllTeachers(); setTeachers(data.teachers || []); }
-    catch { /* silent */ }
-    setLoading(false);
-  };
-
-  useEffect(() => { fetch(); }, []);
-
-  const filtered = useMemo(() => {
-    let list = teachers;
-    if (search) list = list.filter(t =>
-      t.name?.toLowerCase().includes(search.toLowerCase()) ||
-      t.email?.toLowerCase().includes(search.toLowerCase())
-    );
-    if (statusFilter === 'active') list = list.filter(t => t.isActive !== false);
-    if (statusFilter === 'inactive') list = list.filter(t => t.isActive === false);
-    return list;
-  }, [teachers, search, statusFilter]);
 
   const onSubmit = async (data) => {
     setSaving(true);
     try {
       if (editTeacher) { await updateTeacher(editTeacher.id, data); showToast('Teacher updated'); }
       else { await addTeacher({ ...data, role: 'teacher' }); showToast('Teacher added'); }
-      setShowModal(false); setEditTeacher(null); fetch();
+      setShowModal(false); setEditTeacher(null); refresh();
     } catch (err) { showToast(handleApiError(err), 'error'); }
     setSaving(false);
   };
 
-  const onEdit = (t) => { setEditTeacher(t); setShowModal(true); };
-  const onDelete = (t) => setDeleteTarget(t);
-
   const confirmDelete = async () => {
-    try { await deleteTeacher(deleteTarget.id); showToast('Teacher deleted'); setDeleteTarget(null); fetch(); }
+    try { await deleteTeacher(deleteTarget.id); showToast('Teacher deleted'); setDeleteTarget(null); refresh(); }
     catch (err) { showToast(handleApiError(err), 'error'); }
   };
+
 
   return (
     <div>
       <Toast toast={toast} />
-      <PageHeader title="Teachers" subtitle={`${teachers.length} total teachers`}
+      <PageHeader title="Teachers" subtitle={`${total} total teachers`}
         actionLabel="Add Teacher" onAction={() => { setEditTeacher(null); setShowModal(true); }} />
-      <TeacherFilters search={search} onSearchChange={setSearch}
-        statusFilter={statusFilter} onStatusChange={setStatusFilter}
-        onReset={() => { setSearch(''); setStatusFilter(''); }} />
-      <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
-        <TeacherTable teachers={filtered} loading={loading} onEdit={onEdit} onDelete={onDelete} />
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <SearchInput 
+          value={search} 
+          onChange={setSearch} 
+          placeholder="Search by name or email..." 
+          className="flex-1"
+        />
+        <select 
+          onChange={(e) => setFilters({ status: e.target.value })}
+          className="px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00B4D8]"
+        >
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
       </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
+        {loading ? (
+          <TableSkeleton rows={pageSize} cols={5} />
+        ) : (
+          <TeacherTable 
+            teachers={teachers} 
+            loading={loading} 
+            onEdit={(t) => { setEditTeacher(t); setShowModal(true); }} 
+            onDelete={(t) => setDeleteTarget(t)} 
+          />
+        )}
+      </div>
+
+      <AppPagination 
+        total={total} 
+        page={page} 
+        pageSize={pageSize} 
+        onPageChange={setPage} 
+        onPageSizeChange={setPageSize} 
+      />
       <TeacherModal show={showModal} onClose={() => { setShowModal(false); setEditTeacher(null); }}
         teacher={editTeacher} onSubmit={onSubmit} loading={saving} />
       <AppModal show={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Confirm Delete" size="sm">

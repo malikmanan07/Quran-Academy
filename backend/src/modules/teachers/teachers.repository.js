@@ -1,22 +1,30 @@
 import db from '../../config/db.js';
 import { users } from '../../db/schema/index.js';
-import { eq, and, like, isNull, desc, sql } from 'drizzle-orm';
+import { eq, and, ilike, isNull, desc, sql, or } from 'drizzle-orm';
 
 const teacherWhere = and(eq(users.role, 'teacher'), isNull(users.deletedAt));
 
 export const findAll = async ({ search, status, page = 1, limit = 20 } = {}) => {
   const conditions = [teacherWhere];
-  if (search) conditions.push(like(users.name, `%${search}%`));
+  if (search) {
+    conditions.push(or(
+      ilike(users.name, `%${search}%`),
+      ilike(users.email, `%${search}%`),
+      ilike(users.specialization, `%${search}%`)
+    ));
+  }
   if (status === 'active') conditions.push(eq(users.isActive, true));
   if (status === 'inactive') conditions.push(eq(users.isActive, false));
 
   const offset = (page - 1) * limit;
+  const where = and(...conditions);
+
   const data = await db.select({
     id: users.id, name: users.name, email: users.email, phone: users.phone,
-    isActive: users.isActive, createdAt: users.createdAt,
-  }).from(users).where(and(...conditions)).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
+    specialization: users.specialization, isActive: users.isActive, createdAt: users.createdAt
+  }).from(users).where(where).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
 
-  const [{ count }] = await db.select({ count: sql`count(*)` }).from(users).where(and(...conditions));
+  const [{ count }] = await db.select({ count: sql`count(*)` }).from(users).where(where);
   return { data, total: Number(count) };
 };
 

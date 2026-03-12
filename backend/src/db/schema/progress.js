@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, text, varchar, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, text, varchar, timestamp, index } from 'drizzle-orm/pg-core';
 import { users } from './users.js';
 
 export const progress = pgTable('progress', {
@@ -12,4 +12,9 @@ export const progress = pgTable('progress', {
   rating: integer('rating'),
   remarks: text('remarks'),
   createdAt: timestamp('created_at').defaultNow(),
+}, (table) => {
+  return {
+    studentIdx: index('progress_student_idx').on(table.studentId),
+    teacherIdx: index('progress_teacher_idx').on(table.teacherId),
+  };
 });

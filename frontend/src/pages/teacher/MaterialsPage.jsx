@@ -9,52 +9,87 @@ import AppButton from '../../components/common/AppButton';
 import { getAllMaterials, createMaterial, updateMaterial, deleteMaterial } from '../../features/materials/api';
 import { getAllCourses } from '../../features/courses/api';
 import handleApiError from '../../utils/handleApiError';
+import { useSearch } from '../../hooks/useSearch';
+import SearchInput from '../../components/common/SearchInput';
+import AppPagination from '../../components/common/AppPagination';
+import GridSkeleton from '../../components/common/GridSkeleton';
 
 const MaterialsPage = () => {
   const { user } = useAuth();
-  const [materials, setMaterials] = useState([]);
+  const { 
+    data: materials, 
+    loading, 
+    total, 
+    page, 
+    setPage, 
+    pageSize, 
+    setPageSize, 
+    search, 
+    setSearch, 
+    refresh 
+  } = useSearch(getAllMaterials);
+
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editMaterial, setEditMaterial] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const { toast, showToast } = useToast();
 
-  const fetch = async () => {
-    setLoading(true);
+  const fetchCourses = async () => {
     try {
-      const [m, c] = await Promise.all([getAllMaterials(), getAllCourses()]);
-      setMaterials(m.data.materials || m.data || []);
+      const c = await getAllCourses({ limit: 1000 });
       setCourses(c.data.courses || []);
     } catch { /* silent */ }
-    setLoading(false);
   };
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { fetchCourses(); }, []);
 
   const onSubmit = async (data) => {
     setSaving(true);
     try {
       if (editMaterial) { await updateMaterial(editMaterial.id, data); showToast('Material updated'); }
       else { await createMaterial({ ...data, uploadedBy: user?.id }); showToast('Material added'); }
-      setShowModal(false); setEditMaterial(null); fetch();
+      setShowModal(false); setEditMaterial(null); refresh();
     } catch (err) { showToast(handleApiError(err), 'error'); }
     setSaving(false);
   };
 
   const confirmDelete = async () => {
-    try { await deleteMaterial(deleteTarget.id); showToast('Material deleted'); setDeleteTarget(null); fetch(); }
+    try { await deleteMaterial(deleteTarget.id); showToast('Material deleted'); setDeleteTarget(null); refresh(); }
     catch (err) { showToast(handleApiError(err), 'error'); }
   };
+
 
   return (
     <div>
       <Toast toast={toast} />
-      <PageHeader title="Course Materials" subtitle={`${materials.length} materials`}
+      <PageHeader title="Course Materials" subtitle={`${total} materials`}
         actionLabel="Add Material" onAction={() => { setEditMaterial(null); setShowModal(true); }} />
-      <MaterialGrid materials={materials} loading={loading}
-        onEdit={(m) => { setEditMaterial(m); setShowModal(true); }} onDelete={setDeleteTarget} />
+      
+      <div className="mb-6">
+        <SearchInput 
+          value={search} 
+          onChange={setSearch} 
+          placeholder="Search materials..." 
+          className="w-full md:w-96"
+        />
+      </div>
+
+      {loading ? (
+        <GridSkeleton items={pageSize} />
+      ) : (
+        <MaterialGrid materials={materials} loading={loading}
+          onEdit={(m) => { setEditMaterial(m); setShowModal(true); }} onDelete={setDeleteTarget} />
+      )}
+
+      <AppPagination 
+        total={total} 
+        page={page} 
+        pageSize={pageSize} 
+        onPageChange={setPage} 
+        onPageSizeChange={setPageSize} 
+      />
       <MaterialModal show={showModal} onClose={() => { setShowModal(false); setEditMaterial(null); }}
         material={editMaterial} onSubmit={onSubmit} loading={saving} courses={courses} />
       <AppModal show={!!deleteTarget} onClose={() => setDeleteTarget(null)} title="Confirm Delete" size="sm">

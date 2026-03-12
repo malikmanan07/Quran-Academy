@@ -1,11 +1,31 @@
 import db from '../../config/db.js';
 import { progress } from '../../db/schema/index.js';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, ilike, or } from 'drizzle-orm';
+import { users } from '../../db/schema/index.js';
 
-export const findAll = async ({ page = 1, limit = 20 } = {}) => {
+export const findAll = async ({ search, page = 1, limit = 20 } = {}) => {
+  const conditions = [];
+  if (search) {
+    conditions.push(or(
+      ilike(progress.lesson, `%${search}%`),
+      ilike(users.name, `%${search}%`)
+    ));
+  }
+  const where = conditions.length ? and(...conditions) : undefined;
   const offset = (page - 1) * limit;
-  const data = await db.select().from(progress).orderBy(desc(progress.createdAt)).limit(limit).offset(offset);
-  const [{ count }] = await db.select({ count: sql`count(*)` }).from(progress);
+  
+  const data = await db.select({
+    ...progress,
+    studentName: users.name
+  }).from(progress)
+    .leftJoin(users, eq(progress.studentId, users.id))
+    .where(where).orderBy(desc(progress.createdAt)).limit(limit).offset(offset);
+
+  const [{ count }] = await db.select({ count: sql`count(*)` })
+    .from(progress)
+    .leftJoin(users, eq(progress.studentId, users.id))
+    .where(where);
+
   return { data, total: Number(count) };
 };
 

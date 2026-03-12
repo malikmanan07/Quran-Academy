@@ -11,74 +11,113 @@ import { getAllStudents } from '../../features/students/api';
 import { getAllTeachers } from '../../features/teachers/api';
 import { getAllCourses } from '../../features/courses/api';
 import handleApiError from '../../utils/handleApiError';
+import { useSearch } from '../../hooks/useSearch';
+import SearchInput from '../../components/common/SearchInput';
+import AppPagination from '../../components/common/AppPagination';
+import TableSkeleton from '../../components/common/TableSkeleton';
 
 const ClassesPage = () => {
-  const [classes, setClasses] = useState([]);
+  const { 
+    data: classes, 
+    loading, 
+    total, 
+    page, 
+    setPage, 
+    pageSize, 
+    setPageSize, 
+    search, 
+    setSearch, 
+    setFilters,
+    refresh 
+  } = useSearch(getAllClasses);
+
   const [students, setStudents] = useState([]);
   const [teachers, setTeachers] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [depsLoading, setDepsLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [editClass, setEditClass] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
   const { toast, showToast } = useToast();
 
-  const fetch = async () => {
-    setLoading(true);
+  const fetchDeps = async () => {
+    setDepsLoading(true);
     try {
-      const [c, s, t, co] = await Promise.all([
-        getAllClasses(), getAllStudents(), getAllTeachers(), getAllCourses(),
+      const [s, t, co] = await Promise.all([
+        getAllStudents({ limit: 1000 }), 
+        getAllTeachers({ limit: 1000 }), 
+        getAllCourses({ limit: 1000 }),
       ]);
-      setClasses(c.data.classes || []);
       setStudents(s.data.students || []);
       setTeachers(t.data.teachers || []);
       setCourses(co.data.courses || []);
     } catch { /* silent */ }
-    setLoading(false);
+    setDepsLoading(false);
   };
 
-  useEffect(() => { fetch(); }, []);
 
-  const filtered = useMemo(() => {
-    let list = classes;
-    if (search) list = list.filter(c =>
-      c.studentName?.toLowerCase().includes(search.toLowerCase()) ||
-      c.teacherName?.toLowerCase().includes(search.toLowerCase())
-    );
-    if (statusFilter) list = list.filter(c => c.status === statusFilter);
-    return list;
-  }, [classes, search, statusFilter]);
+  useEffect(() => { fetchDeps(); }, []);
 
   const onSubmit = async (data) => {
     setSaving(true);
     try {
       if (editClass) { await updateClass(editClass.id, data); showToast('Class updated'); }
       else { await addClass(data); showToast('Class scheduled'); }
-      setShowModal(false); setEditClass(null); fetch();
+      setShowModal(false); setEditClass(null); refresh();
     } catch (err) { showToast(handleApiError(err), 'error'); }
     setSaving(false);
   };
 
-  const onEdit = (c) => { setEditClass(c); setShowModal(true); };
   const confirmDelete = async () => {
-    try { await deleteClass(deleteTarget.id); showToast('Class deleted'); setDeleteTarget(null); fetch(); }
+    try { await deleteClass(deleteTarget.id); showToast('Class deleted'); setDeleteTarget(null); refresh(); }
     catch (err) { showToast(handleApiError(err), 'error'); }
   };
+
 
   return (
     <div>
       <Toast toast={toast} />
-      <PageHeader title="Classes" subtitle={`${classes.length} total classes`}
+      <PageHeader title="Classes" subtitle={`${total} total classes`}
         actionLabel="Schedule Class" onAction={() => { setEditClass(null); setShowModal(true); }} />
-      <ClassFilters search={search} onSearchChange={setSearch}
-        statusFilter={statusFilter} onStatusChange={setStatusFilter}
-        onReset={() => { setSearch(''); setStatusFilter(''); }} />
-      <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
-        <ClassTable classes={filtered} loading={loading} onEdit={onEdit} onDelete={setDeleteTarget} />
+      <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <SearchInput 
+          value={search} 
+          onChange={setSearch} 
+          placeholder="Search by student, teacher or course..." 
+          className="flex-1"
+        />
+        <select 
+          onChange={(e) => setFilters({ status: e.target.value })}
+          className="px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00B4D8]"
+        >
+          <option value="">All Statuses</option>
+          <option value="scheduled">Scheduled</option>
+          <option value="completed">Completed</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
       </div>
+
+      <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
+        {loading ? (
+          <TableSkeleton rows={pageSize} cols={6} />
+        ) : (
+          <ClassTable 
+            classes={classes} 
+            loading={loading} 
+            onEdit={(c) => { setEditClass(c); setShowModal(true); }} 
+            onDelete={setDeleteTarget} 
+          />
+        )}
+      </div>
+
+      <AppPagination 
+        total={total} 
+        page={page} 
+        pageSize={pageSize} 
+        onPageChange={setPage} 
+        onPageSizeChange={setPageSize} 
+      />
       <ClassModal show={showModal} onClose={() => { setShowModal(false); setEditClass(null); }}
         classData={editClass} onSubmit={onSubmit} loading={saving}
         students={students} teachers={teachers} courses={courses} />

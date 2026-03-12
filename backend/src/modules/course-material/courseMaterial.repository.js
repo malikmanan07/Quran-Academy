@@ -1,11 +1,17 @@
 import db from '../../config/db.js';
 import { courseMaterial } from '../../db/schema/index.js';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, desc, sql, ilike, or } from 'drizzle-orm';
 
-export const findAll = async ({ courseId, type, page = 1, limit = 20 } = {}) => {
+export const findAll = async ({ courseId, type, search, page = 1, limit = 20 } = {}) => {
   const conditions = [];
   if (courseId) conditions.push(eq(courseMaterial.courseId, Number(courseId)));
   if (type) conditions.push(eq(courseMaterial.type, type));
+  if (search) {
+    conditions.push(or(
+      ilike(courseMaterial.title, `%${search}%`),
+      ilike(courseMaterial.description, `%${search}%`)
+    ));
+  }
   const where = conditions.length ? and(...conditions) : undefined;
   const offset = (page - 1) * limit;
 

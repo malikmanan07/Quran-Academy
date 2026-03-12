@@ -3,58 +3,52 @@ import PageHeader from '../../components/common/PageHeader';
 import ApprovalFilters from '../../components/admin/approvals/ApprovalFilters';
 import PendingUsersList from '../../components/admin/approvals/PendingUsersList';
 import { useToast } from '../../components/common/Toast';
-import http from '../../services/http';
-import { API } from '../../constants/apiEndpoints';
+import handleApiError from '../../utils/handleApiError';
+import { useSearch } from '../../hooks/useSearch';
+import SearchInput from '../../components/common/SearchInput';
+import AppPagination from '../../components/common/AppPagination';
+import TableSkeleton from '../../components/common/TableSkeleton';
 
 const ApprovalsPage = () => {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [roleFilter, setRoleFilter] = useState('all');
-  const { showToast } = useToast();
-
-  const fetchPending = async () => {
-    setLoading(true);
-    try {
-      const { data } = await http.get('/admin/pending-users');
-      setUsers(data.users || []);
-    } catch {
-      showToast('error', 'Failed to fetch pending approvals');
-    } finally {
-      setLoading(false);
-    }
+  const fetchPending = async (params) => {
+    const { data } = await http.get('/admin/users', { 
+      params: { ...params, status: 'pending' } 
+    });
+    return { data };
   };
 
-  useEffect(() => {
-    fetchPending();
-  }, []);
+  const { 
+    data: users, 
+    loading, 
+    total, 
+    page, 
+    setPage, 
+    pageSize, 
+    setPageSize, 
+    search, 
+    setSearch, 
+    setFilters,
+    refresh 
+  } = useSearch(fetchPending);
+
+  const { showToast } = useToast();
+
 
   const handleApprove = async (id) => {
     try {
       await http.put(`/admin/users/${id}/approve`);
       showToast('success', 'User approved successfully');
-      fetchPending();
-    } catch {
-      showToast('error', 'Failed to approve user');
-    }
+      refresh();
+    } catch { showToast('error', 'Failed to approve user'); }
   };
 
   const handleReject = async (id) => {
     try {
       await http.put(`/admin/users/${id}/reject`);
       showToast('success', 'User rejected');
-      fetchPending();
-    } catch {
-      showToast('error', 'Failed to reject user');
-    }
+      refresh();
+    } catch { showToast('error', 'Failed to reject user'); }
   };
-
-  const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(search.toLowerCase()) || 
-                          user.email.toLowerCase().includes(search.toLowerCase());
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    return matchesSearch && matchesRole;
-  });
 
   return (
     <div className="space-y-6">
@@ -63,24 +57,51 @@ const ApprovalsPage = () => {
         subtitle="Review and manage new student and teacher registrations"
         action={
           <div className="bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-medium shadow-sm flex items-center gap-2">
-            <span>⏳</span> {users.length} Pending
+            <span>⏳</span> {total} Pending
           </div>
         }
       />
       
-      <ApprovalFilters 
-        search={search} setSearch={setSearch} 
-        roleFilter={roleFilter} setRoleFilter={setRoleFilter} 
-      />
+      <div className="flex flex-col md:flex-row gap-4">
+        <SearchInput 
+          value={search} 
+          onChange={setSearch} 
+          placeholder="Search by name or email..." 
+          className="flex-1"
+        />
+        <select 
+          onChange={(e) => setFilters({ role: e.target.value })}
+          className="px-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00B4D8]"
+        >
+          <option value="">All Roles</option>
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+        </select>
+      </div>
       
-      <PendingUsersList 
-        users={filteredUsers} 
-        loading={loading} 
-        onApprove={handleApprove} 
-        onReject={handleReject} 
+      <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
+        {loading ? (
+          <TableSkeleton rows={pageSize} cols={5} />
+        ) : (
+          <PendingUsersList 
+            users={users} 
+            loading={loading} 
+            onApprove={handleApprove} 
+            onReject={handleReject} 
+          />
+        )}
+      </div>
+
+      <AppPagination 
+        total={total} 
+        page={page} 
+        pageSize={pageSize} 
+        onPageChange={setPage} 
+        onPageSizeChange={setPageSize} 
       />
     </div>
   );
+
 };
 
 export default ApprovalsPage;

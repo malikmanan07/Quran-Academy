@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, text, time, date, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, varchar, text, time, date, timestamp, index } from 'drizzle-orm/pg-core';
 import { users } from './users.js';
 import { courses } from './courses.js';
 
@@ -15,4 +15,11 @@ export const classes = pgTable('classes', {
   notes: text('notes'),
   cancellationReason: text('cancellation_reason'),
   createdAt: timestamp('created_at').defaultNow(),
+}, (table) => {
+  return {
+    teacherIdx: index('class_teacher_idx').on(table.teacherId),
+    studentIdx: index('class_student_idx').on(table.studentId),
+    dateIdx: index('class_date_idx').on(table.date),
+    statusIdx: index('class_status_idx').on(table.status),
+  };
 });

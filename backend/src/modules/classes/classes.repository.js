@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 import { classes, users, courses } from '../../db/schema/index.js';
-import { eq, and, desc, sql, gte, lte } from 'drizzle-orm';
+import { eq, and, desc, sql, ilike, or, alias } from 'drizzle-orm';
 
 const baseSelect = {
   id: classes.id, teacherId: classes.teacherId, studentId: classes.studentId,
@@ -9,15 +9,41 @@ const baseSelect = {
   notes: classes.notes, createdAt: classes.createdAt,
 };
 
-export const findAll = async ({ status, page = 1, limit = 20 } = {}) => {
+export const findAll = async ({ status, search, page = 1, limit = 20 } = {}) => {
+  const teacher = alias(users, 'teacher');
+  const student = alias(users, 'student');
+  
   const conditions = [];
   if (status) conditions.push(eq(classes.status, status));
+  if (search) {
+    conditions.push(or(
+      ilike(student.name, `%${search}%`),
+      ilike(teacher.name, `%${search}%`),
+      ilike(courses.name, `%${search}%`)
+    ));
+  }
+  
   const where = conditions.length ? and(...conditions) : undefined;
   const offset = (page - 1) * limit;
 
-  const data = await db.select(baseSelect).from(classes)
+  const data = await db.select({
+    ...baseSelect,
+    teacherName: teacher.name,
+    studentName: student.name,
+    courseName: courses.name
+  }).from(classes)
+    .leftJoin(teacher, eq(classes.teacherId, teacher.id))
+    .leftJoin(student, eq(classes.studentId, student.id))
+    .leftJoin(courses, eq(classes.courseId, courses.id))
     .where(where).orderBy(desc(classes.date)).limit(limit).offset(offset);
-  const [{ count }] = await db.select({ count: sql`count(*)` }).from(classes).where(where);
+
+  const [{ count }] = await db.select({ count: sql`count(*)` })
+    .from(classes)
+    .leftJoin(teacher, eq(classes.teacherId, teacher.id))
+    .leftJoin(student, eq(classes.studentId, student.id))
+    .leftJoin(courses, eq(classes.courseId, courses.id))
+    .where(where);
+    
   return { data, total: Number(count) };
 };
 

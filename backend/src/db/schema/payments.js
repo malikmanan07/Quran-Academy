@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, date, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, varchar, date, text, timestamp, index } from 'drizzle-orm/pg-core';
 import { users } from './users.js';
 
 export const payments = pgTable('payments', {
@@ -12,4 +12,9 @@ export const payments = pgTable('payments', {
   paidAt: timestamp('paid_at'),
   receiptUrl: text('receipt_url'),
   createdAt: timestamp('created_at').defaultNow(),
+}, (table) => {
+  return {
+    studentIdx: index('payment_student_idx').on(table.studentId),
+    statusIdx: index('payment_status_idx').on(table.status),
+  };
 });
