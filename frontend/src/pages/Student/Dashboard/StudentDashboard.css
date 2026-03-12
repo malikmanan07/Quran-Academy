@@ -1,0 +1,210 @@
+.welcome-card {
+  background: linear-gradient(135deg, var(--green) 0%, #2ecc71 100%);
+  border-radius: 16px;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  box-shadow: 0 4px 20px rgba(76, 175, 130, 0.3);
+}
+
+.welcome-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin: 0 0 4px 0;
+}
+
+.welcome-sub {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+.welcome-icon {
+  font-size: 3rem;
+}
+
+.student-stat-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  transition: transform 0.2s ease;
+}
+
+.student-stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.student-stat-card.blue  { border-left: 4px solid var(--blue);  }
+.student-stat-card.green { border-left: 4px solid var(--green); }
+.student-stat-card.coral { border-left: 4px solid var(--coral); }
+
+.student-stat-icon {
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.student-stat-card.blue  .student-stat-icon { background: var(--blue-light);  }
+.student-stat-card.green .student-stat-icon { background: var(--green-light); }
+.student-stat-card.coral .student-stat-icon { background: var(--coral-light); }
+
+.stat-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--navy);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+}
+
+.table-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+.table-card-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 16px;
+}
+
+/* Class Card */
+.class-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--light-gray);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--green);
+  transition: transform 0.2s ease;
+}
+
+.class-card:hover {
+  transform: translateX(4px);
+}
+
+.class-time {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.class-teacher {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.class-meeting-info {
+  margin-top: 4px;
+  color: #888;
+  font-size: 0.8rem;
+}
+
+.join-btn {
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity 0.2s ease;
+}
+
+.join-btn:hover {
+  opacity: 0.85;
+  color: white;
+}
+
+.no-link-badge {
+  background: var(--light-gray);
+  color: #888;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.no-class-box {
+  text-align: center;
+  padding: 24px;
+  color: #888;
+  background: var(--light-gray);
+  border-radius: 12px;
+}
+
+.btn-join {
+  background: var(--green-light);
+  color: var(--green);
+  border: 1px solid var(--green);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  border-radius: 8px;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-join:hover {
+  background: var(--green);
+  color: white;
+}
+
+.time-badge {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+
+.platform-badge {
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.custom-table thead tr th {
+  background: var(--light-gray);
+  color: var(--navy);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  padding: 12px 16px;
+}
+
+.custom-table tbody tr td {
+  font-size: 0.9rem;
+  padding: 12px 16px;
+  vertical-align: middle;
+  color: var(--navy);
+}
+
+.custom-table tbody tr:hover {
+  background: var(--green-light);
+}
