@@ -1,0 +1,37 @@
+import db from '../../config/db.js';
+import { courseMaterial } from '../../db/schema/index.js';
+import { eq, and, desc, sql } from 'drizzle-orm';
+
+export const findAll = async ({ courseId, type, page = 1, limit = 20 } = {}) => {
+  const conditions = [];
+  if (courseId) conditions.push(eq(courseMaterial.courseId, Number(courseId)));
+  if (type) conditions.push(eq(courseMaterial.type, type));
+  const where = conditions.length ? and(...conditions) : undefined;
+  const offset = (page - 1) * limit;
+
+  const data = await db.select().from(courseMaterial).where(where)
+    .orderBy(desc(courseMaterial.createdAt)).limit(limit).offset(offset);
+  const [{ count }] = await db.select({ count: sql`count(*)` }).from(courseMaterial).where(where);
+  return { data, total: Number(count) };
+};
+
+export const findById = async (id) => {
+  const result = await db.select().from(courseMaterial).where(eq(courseMaterial.id, id));
+  return result[0] || null;
+};
+
+export const findVisibleToStudents = async () =>
+  db.select().from(courseMaterial).where(eq(courseMaterial.visibleToStudents, true))
+    .orderBy(desc(courseMaterial.createdAt));
+
+export const create = async (data) => {
+  const result = await db.insert(courseMaterial).values(data).returning();
+  return result[0];
+};
+
+export const update = async (id, data) => {
+  const result = await db.update(courseMaterial).set(data).where(eq(courseMaterial.id, id)).returning();
+  return result[0];
+};
+
+export const remove = async (id) => db.delete(courseMaterial).where(eq(courseMaterial.id, id));

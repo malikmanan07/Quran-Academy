@@ -1,32 +1,32 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import * as authStorage from '../services/authStorage';
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token') || null);
+  const [token, setToken] = useState(authStorage.getToken());
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = authStorage.getUser();
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      setUser(storedUser);
     }
     setLoading(false);
   }, []);
 
   const login = (userData, tokenData) => {
+    authStorage.setUser(userData);
+    authStorage.setToken(tokenData);
     setUser(userData);
     setToken(tokenData);
-    localStorage.setItem('user', JSON.stringify(userData));
-    localStorage.setItem('token', tokenData);
   };
 
   const logout = () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
+    authStorage.clear();
   };
 
   return (

@@ -1,0 +1,35 @@
+import AppBadge from '../../common/AppBadge';
+
+const mockClasses = [
+  { teacher: 'Ustaz Ahmad', student: 'Ali Khan', course: 'Tajweed', time: '10:00 AM', status: 'Upcoming', initials: 'UA' },
+  { teacher: 'Ustaza Fatima', student: 'Sara Ahmed', course: 'Nazra', time: '11:30 AM', status: 'In Progress', initials: 'UF' },
+  { teacher: 'Ustaz Hassan', student: 'Omar Farooq', course: 'Hifz', time: '2:00 PM', status: 'Upcoming', initials: 'UH' },
+];
+
+const UpcomingClasses = () => (
+  <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
+    <div className="p-5 border-b border-[#E2E8F0]">
+      <h3 className="text-base font-semibold text-[#1A1A2E]">Today's Classes</h3>
+    </div>
+    <div className="divide-y divide-[#E2E8F0]">
+      {mockClasses.length === 0 ? (
+        <div className="p-8 text-center text-sm text-[#4A5568]">No classes scheduled for today</div>
+      ) : (
+        mockClasses.map((c, i) => (
+          <div key={i} className="flex items-center gap-3 p-4 hover:bg-[#F0F4F8]/50 transition-colors">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+              {c.initials}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[#1A1A2E] truncate">{c.student} — {c.course}</p>
+              <p className="text-xs text-[#4A5568]">{c.teacher} • {c.time}</p>
+            </div>
+            <AppBadge status={c.status === 'In Progress' ? 'Active' : 'Pending'} />
+          </div>
+        ))
+      )}
+    </div>
+  </div>
+);
+
+export default UpcomingClasses;

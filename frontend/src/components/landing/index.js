@@ -1,0 +1,9 @@
+export { default as HeroSection } from './HeroSection';
+export { default as StatsBar } from './StatsBar';
+export { default as FeaturesSection } from './FeaturesSection';
+export { default as CoursesSection } from './CoursesSection';
+export { default as HowItWorks } from './HowItWorks';
+export { default as TeachersSection } from './TeachersSection';
+export { default as TestimonialsSection } from './TestimonialsSection';
+export { default as PricingSection } from './PricingSection';
+export { default as CTASection } from './CTASection';

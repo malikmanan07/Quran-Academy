@@ -1,0 +1,62 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import corsOptions from './config/cors.js';
+import errorHandler from './middlewares/errorHandler.js';
+import notFound from './middlewares/notFound.js';
+
+// Module Routes
+import authRoutes from './modules/auth/auth.routes.js';
+import studentsRoutes from './modules/students/students.routes.js';
+import teachersRoutes from './modules/teachers/teachers.routes.js';
+import coursesRoutes from './modules/courses/courses.routes.js';
+import classesRoutes from './modules/classes/classes.routes.js';
+import paymentsRoutes from './modules/payments/payments.routes.js';
+import progressRoutes from './modules/progress/progress.routes.js';
+import examsRoutes from './modules/exams/exams.routes.js';
+import courseMaterialRoutes from './modules/course-material/courseMaterial.routes.js';
+import statsRoutes from './modules/stats/stats.routes.js';
+import adminUserRoutes from './modules/users/users.routes.js';
+
+const app = express();
+
+// Security & Parsing
+app.use(helmet());
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('dev'));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: { success: false, message: 'Too many requests, try again later.' },
+});
+app.use('/api', limiter);
+
+// Health Check
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Quran Academy API Running ✅' });
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/students', studentsRoutes);
+app.use('/api/teachers', teachersRoutes);
+app.use('/api/courses', coursesRoutes);
+app.use('/api/classes', classesRoutes);
+app.use('/api/payments', paymentsRoutes);
+app.use('/api/progress', progressRoutes);
+app.use('/api/exams', examsRoutes);
+app.use('/api/course-material', courseMaterialRoutes);
+app.use('/api/stats', statsRoutes);
+app.use('/api/admin', adminUserRoutes);
+
+// Error Handling
+app.use(notFound);
+app.use(errorHandler);
+
+export default app;

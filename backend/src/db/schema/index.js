@@ -1,0 +1,8 @@
+export { users } from './users.js';
+export { courses } from './courses.js';
+export { classes } from './classes.js';
+export { payments } from './payments.js';
+export { progress } from './progress.js';
+export { exams } from './exams.js';
+export { courseMaterial } from './courseMaterial.js';
+export { attendance } from './attendance.js';
