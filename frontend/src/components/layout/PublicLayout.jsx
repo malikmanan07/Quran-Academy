@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants/routes';
 import AppButton from '../common/AppButton';
 import CurrencySelector from '../common/CurrencySelector';
@@ -8,15 +8,55 @@ import { useCurrency } from '../../hooks/useCurrency';
 import Footer from './Footer';
 
 const navLinks = [
-  { label: 'Home', to: ROUTES.HOME },
-  { label: 'Courses', to: '/#courses' },
-  { label: 'Pricing', to: '/#pricing' },
-  { label: 'About', to: '/#about' },
+  { label: 'Home', to: ROUTES.HOME, hash: '' },
+  { label: 'Courses', to: ROUTES.HOME, hash: '#courses' },
+  { label: 'Pricing', to: ROUTES.HOME, hash: '#pricing' },
+  { label: 'About', to: ROUTES.HOME, hash: '#about' },
 ];
 
 const PublicLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { currency, setCurrency } = useCurrency();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    // Handle initial load with hash
+    if (location.hash && location.pathname === '/') {
+      const id = location.hash.substring(1);
+      const attemptScroll = () => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          // If element not ready, wait a bit
+          setTimeout(attemptScroll, 100);
+        }
+      };
+      attemptScroll();
+    }
+  }, [location.hash, location.pathname]);
+
+  const handleNav = (e, link) => {
+    setMenuOpen(false);
+
+    // If it's a hash link and we are on home page
+    if (link.hash && location.pathname === '/') {
+      e.preventDefault();
+      const id = link.hash.substring(1);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+        // Update URL without refresh
+        window.history.pushState(null, '', link.hash);
+      }
+    } else if (link.hash) {
+      // Cross-page hash link
+      e.preventDefault();
+      navigate('/' + link.hash);
+    }
+    // else default behavior (home link, etc)
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F0F4F8]">
@@ -29,7 +69,8 @@ const PublicLayout = () => {
 
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <a key={link.label} href={link.to}
+              <a key={link.label} href={link.hash || link.to}
+                onClick={(e) => handleNav(e, link)}
                 className="px-4 py-2 rounded-lg text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all duration-200">
                 {link.label}
               </a>
@@ -76,7 +117,8 @@ const PublicLayout = () => {
         </div>
         <div className="p-4 flex flex-col gap-2 flex-1">
           {navLinks.map((link) => (
-            <a key={link.label} href={link.to} onClick={() => setMenuOpen(false)}
+            <a key={link.label} href={link.hash || link.to}
+              onClick={(e) => handleNav(e, link)}
               className="px-4 py-3 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">
               {link.label}
             </a>
@@ -95,8 +137,9 @@ const PublicLayout = () => {
         </div>
       </div>
 
+
       <main className="flex-1 w-full max-w-full overflow-x-hidden relative">
-        <Outlet context={{ currency }} />
+        <Outlet />
       </main>
 
       <Footer />
