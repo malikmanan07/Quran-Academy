@@ -6,14 +6,15 @@ import { formatDate } from '../../../utils/formatDate';
 const UsersTable = ({ users, loading, onApprove, onReject }) => {
   const columns = [
     {
-      header: 'User',
-      accessor: (user) => (
+      key: 'user',
+      label: 'User',
+      render: (user) => (
         <div className="flex items-center gap-3">
           {user.avatar ? (
             <img src={user.avatar} className="w-10 h-10 rounded-full object-cover" />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] flex items-center justify-center text-white font-medium">
-              {user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+              {user.name?.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || '?'}
             </div>
           )}
           <div>
@@ -24,27 +25,31 @@ const UsersTable = ({ users, loading, onApprove, onReject }) => {
       )
     },
     {
-      header: 'Role',
-      accessor: (user) => (
+      key: 'role',
+      label: 'Role',
+      render: (user) => (
         <AppBadge variant={user.role === 'teacher' ? 'accent' : 'warning'} size="sm">
           {user.role}
         </AppBadge>
       )
     },
     {
-      header: 'Status',
-      accessor: (user) => {
+      key: 'status',
+      label: 'Status',
+      render: (user) => {
         const variants = { active: 'success', pending: 'warning', rejected: 'danger' };
         return <AppBadge variant={variants[user.status]} size="sm">{user.status}</AppBadge>;
       }
     },
     {
-      header: 'Joined',
-      accessor: (user) => formatDate(user.createdAt)
+      key: 'createdAt',
+      label: 'Joined',
+      render: (user) => formatDate(user.createdAt)
     },
     {
-      header: 'Actions',
-      accessor: (user) => {
+      key: 'actions',
+      label: 'Actions',
+      render: (user) => {
         if (user.status === 'pending') {
           return (
             <div className="flex items-center gap-2">

@@ -21,7 +21,7 @@ const DashboardPage = () => {
       try {
         const [cRes, sRes, pRes] = await Promise.all([
           getClassesByTeacher().catch(() => ({ data: { data: { classes: [] } } })),
-          getAllStudents().catch(() => ({ data: { data: { students: [] } } })),
+          getAllStudents({ teacherId: user.id }).catch(() => ({ data: { data: { students: [] } } })),
           getAllProgress().catch(() => ({ data: { data: { progress: [] } } })),
         ]);
         

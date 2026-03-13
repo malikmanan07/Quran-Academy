@@ -18,6 +18,7 @@ export const findAll = async ({ status, search, page = 1, limit = 20 } = {}) => 
   const data = await db.select({
     id: payments.id, studentId: payments.studentId, studentName: users.name,
     courseName: courses.name, amount: payments.amount, status: payments.status,
+    month: payments.month,
     dueDate: payments.dueDate, paidAt: payments.paidAt, createdAt: payments.createdAt
   }).from(payments)
     .leftJoin(users, eq(payments.studentId, users.id))
@@ -42,6 +43,7 @@ export const findByStudentId = async (studentId) => {
   return db.select({
     id: payments.id, studentId: payments.studentId, studentName: users.name,
     courseId: payments.courseId, courseName: courses.name, amount: payments.amount, 
+    month: payments.month,
     status: payments.status, dueDate: payments.dueDate, paidAt: payments.paidAt, 
     createdAt: payments.createdAt
   }).from(payments)

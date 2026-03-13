@@ -18,7 +18,7 @@ const MyStudentsPage = () => {
     const fetch = async () => {
       setLoading(true);
       try {
-        const res = await getAllStudents();
+        const res = await getAllStudents({ teacherId: user?.id });
         // Extract from response.data (axios) -> .data (backend) -> .students
         const list = res.data?.data?.students || res.data?.students || [];
         setStudents(list);
@@ -29,7 +29,7 @@ const MyStudentsPage = () => {
       }
     };
     fetch();
-  }, []);
+  }, [user]);
 
   const filtered = useMemo(() => {
     if (!search) return students;

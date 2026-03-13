@@ -1,10 +1,10 @@
 import db from '../../config/db.js';
-import { users } from '../../db/schema/index.js';
+import { users, classes, courses } from '../../db/schema/index.js';
 import { eq, and, ilike, isNull, desc, sql, or } from 'drizzle-orm';
 
 const studentWhere = and(eq(users.role, 'student'), isNull(users.deletedAt));
 
-export const findAll = async ({ search, status, page = 1, limit = 20 } = {}) => {
+export const findAll = async ({ search, status, teacherId, page = 1, limit = 20 } = {}) => {
   const conditions = [studentWhere];
   if (search) {
     conditions.push(or(
@@ -16,14 +16,42 @@ export const findAll = async ({ search, status, page = 1, limit = 20 } = {}) => 
   if (status === 'inactive') conditions.push(eq(users.isActive, false));
 
   const offset = (page - 1) * limit;
-  const where = and(...conditions);
 
-  const data = await db.select({
-    id: users.id, name: users.name, email: users.email, phone: users.phone,
-    isActive: users.isActive, createdAt: users.createdAt, status: users.status
-  }).from(users).where(where).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
+  // If teacherId is provided, only show students who have classes with this teacher
+  const query = db.select({
+    id: users.id, 
+    name: users.name, 
+    email: users.email, 
+    phone: users.phone,
+    isActive: users.isActive, 
+    createdAt: users.createdAt, 
+    status: users.status,
+    courseName: courses.name,
+  }).from(users);
 
-  const [{ count }] = await db.select({ count: sql`count(*)` }).from(users).where(where);
+  // Use a left join with classes to get course association
+  // We use a subquery/distinct join strategy to avoid getting multiple rows per student
+  // For simplicity here, we'll join and use a group by or just take the first one found
+  query.leftJoin(classes, eq(users.id, classes.studentId))
+       .leftJoin(courses, eq(classes.courseId, courses.id));
+
+  const finalConditions = [...conditions];
+  if (teacherId) {
+    finalConditions.push(eq(classes.teacherId, parseInt(teacherId)));
+  }
+
+  const where = and(...finalConditions);
+
+  const data = await query.where(where)
+    .orderBy(desc(users.createdAt))
+    .limit(limit)
+    .offset(offset);
+
+  const [{ count }] = await db.select({ count: sql`count(distinct ${users.id})` })
+    .from(users)
+    .leftJoin(classes, eq(users.id, classes.studentId))
+    .where(where);
+
   return { data, total: Number(count) };
 };
 

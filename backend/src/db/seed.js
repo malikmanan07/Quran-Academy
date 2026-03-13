@@ -145,10 +145,10 @@ const seed = async () => {
         teacherId,
         studentId,
         date: tomorrow.toISOString().split('T')[0],
-        startTime: '10:00:00',
-        endTime: '10:45:00',
+        time: '10:00:00',
+        duration: '45min',
         status: 'Scheduled',
-        meetingUrl: 'https://zoom.us/j/123456789'
+        meetingLink: 'https://zoom.us/j/123456789'
       });
       console.log('✅ Class created');
     }
@@ -159,13 +159,15 @@ const seed = async () => {
       console.log('⚠️ Already seeded, skipping payment');
     } else {
       const year = new Date().getFullYear();
-      const month = new Date().getMonth();
-      const dueDate = new Date(year, month + 1, 0); // last day of current month
+      const monthIndex = new Date().getMonth();
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const dueDate = new Date(year, monthIndex + 1, 0); // last day of current month
       
       await db.insert(payments).values({
         studentId,
         courseId,
-        amount: '2000',
+        amount: 2000,
+        month: monthNames[monthIndex],
         status: 'Pending',
         dueDate: dueDate.toISOString().split('T')[0]
       });
