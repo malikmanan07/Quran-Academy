@@ -28,6 +28,8 @@ import PaymentsPage from './pages/admin/PaymentsPage';
 import ApprovalsPage from './pages/admin/ApprovalsPage';
 import UsersPage from './pages/admin/UsersPage';
 import SettingsPage from './pages/admin/SettingsPage';
+import ParentsPage from './pages/admin/ParentsPage';
+import TrialRequestsPage from './pages/admin/TrialRequestsPage';
 
 // Teacher Pages
 import TeacherDashboard from './pages/teacher/DashboardPage';
@@ -44,6 +46,11 @@ import StudentProgress from './pages/student/ProgressPage';
 import ExamsPage from './pages/student/ExamsPage';
 import StudentPayments from './pages/student/PaymentsPage';
 import StudentProfilePage from './pages/student/ProfilePage';
+
+// Parent Pages
+import ParentDashboard from './pages/parent/DashboardPage';
+import ChildProgressPage from './pages/parent/ChildProgressPage';
+import ChildPaymentsPage from './pages/parent/ChildPaymentsPage';
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -85,6 +92,8 @@ function App() {
           <Route path={ROUTES.ADMIN_APPROVALS} element={<ApprovalsPage />} />
           <Route path={ROUTES.ADMIN_USERS} element={<UsersPage />} />
           <Route path={ROUTES.ADMIN_SETTINGS} element={<SettingsPage />} />
+          <Route path={ROUTES.ADMIN_PARENTS} element={<ParentsPage />} />
+          <Route path={ROUTES.ADMIN_TRIAL_REQUESTS} element={<TrialRequestsPage />} />
         </Route>
 
         {/* Teacher Routes */}
@@ -113,6 +122,18 @@ function App() {
           <Route path={ROUTES.STUDENT_EXAMS} element={<ExamsPage />} />
           <Route path={ROUTES.STUDENT_PAYMENTS} element={<StudentPayments />} />
           <Route path={ROUTES.STUDENT_PROFILE} element={<StudentProfilePage />} />
+        </Route>
+
+        {/* Parent Routes */}
+        <Route element={
+          <ProtectedRoute roles={[ROLES.PARENT]}>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }>
+          <Route path={ROUTES.PARENT_DASHBOARD} element={<ParentDashboard />} />
+          <Route path={ROUTES.PARENT_CHILDREN} element={<ParentDashboard />} />
+          <Route path="/parent/progress/:id" element={<ChildProgressPage />} />
+          <Route path="/parent/payments/:id" element={<ChildPaymentsPage />} />
         </Route>
 
             {/* 404 */}

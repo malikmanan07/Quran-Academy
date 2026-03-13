@@ -1,17 +1,14 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
 import AppButton from '../common/AppButton';
-import { ROUTES } from '../../constants/routes';
+import TrialBookingModal from './TrialBookingModal';
 
 const HeroSection = () => {
+  const [showTrial, setShowTrial] = useState(false);
+
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] text-white overflow-hidden flex items-center">
       {/* Islamic geometric pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }}
-      />
+      <div className="absolute inset-0 opacity-[0.04] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%3E%3Cg%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')]" />
 
       {/* Glow effects */}
       <div className="absolute top-20 left-10 w-80 h-80 bg-[#00B4D8]/20 rounded-full blur-[120px]" />
@@ -30,15 +27,19 @@ const HeroSection = () => {
               <span className="text-[#00B4D8]">Expert Teachers</span>
             </h1>
 
-            <p className="text-base sm:text-lg text-white/75 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-              One-on-one personalized classes for all ages. Tajweed, Hifz,
-              Nazra and Islamic Studies.
+            <p className="text-base sm:text-lg text-white/75 max-w-xl mx-auto lg:mx-0 mb-4 leading-relaxed">
+              Join 500+ Students From 20+ Countries Worldwide. One-on-one personalized classes for all ages.
             </p>
 
+            {/* Feature pills */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 mb-8">
+              {['🌍 Global Students', '⏰ Flexible Timezones', '✅ Free Trial'].map(f => (
+                <span key={f} className="px-3 py-1.5 rounded-full bg-white/10 text-xs font-medium text-white/90">{f}</span>
+              ))}
+            </div>
+
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 mb-10">
-              <Link to={ROUTES.SIGNUP}>
-                <AppButton variant="accent" size="lg">Start Free Trial</AppButton>
-              </Link>
+              <AppButton variant="accent" size="lg" onClick={() => setShowTrial(true)}>Start Free Trial</AppButton>
               <a href="#courses">
                 <AppButton variant="outline" size="lg" className="!border-white/30 !text-white hover:!bg-white/10">
                   View Courses
@@ -57,7 +58,6 @@ const HeroSection = () => {
 
           {/* Right decorative cards */}
           <div className="hidden lg:flex flex-col items-center gap-5 relative">
-            {/* Next class card */}
             <div className="animate-float-slow bg-white/10 backdrop-blur-md rounded-2xl p-5 w-72 border border-white/10">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-[#00B4D8]/20 flex items-center justify-center text-lg">🕐</div>
@@ -72,11 +72,10 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Progress card */}
             <div className="animate-float-medium bg-white/10 backdrop-blur-md rounded-2xl p-5 w-64 ml-20 border border-white/10">
               <p className="text-sm font-semibold mb-2">📈 My Progress</p>
               <div className="w-full bg-white/10 rounded-full h-2.5 mb-2">
-                <div className="bg-[#00B4D8] h-2.5 rounded-full" style={{ width: '72%' }} />
+                <div className="bg-[#00B4D8] h-2.5 rounded-full w-[72%]" />
               </div>
               <div className="flex justify-between text-xs text-white/60">
                 <span>Juz 18 / 30</span>
@@ -84,7 +83,6 @@ const HeroSection = () => {
               </div>
             </div>
 
-            {/* Teacher rating card */}
             <div className="animate-float-fast bg-white/10 backdrop-blur-md rounded-2xl p-5 w-60 mr-16 border border-white/10">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#1B3A5C] to-[#00B4D8] flex items-center justify-center text-sm font-bold">UA</div>
@@ -99,6 +97,8 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+
+      <TrialBookingModal show={showTrial} onClose={() => setShowTrial(false)} />
     </section>
   );
 };

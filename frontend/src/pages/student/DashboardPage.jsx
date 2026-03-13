@@ -4,10 +4,13 @@ import { getClassesByStudent } from '../../features/classes/api';
 import { getProgressByStudent } from '../../features/progress/api';
 import { getPaymentsByStudent } from '../../features/payments/api';
 import { getMaterialsByStudent } from '../../features/materials/api';
+import { getMyQuranProgress } from '../../features/quranProgress/api';
 import StudentStatsCards from '../../components/dashboard/student/StudentStatsCards';
 import UpcomingClasses from '../../components/dashboard/student/UpcomingClasses';
 import MyProgressSummary from '../../components/dashboard/student/MyProgressSummary';
 import RecentMaterials from '../../components/dashboard/student/RecentMaterials';
+import MyCertificates from '../../components/student/MyCertificates';
+import QuranProgressMap from '../../components/common/QuranProgressMap';
 import StatCardSkeleton from '../../components/common/StatCardSkeleton';
 import TableSkeleton from '../../components/common/TableSkeleton';
 
@@ -16,6 +19,7 @@ const DashboardPage = () => {
   const [classes, setClasses] = useState([]);
   const [progress, setProgress] = useState([]);
   const [materials, setMaterials] = useState([]);
+  const [quranProg, setQuranProg] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({ attended: 0, pendingPayments: 0, progress: 0, materials: 0 });
 
@@ -23,21 +27,24 @@ const DashboardPage = () => {
     const fetch = async () => {
       setLoading(true);
       try {
-        const [cRes, pRes, payRes, mRes] = await Promise.all([
+        const [cRes, pRes, payRes, mRes, qRes] = await Promise.all([
           getClassesByStudent().catch(() => ({ data: { data: { classes: [] } } })),
           getProgressByStudent().catch(() => ({ data: { data: { progress: [] } } })),
           getPaymentsByStudent().catch(() => ({ data: { data: { payments: [] } } })),
           getMaterialsByStudent().catch(() => ({ data: { data: { materials: [] } } })),
+          getMyQuranProgress().catch(() => ({ data: { data: { progress: [] } } })),
         ]);
 
         const cls = cRes.data?.data?.classes || cRes.data?.classes || [];
         const prg = pRes.data?.data?.progress || pRes.data?.progress || [];
         const pays = payRes.data?.data?.payments || payRes.data?.payments || [];
         const mats = mRes.data?.data?.materials || mRes.data?.data || mRes.data?.materials || [];
+        const qp = qRes.data?.data?.progress || [];
 
         setClasses(cls);
         setProgress(prg);
         setMaterials(mats);
+        setQuranProg(qp);
         
         setStats({
           attended: cls.filter(x => x.status === 'completed' || x.status === 'Completed').length,
@@ -66,6 +73,10 @@ const DashboardPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {loading ? <TableSkeleton /> : <UpcomingClasses classes={classes.filter(c => c.status === 'scheduled' || c.status === 'Scheduled')} loading={loading} />}
         <MyProgressSummary progress={progress} loading={loading} />
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <QuranProgressMap progress={quranProg} mini />
+        <MyCertificates />
       </div>
       <div className="mt-6"><RecentMaterials materials={materials} loading={loading} /></div>
     </div>

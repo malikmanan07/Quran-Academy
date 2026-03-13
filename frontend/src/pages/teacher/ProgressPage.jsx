@@ -6,8 +6,10 @@ import ProgressTable from '../../components/teacher/progress/ProgressTable';
 import ProgressModal from '../../components/teacher/progress/ProgressModal';
 import AppModal from '../../components/common/AppModal';
 import AppButton from '../../components/common/AppButton';
+import QuranProgressMap from '../../components/common/QuranProgressMap';
 import { getAllProgress, createProgress, updateProgress, deleteProgress } from '../../features/progress/api';
 import { getAllStudents } from '../../features/students/api';
+import { getQuranProgress, updateQuranPara } from '../../features/quranProgress/api';
 import handleApiError from '../../utils/handleApiError';
 import { useSearch } from '../../hooks/useSearch';
 import SearchInput from '../../components/common/SearchInput';
@@ -34,6 +36,8 @@ const ProgressPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [editReport, setEditReport] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [quranProg, setQuranProg] = useState([]);
+  const [selectedStudent, setSelectedStudent] = useState('');
   const { toast, showToast } = useToast();
 
   const fetchStudents = async () => {
@@ -44,6 +48,23 @@ const ProgressPage = () => {
   };
 
   useEffect(() => { fetchStudents(); }, []);
+
+  const fetchQuranProgress = async (studentId) => {
+    if (!studentId) { setQuranProg([]); return; }
+    try {
+      const res = await getQuranProgress(studentId);
+      setQuranProg(res.data?.data?.progress || []);
+    } catch { setQuranProg([]); }
+  };
+
+  const handleParaUpdate = async (paraNumber, status) => {
+    if (!selectedStudent) return;
+    try {
+      await updateQuranPara(selectedStudent, paraNumber, status);
+      showToast('Para status updated');
+      fetchQuranProgress(selectedStudent);
+    } catch (err) { showToast(handleApiError(err), 'error'); }
+  };
 
   const onSubmit = async (data) => {
     setSaving(true);
@@ -66,6 +87,26 @@ const ProgressPage = () => {
       <Toast toast={toast} />
       <PageHeader title="Progress Reports" subtitle={`${total} reports`}
         actionLabel="Add Report" onAction={() => { setEditReport(null); setShowModal(true); }} />
+
+      {/* Quran Progress Map */}
+      <div className="mb-6 bg-white rounded-xl border border-[#E2E8F0] shadow-sm p-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-4">
+          <h3 className="text-sm font-bold text-[#1A1A2E]">📖 Quran Para Progress</h3>
+          <select
+            value={selectedStudent}
+            onChange={(e) => { setSelectedStudent(e.target.value); fetchQuranProgress(e.target.value); }}
+            className="rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 outline-none"
+          >
+            <option value="">Select Student</option>
+            {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          </select>
+        </div>
+        {selectedStudent ? (
+          <QuranProgressMap progress={quranProg} editable onUpdatePara={handleParaUpdate} />
+        ) : (
+          <p className="text-sm text-[#4A5568] text-center py-6">Select a student to view and update Quran progress</p>
+        )}
+      </div>
       
       <div className="mb-6">
         <SearchInput 

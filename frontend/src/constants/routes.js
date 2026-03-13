@@ -14,6 +14,8 @@ export const ROUTES = {
   ADMIN_APPROVALS: '/admin/approvals',
   ADMIN_USERS: '/admin/users',
   ADMIN_SETTINGS: '/admin/settings',
+  ADMIN_PARENTS: '/admin/parents',
+  ADMIN_TRIAL_REQUESTS: '/admin/trial-requests',
 
   // Teacher
   TEACHER_DASHBOARD: '/teacher/dashboard',
@@ -30,4 +32,10 @@ export const ROUTES = {
   STUDENT_EXAMS: '/student/exams',
   STUDENT_PAYMENTS: '/student/payments',
   STUDENT_PROFILE: '/student/profile',
+
+  // Parent
+  PARENT_DASHBOARD: '/parent/dashboard',
+  PARENT_CHILDREN: '/parent/children',
+  PARENT_PROGRESS: '/parent/progress/:id',
+  PARENT_PAYMENTS: '/parent/payments/:id',
 };

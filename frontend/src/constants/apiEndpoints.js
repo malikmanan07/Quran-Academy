@@ -48,4 +48,29 @@ export const API = {
 
   // Stats
   ADMIN_STATS: '/stats/admin',
+
+  // Certificates
+  MY_CERTIFICATES: '/certificates/my-certificates',
+  GENERATE_CERTIFICATE: '/certificates/generate',
+
+  // Parent
+  PARENT_CHILDREN: '/parent/my-children',
+  PARENT_CHILD_PROGRESS: (id) => `/parent/child/${id}/progress`,
+  PARENT_CHILD_ATTENDANCE: (id) => `/parent/child/${id}/attendance`,
+  PARENT_CHILD_PAYMENTS: (id) => `/parent/child/${id}/payments`,
+  PARENT_CHILD_CLASSES: (id) => `/parent/child/${id}/classes`,
+  ADMIN_LINK_PARENT: '/parent/link-parent',
+  ADMIN_ALL_PARENTS: '/parent/all-parents',
+
+  // Trial
+  TRIAL_BOOK: '/trial/book',
+  TRIAL_REQUESTS: '/trial/requests',
+  TRIAL_STATUS: (id) => `/trial/${id}/status`,
+  TRIAL_CONVERT: (id) => `/trial/${id}/convert`,
+
+  // Quran Progress
+  QURAN_PROGRESS: (studentId) => `/quran-progress/${studentId}`,
+  QURAN_PROGRESS_MY: '/quran-progress/my-progress',
+  QURAN_PROGRESS_UPDATE: (studentId, paraNumber) =>
+    `/quran-progress/${studentId}/para/${paraNumber}`,
 };

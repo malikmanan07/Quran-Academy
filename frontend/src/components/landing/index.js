@@ -1,5 +1,6 @@
 export { default as HeroSection } from './HeroSection';
 export { default as StatsBar } from './StatsBar';
+export { default as CountriesSection } from './CountriesSection';
 export { default as FeaturesSection } from './FeaturesSection';
 export { default as CoursesSection } from './CoursesSection';
 export { default as HowItWorks } from './HowItWorks';

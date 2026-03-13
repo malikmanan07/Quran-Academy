@@ -1,7 +1,7 @@
 const stats = [
-  { value: '500+', label: 'Active Students', icon: '👨‍🎓' },
+  { value: '500+', label: 'Global Students', icon: '👨‍🎓' },
   { value: '50+', label: 'Expert Teachers', icon: '🎓' },
-  { value: '20+', label: 'Courses', icon: '📚' },
+  { value: '20+', label: 'Countries', icon: '🌍' },
   { value: '98%', label: 'Satisfaction Rate', icon: '⭐' },
 ];
 
