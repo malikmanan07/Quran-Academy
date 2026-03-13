@@ -15,9 +15,9 @@ const testimonials = [
 
 const TestimonialsSection = () => {
   return (
-    <section className="py-16 sm:py-24 bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-72 h-72 bg-[#00B4D8]/10 rounded-full blur-[100px]" />
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#00B4D8]/10 rounded-full blur-[100px]" />
+    <section className="py-16 sm:py-24 bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] relative overflow-hidden w-full max-w-full">
+      <div className="absolute top-0 left-0 w-72 h-72 bg-[#00B4D8]/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-[#00B4D8]/10 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 sm:mb-16">

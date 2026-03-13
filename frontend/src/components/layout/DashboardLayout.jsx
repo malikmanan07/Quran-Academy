@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import DashboardLoadingSkeleton from '../common/DashboardLoadingSkeleton';
 
 const DashboardLayout = () => {
   const { user } = useAuth();
@@ -12,13 +13,15 @@ const DashboardLayout = () => {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className="min-h-screen bg-[#F0F4F8]">
+    <div className="min-h-screen bg-[#F0F4F8] w-full max-w-full overflow-x-hidden">
       <Navbar onToggleSidebar={toggleSidebar} user={user} />
       <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
 
-      <main className="pt-16 lg:pl-64 min-h-screen transition-all duration-300">
+      <main className="pt-16 lg:pl-64 min-h-screen transition-all duration-300 w-full max-w-full overflow-x-hidden">
         <div className="p-4 sm:p-6">
-          <Outlet />
+          <Suspense fallback={<DashboardLoadingSkeleton />}>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
     </div>

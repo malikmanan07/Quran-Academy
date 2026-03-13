@@ -1,6 +1,6 @@
 const Navbar = ({ onToggleSidebar, user }) => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 h-16 bg-[#1B3A5C] text-white flex items-center justify-between px-4 lg:px-6 shadow-md">
+    <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-[#1B3A5C] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-md w-full">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}

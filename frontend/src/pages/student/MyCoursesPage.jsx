@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
 import EmptyState from '../../components/common/EmptyState';
-import Loader from '../../components/common/Loader';
+import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
 import CourseProgressCard from '../../components/student/courses/CourseProgressCard';
 import { getAllCourses } from '../../features/courses/api';
 
@@ -20,7 +20,7 @@ const MyCoursesPage = () => {
     fetch();
   }, []);
 
-  if (loading) return <Loader />;
+  if (loading) return <DashboardLoadingSkeleton />;
 
   return (
     <div>

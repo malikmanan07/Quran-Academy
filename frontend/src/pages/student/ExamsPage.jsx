@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
 import EmptyState from '../../components/common/EmptyState';
-import Loader from '../../components/common/Loader';
+import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
 import AppModal from '../../components/common/AppModal';
 import ExamCard from '../../components/student/exams/ExamCard';
 import ExamResultCard from '../../components/student/exams/ExamResultCard';
@@ -34,7 +34,7 @@ const ExamsPage = () => {
     if (user?.id) fetch();
   }, [user]);
 
-  if (loading) return <Loader />;
+  if (loading) return <DashboardLoadingSkeleton />;
 
   const upcoming = exams.filter(e => e.status !== 'completed');
   const completed = exams.filter(e => e.status === 'completed');

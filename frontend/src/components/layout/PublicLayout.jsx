@@ -95,7 +95,7 @@ const PublicLayout = () => {
         </div>
       </div>
 
-      <main className="flex-1">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden relative">
         <Outlet context={{ currency }} />
       </main>
 

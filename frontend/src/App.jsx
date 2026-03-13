@@ -1,56 +1,57 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
+import { useAuth, AuthProvider } from './context/AuthContext';
 import { ROUTES } from './constants/routes';
 import { ROLES } from './constants/roles';
 import Loader from './components/common/Loader';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import { lazy, Suspense } from 'react';
 
 // Layouts
 import PublicLayout from './components/layout/PublicLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
 
 // Public Pages
-import HomePage from './pages/public/HomePage';
-import LoginPage from './pages/public/LoginPage';
-import SignupPage from './pages/public/SignupPage';
-import ForgotPasswordPage from './pages/public/ForgotPasswordPage';
-import PendingApprovalPage from './pages/public/PendingApprovalPage';
-import UnauthorizedPage from './pages/public/UnauthorizedPage';
-import NotFoundPage from './pages/public/NotFoundPage';
+const HomePage = lazy(() => import('./pages/public/HomePage'));
+const LoginPage = lazy(() => import('./pages/public/LoginPage'));
+const SignupPage = lazy(() => import('./pages/public/SignupPage'));
+const ForgotPasswordPage = lazy(() => import('./pages/public/ForgotPasswordPage'));
+const PendingApprovalPage = lazy(() => import('./pages/public/PendingApprovalPage'));
+const UnauthorizedPage = lazy(() => import('./pages/public/UnauthorizedPage'));
+const NotFoundPage = lazy(() => import('./pages/public/NotFoundPage'));
 
 // Admin Pages
-import AdminDashboard from './pages/admin/DashboardPage';
-import StudentsPage from './pages/admin/StudentsPage';
-import TeachersPage from './pages/admin/TeachersPage';
-import CoursesPage from './pages/admin/CoursesPage';
-import ClassesPage from './pages/admin/ClassesPage';
-import PaymentsPage from './pages/admin/PaymentsPage';
-import ApprovalsPage from './pages/admin/ApprovalsPage';
-import UsersPage from './pages/admin/UsersPage';
-import SettingsPage from './pages/admin/SettingsPage';
-import ParentsPage from './pages/admin/ParentsPage';
-import TrialRequestsPage from './pages/admin/TrialRequestsPage';
+const AdminDashboard = lazy(() => import('./pages/admin/DashboardPage'));
+const StudentsPage = lazy(() => import('./pages/admin/StudentsPage'));
+const TeachersPage = lazy(() => import('./pages/admin/TeachersPage'));
+const CoursesPage = lazy(() => import('./pages/admin/CoursesPage'));
+const ClassesPage = lazy(() => import('./pages/admin/ClassesPage'));
+const PaymentsPage = lazy(() => import('./pages/admin/PaymentsPage'));
+const ApprovalsPage = lazy(() => import('./pages/admin/ApprovalsPage'));
+const UsersPage = lazy(() => import('./pages/admin/UsersPage'));
+const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
+const ParentsPage = lazy(() => import('./pages/admin/ParentsPage'));
+const TrialRequestsPage = lazy(() => import('./pages/admin/TrialRequestsPage'));
 
 // Teacher Pages
-import TeacherDashboard from './pages/teacher/DashboardPage';
-import MyStudentsPage from './pages/teacher/MyStudentsPage';
-import SchedulePage from './pages/teacher/SchedulePage';
-import TeacherProgress from './pages/teacher/ProgressPage';
-import MaterialsPage from './pages/teacher/MaterialsPage';
-import TeacherProfilePage from './pages/teacher/ProfilePage';
+const TeacherDashboard = lazy(() => import('./pages/teacher/DashboardPage'));
+const MyStudentsPage = lazy(() => import('./pages/teacher/MyStudentsPage'));
+const SchedulePage = lazy(() => import('./pages/teacher/SchedulePage'));
+const TeacherProgress = lazy(() => import('./pages/teacher/ProgressPage'));
+const MaterialsPage = lazy(() => import('./pages/teacher/MaterialsPage'));
+const TeacherProfilePage = lazy(() => import('./pages/teacher/ProfilePage'));
 
 // Student Pages
-import StudentDashboard from './pages/student/DashboardPage';
-import MyCoursesPage from './pages/student/MyCoursesPage';
-import StudentProgress from './pages/student/ProgressPage';
-import ExamsPage from './pages/student/ExamsPage';
-import StudentPayments from './pages/student/PaymentsPage';
-import StudentProfilePage from './pages/student/ProfilePage';
+const StudentDashboard = lazy(() => import('./pages/student/DashboardPage'));
+const MyCoursesPage = lazy(() => import('./pages/student/MyCoursesPage'));
+const StudentProgress = lazy(() => import('./pages/student/ProgressPage'));
+const ExamsPage = lazy(() => import('./pages/student/ExamsPage'));
+const StudentPayments = lazy(() => import('./pages/student/PaymentsPage'));
+const StudentProfilePage = lazy(() => import('./pages/student/ProfilePage'));
 
 // Parent Pages
-import ParentDashboard from './pages/parent/DashboardPage';
-import ChildProgressPage from './pages/parent/ChildProgressPage';
-import ChildPaymentsPage from './pages/parent/ChildPaymentsPage';
+const ParentDashboard = lazy(() => import('./pages/parent/DashboardPage'));
+const ChildProgressPage = lazy(() => import('./pages/parent/ChildProgressPage'));
+const ChildPaymentsPage = lazy(() => import('./pages/parent/ChildPaymentsPage'));
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();

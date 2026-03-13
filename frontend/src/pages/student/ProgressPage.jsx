@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
-import Loader from '../../components/common/Loader';
+import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
 import ProgressStats from '../../components/student/progress/ProgressStats';
 import ProgressTimeline from '../../components/student/progress/ProgressTimeline';
 import QuranProgressMap from '../../components/common/QuranProgressMap';
@@ -34,7 +34,7 @@ const ProgressPage = () => {
     if (user?.id) fetch();
   }, [user]);
 
-  if (loading) return <Loader />;
+  if (loading) return <DashboardLoadingSkeleton />;
 
   return (
     <div>

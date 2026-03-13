@@ -6,13 +6,13 @@ const HeroSection = () => {
   const [showTrial, setShowTrial] = useState(false);
 
   return (
-    <section className="relative min-h-screen bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] text-white overflow-hidden flex items-center">
+    <section className="relative min-h-screen bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] text-white overflow-hidden flex items-center w-full max-w-full">
       {/* Islamic geometric pattern overlay */}
-      <div className="absolute inset-0 opacity-[0.04] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%3E%3Cg%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')]" />
+      <div className="absolute inset-0 opacity-[0.04] bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22none%22%3E%3Cg%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E')] pointer-events-none" />
 
       {/* Glow effects */}
-      <div className="absolute top-20 left-10 w-80 h-80 bg-[#00B4D8]/20 rounded-full blur-[120px]" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#00B4D8]/10 rounded-full blur-[140px]" />
+      <div className="absolute top-20 left-10 w-80 h-80 bg-[#00B4D8]/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-[#00B4D8]/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">

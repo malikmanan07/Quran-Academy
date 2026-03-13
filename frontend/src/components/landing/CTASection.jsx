@@ -4,9 +4,9 @@ import { ROUTES } from '../../constants/routes';
 
 const CTASection = () => {
   return (
-    <section className="py-16 sm:py-24 bg-[#00B4D8] relative overflow-hidden">
-      <div className="absolute -top-20 -left-20 w-60 h-60 bg-white/10 rounded-full blur-[80px]" />
-      <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-[80px]" />
+    <section className="py-16 sm:py-24 bg-[#00B4D8] relative overflow-hidden w-full max-w-full">
+      <div className="absolute -top-20 -left-20 w-60 h-60 bg-white/10 rounded-full blur-[80px] pointer-events-none" />
+      <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-[80px] pointer-events-none" />
 
       <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">

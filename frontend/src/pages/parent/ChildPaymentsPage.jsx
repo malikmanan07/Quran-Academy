@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import PageHeader from '../../components/common/PageHeader';
-import Loader from '../../components/common/Loader';
+import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
 import EmptyState from '../../components/common/EmptyState';
 import AppBadge from '../../components/common/AppBadge';
 import { getChildPayments } from '../../features/parent/api';
@@ -24,7 +24,7 @@ const ChildPaymentsPage = () => {
     fetch();
   }, [id]);
 
-  if (loading) return <Loader />;
+  if (loading) return <DashboardLoadingSkeleton />;
 
   return (
     <div>
