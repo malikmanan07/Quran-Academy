@@ -6,3 +6,7 @@ export { progress } from './progress.js';
 export { exams } from './exams.js';
 export { courseMaterial } from './courseMaterial.js';
 export { attendance } from './attendance.js';
+export { parentStudent } from './parentStudent.js';
+export { trialRequests } from './trialRequests.js';
+export { quranProgress } from './quranProgress.js';
+export { certificates } from './certificates.js';

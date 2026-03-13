@@ -19,6 +19,10 @@ import examsRoutes from './modules/exams/exams.routes.js';
 import courseMaterialRoutes from './modules/course-material/courseMaterial.routes.js';
 import statsRoutes from './modules/stats/stats.routes.js';
 import adminUserRoutes from './modules/users/users.routes.js';
+import certificatesRoutes from './modules/certificates/certificates.routes.js';
+import parentRoutes from './modules/parent/parent.routes.js';
+import trialRoutes from './modules/trial/trial.routes.js';
+import quranProgressRoutes from './modules/quran-progress/quran-progress.routes.js';
 
 const app = express();
 
@@ -54,6 +58,10 @@ app.use('/api/exams', examsRoutes);
 app.use('/api/course-material', courseMaterialRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/admin', adminUserRoutes);
+app.use('/api/certificates', certificatesRoutes);
+app.use('/api/parent', parentRoutes);
+app.use('/api/trial', trialRoutes);
+app.use('/api/quran-progress', quranProgressRoutes);
 
 // Error Handling
 app.use(notFound);
