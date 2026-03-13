@@ -9,7 +9,7 @@ export const registerUser = (data) => http.post(API.REGISTER, data);
 export const getMe = () => http.get(API.ME);
 
 export const forgotPassword = (email) =>
-  http.post('/api/auth/forgot-password', { email });
+  http.post('auth/forgot-password', { email });
 
 export const logoutUser = () => {
   authStorage.clear();

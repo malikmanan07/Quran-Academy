@@ -1,76 +1,76 @@
 export const API = {
   // Auth
-  LOGIN: '/auth/login',
-  REGISTER: '/auth/signup',
-  FORGOT_PASSWORD: '/auth/forgot-password',
-  LOGOUT: '/auth/logout',
-  ME: '/auth/me',
+  LOGIN: 'auth/login',
+  REGISTER: 'auth/signup',
+  FORGOT_PASSWORD: 'auth/forgot-password',
+  LOGOUT: 'auth/logout',
+  ME: 'auth/me',
 
   // Students
-  STUDENTS: '/students',
-  STUDENT_BY_ID: (id) => `/students/${id}`,
+  STUDENTS: 'students',
+  STUDENT_BY_ID: (id) => `students/${id}`,
 
   // Teachers
-  TEACHERS: '/teachers',
-  TEACHER_BY_ID: (id) => `/teachers/${id}`,
+  TEACHERS: 'teachers',
+  TEACHER_BY_ID: (id) => `teachers/${id}`,
 
   // Courses
-  COURSES: '/courses',
-  COURSE_BY_ID: (id) => `/courses/${id}`,
+  COURSES: 'courses',
+  COURSE_BY_ID: (id) => `courses/${id}`,
 
   // Classes
-  CLASSES: '/classes',
-  CLASSES_BY_TEACHER: () => `/classes/teacher/my-classes`,
-  CLASSES_BY_STUDENT: () => `/classes/student/my-classes`,
-  CLASS_STATUS: (id) => `/classes/${id}/status`,
-  CLASS_BY_ID: (id) => `/classes/${id}`,
+  CLASSES: 'classes',
+  CLASSES_BY_TEACHER: () => `classes/teacher/my-classes`,
+  CLASSES_BY_STUDENT: () => `classes/student/my-classes`,
+  CLASS_STATUS: (id) => `classes/${id}/status`,
+  CLASS_BY_ID: (id) => `classes/${id}`,
 
   // Payments
-  PAYMENTS: '/payments',
-  PAYMENTS_BY_STUDENT: () => `/payments/student/my-payments`,
-  PAYMENT_STATUS: (id) => `/payments/${id}/status`,
-  PAYMENT_BY_ID: (id) => `/payments/${id}`,
+  PAYMENTS: 'payments',
+  PAYMENTS_BY_STUDENT: () => `payments/student/my-payments`,
+  PAYMENT_STATUS: (id) => `payments/${id}/status`,
+  PAYMENT_BY_ID: (id) => `payments/${id}`,
 
   // Progress
-  PROGRESS: '/progress',
-  PROGRESS_BY_STUDENT: () => `/progress/student/my-progress`,
-  PROGRESS_BY_ID: (id) => `/progress/${id}`,
+  PROGRESS: 'progress',
+  PROGRESS_BY_STUDENT: () => `progress/student/my-progress`,
+  PROGRESS_BY_ID: (id) => `progress/${id}`,
 
   // Exams
-  EXAMS: '/exams',
-  EXAMS_BY_STUDENT: () => `/exams/student/my-exams`,
-  EXAM_BY_ID: (id) => `/exams/${id}`,
+  EXAMS: 'exams',
+  EXAMS_BY_STUDENT: () => `exams/student/my-exams`,
+  EXAM_BY_ID: (id) => `exams/${id}`,
 
   // Course Material
-  COURSE_MATERIAL: '/course-material',
-  COURSE_MATERIAL_BY_STUDENT: () => `/course-material/student/my-materials`,
-  COURSE_MATERIAL_BY_ID: (id) => `/course-material/${id}`,
+  COURSE_MATERIAL: 'course-material',
+  COURSE_MATERIAL_BY_STUDENT: () => `course-material/student/my-materials`,
+  COURSE_MATERIAL_BY_ID: (id) => `course-material/${id}`,
 
   // Stats
-  ADMIN_STATS: '/stats/admin',
+  ADMIN_STATS: 'stats/admin',
 
   // Certificates
-  MY_CERTIFICATES: '/certificates/my-certificates',
-  GENERATE_CERTIFICATE: '/certificates/generate',
+  MY_CERTIFICATES: 'certificates/my-certificates',
+  GENERATE_CERTIFICATE: 'certificates/generate',
 
   // Parent
-  PARENT_CHILDREN: '/parent/my-children',
-  PARENT_CHILD_PROGRESS: (id) => `/parent/child/${id}/progress`,
-  PARENT_CHILD_ATTENDANCE: (id) => `/parent/child/${id}/attendance`,
-  PARENT_CHILD_PAYMENTS: (id) => `/parent/child/${id}/payments`,
-  PARENT_CHILD_CLASSES: (id) => `/parent/child/${id}/classes`,
-  ADMIN_LINK_PARENT: '/parent/link-parent',
-  ADMIN_ALL_PARENTS: '/parent/all-parents',
+  PARENT_CHILDREN: 'parent/my-children',
+  PARENT_CHILD_PROGRESS: (id) => `parent/child/${id}/progress`,
+  PARENT_CHILD_ATTENDANCE: (id) => `parent/child/${id}/attendance`,
+  PARENT_CHILD_PAYMENTS: (id) => `parent/child/${id}/payments`,
+  PARENT_CHILD_CLASSES: (id) => `parent/child/${id}/classes`,
+  ADMIN_LINK_PARENT: 'parent/link-parent',
+  ADMIN_ALL_PARENTS: 'parent/all-parents',
 
   // Trial
-  TRIAL_BOOK: '/trial/book',
-  TRIAL_REQUESTS: '/trial/requests',
-  TRIAL_STATUS: (id) => `/trial/${id}/status`,
-  TRIAL_CONVERT: (id) => `/trial/${id}/convert`,
+  TRIAL_BOOK: 'trial/book',
+  TRIAL_REQUESTS: 'trial/requests',
+  TRIAL_STATUS: (id) => `trial/${id}/status`,
+  TRIAL_CONVERT: (id) => `trial/${id}/convert`,
 
   // Quran Progress
-  QURAN_PROGRESS: (studentId) => `/quran-progress/${studentId}`,
-  QURAN_PROGRESS_MY: '/quran-progress/my-progress',
+  QURAN_PROGRESS: (studentId) => `quran-progress/${studentId}`,
+  QURAN_PROGRESS_MY: 'quran-progress/my-progress',
   QURAN_PROGRESS_UPDATE: (studentId, paraNumber) =>
-    `/quran-progress/${studentId}/para/${paraNumber}`,
+    `quran-progress/${studentId}/para/${paraNumber}`,
 };
