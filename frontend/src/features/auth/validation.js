@@ -31,7 +31,7 @@ export const signupSchema = z
       .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
       .regex(/[0-9]/, 'Must contain at least one number'),
     confirmPassword: z.string().min(1, 'Confirm your password'),
-    role: z.enum(['student', 'teacher'], {
+    role: z.enum(['student', 'teacher', 'parent'], {
       errorMap: () => ({ message: 'Please select a role' }),
     }),
     terms: z.literal(true, {

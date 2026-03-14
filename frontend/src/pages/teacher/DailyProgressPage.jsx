@@ -29,7 +29,7 @@ const DailyProgressPage = () => {
     const fetchStudents = async () => {
       try {
         const res = await getAllStudents({ limit: 1000 });
-        setStudents(res.data?.students || []);
+        setStudents(res.data?.data?.students || res.data?.students || []);
       } catch { /* silent */ }
     };
     fetchStudents();

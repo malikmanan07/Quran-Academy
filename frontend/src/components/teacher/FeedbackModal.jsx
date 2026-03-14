@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AppModal from '../common/AppModal';
 import AppSelect from '../common/AppSelect';
 import AppButton from '../common/AppButton';
@@ -34,6 +34,13 @@ const FeedbackModal = ({ isOpen, onClose, student, onSuccess }) => {
     behavior: '',
     recommendations: '',
   });
+
+  // Sync studentId when student or modal changes
+  useEffect(() => {
+    if (isOpen && student?.id) {
+      setFormData(prev => ({ ...prev, studentId: student.id }));
+    }
+  }, [isOpen, student]);
 
   const set = (key) => (e) => setFormData(prev => ({ ...prev, [key]: e.target.value }));
 

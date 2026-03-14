@@ -6,3 +6,4 @@ export const getConversation = (userId, partnerId) => repo.getConversation(userI
 export const markAsRead = (id) => repo.markAsRead(id);
 export const markConversationRead = (userId, partnerId) => repo.markConversationRead(userId, partnerId);
 export const getUnreadCount = (userId) => repo.getUnreadCount(userId);
+export const searchUsers = (userId, query) => repo.searchUsers(userId, query);

@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 import { messages, users } from '../../db/schema/index.js';
-import { eq, or, and, desc, sql } from 'drizzle-orm';
+import { eq, or, and, desc, sql, ne, ilike } from 'drizzle-orm';
 
 export const sendMessage = async (data) => {
   const [result] = await db.insert(messages).values(data).returning();
@@ -55,4 +55,26 @@ export const getUnreadCount = async (userId) => {
   const [{ count }] = await db.select({ count: sql`count(*)` })
     .from(messages).where(and(eq(messages.receiverId, userId), eq(messages.isRead, false)));
   return Number(count);
+};
+
+export const searchUsers = async (userId, query) => {
+  let condition = ne(users.id, userId);
+  if (query) {
+    condition = and(
+      ne(users.id, userId),
+      or(
+        ilike(users.name, `%${query}%`),
+        ilike(users.email, `%${query}%`)
+      )
+    );
+  }
+  return db.select({
+    id: users.id,
+    name: users.name,
+    role: users.role,
+    avatar: users.avatar
+  })
+  .from(users)
+  .where(condition)
+  .limit(20);
 };

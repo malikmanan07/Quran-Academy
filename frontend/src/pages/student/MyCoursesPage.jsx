@@ -13,7 +13,7 @@ const MyCoursesPage = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      try { const { data } = await getAllCourses(); setCourses(data.courses || []); }
+      try { const { data } = await getAllCourses(); setCourses(data?.data?.courses || data?.courses || []); }
       catch { /* silent */ }
       setLoading(false);
     };

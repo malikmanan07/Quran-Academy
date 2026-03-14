@@ -29,3 +29,8 @@ export const remove = asyncHandler(async (req, res) => {
   await service.remove(parseInt(req.params.id));
   sendSuccess(res, 'Teacher deleted');
 });
+
+export const getMyStudents = asyncHandler(async (req, res) => {
+  const result = await service.getMyStudents(req.user.id);
+  sendSuccess(res, 'Students fetched', { students: result.students });
+});

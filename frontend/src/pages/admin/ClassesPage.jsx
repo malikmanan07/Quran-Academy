@@ -49,9 +49,9 @@ const ClassesPage = () => {
         getAllTeachers({ limit: 1000 }), 
         getAllCourses({ limit: 1000 }),
       ]);
-      setStudents(s.data.students || []);
-      setTeachers(t.data.teachers || []);
-      setCourses(co.data.courses || []);
+      setStudents(s.data?.data?.students || s.data?.students || []);
+      setTeachers(t.data?.data?.teachers || t.data?.teachers || []);
+      setCourses(co.data?.data?.courses || co.data?.courses || []);
     } catch { /* silent */ }
     setDepsLoading(false);
   };

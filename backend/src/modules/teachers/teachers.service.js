@@ -13,6 +13,11 @@ export const getById = async (id) => {
   return teacher;
 };
 
+export const getMyStudents = async (teacherId) => {
+  const students = await repo.findMyStudents(teacherId);
+  return { students };
+};
+
 export const create = async (data) => {
   const hash = await bcrypt.hash(data.password, 10);
   return repo.create({ ...data, password: hash });

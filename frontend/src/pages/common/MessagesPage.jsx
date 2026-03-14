@@ -5,8 +5,11 @@ import useMessages from '../../hooks/useMessages';
 const MessagesPage = () => {
   const { user } = useAuth();
   const [selectedPartner, setSelectedPartner] = useState(null);
-  const { conversations, messages, sendMessage, loading, fetchInbox } = useMessages(selectedPartner?.partner_id);
+  const { conversations, messages, sendMessage, loading, fetchInbox, searchUsers } = useMessages(selectedPartner?.partner_id);
   const [newMessage, setNewMessage] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
   const scrollRef = useRef();
 
   useEffect(() => {
@@ -14,6 +17,20 @@ const MessagesPage = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+    const delaySearch = setTimeout(async () => {
+      setIsSearching(true);
+      const results = await searchUsers(searchQuery);
+      setSearchResults(results);
+    }, 300);
+    return () => clearTimeout(delaySearch);
+  }, [searchQuery, searchUsers]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -31,10 +48,51 @@ const MessagesPage = () => {
       {/* Left Panel: Conversations */}
       <div className="w-full md:w-80 border-r border-[#E2E8F0] flex flex-col">
         <div className="p-4 border-b border-[#E2E8F0] bg-gray-50/50">
-          <h2 className="text-lg font-bold text-[#1A1A2E]">Messages</h2>
+          <h2 className="text-lg font-bold text-[#1A1A2E] mb-3">Messages</h2>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search users to message..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 bg-white border border-[#E2E8F0] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#00B4D8]"
+            />
+            <svg className="w-4 h-4 text-[#A0AEC0] absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
         </div>
         <div className="flex-1 overflow-y-auto">
-          {conversations.length === 0 ? (
+          {searchQuery.trim() ? (
+            <div>
+              <div className="px-4 py-2 text-xs font-semibold text-[#A0AEC0] uppercase tracking-wider bg-gray-50">Search Results</div>
+              {isSearching && searchResults.length === 0 ? (
+                <div className="p-4 text-center text-sm text-[#4A5568]">Searching...</div>
+              ) : searchResults.length === 0 ? (
+                <div className="p-4 text-center text-sm text-[#4A5568]">No users found</div>
+              ) : (
+                searchResults.map(u => (
+                  <div
+                    key={u.id}
+                    onClick={() => {
+                      setSelectedPartner({ partner_id: u.id, partner_name: u.name, partner_role: u.role });
+                      setSearchQuery('');
+                      setSearchResults([]);
+                    }}
+                    className="flex items-center gap-3 p-4 cursor-pointer hover:bg-gray-50 border-b border-[#E2E8F0]"
+                  >
+                    <div className="w-10 h-10 rounded-full bg-[#00B4D8] flex items-center justify-center text-white font-bold shrink-0">
+                      {u.name?.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-[#1A1A2E] text-sm">{u.name}</p>
+                      <p className="text-[10px] text-[#4A5568] uppercase">{u.role}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          ) : conversations.length === 0 ? (
             <div className="p-8 text-center text-sm text-[#4A5568]">No conversations yet</div>
           ) : (
             conversations.map((conv) => (

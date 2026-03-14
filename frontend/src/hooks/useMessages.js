@@ -41,6 +41,16 @@ const useMessages = (partnerId = null) => {
     }
   }, []);
 
+  const searchUsers = async (query) => {
+    try {
+      const res = await http.get('messages/search-users', { params: { query } });
+      return res.data?.data?.users || [];
+    } catch (err) {
+      console.error('Failed to search users:', err);
+      return [];
+    }
+  };
+
   const sendMessage = async (receiverId, text) => {
     try {
       const res = await http.post('messages/send', { receiverId, message: text });
@@ -75,7 +85,8 @@ const useMessages = (partnerId = null) => {
     sendMessage,
     fetchInbox,
     fetchConversation,
-    fetchUnreadCount
+    fetchUnreadCount,
+    searchUsers
   };
 };
 

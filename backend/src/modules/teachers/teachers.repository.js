@@ -1,5 +1,5 @@
 import db from '../../config/db.js';
-import { users } from '../../db/schema/index.js';
+import { users, classes, courses } from '../../db/schema/index.js';
 import { eq, and, ilike, isNull, desc, sql, or } from 'drizzle-orm';
 
 const teacherWhere = and(eq(users.role, 'teacher'), isNull(users.deletedAt));
@@ -50,4 +50,22 @@ export const update = async (id, data) => {
 
 export const softDelete = async (id) => {
   return db.update(users).set({ deletedAt: new Date(), isActive: false }).where(eq(users.id, id));
+};
+
+export const findMyStudents = async (teacherId) => {
+  // Find distinct students from the teacher's classes
+  const results = await db
+    .selectDistinctOn([classes.studentId], {
+      id: users.id,
+      name: users.name,
+      email: users.email,
+      phone: users.phone,
+      courseName: courses.name,
+      courseId: classes.courseId,
+    })
+    .from(classes)
+    .innerJoin(users, eq(classes.studentId, users.id))
+    .leftJoin(courses, eq(classes.courseId, courses.id))
+    .where(eq(classes.teacherId, teacherId));
+  return results;
 };

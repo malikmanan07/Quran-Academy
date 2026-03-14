@@ -89,18 +89,17 @@ const SmartJoinButton = ({ meetingLink, meetingPlatform = 'other', date, time, s
         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border flex items-center gap-1 leading-none h-5 ${PLATFORM_COLORS[platform] || PLATFORM_COLORS.other}`}>
           {PLATFORM_ICONS[platform] || PLATFORM_ICONS.other} {platform.toUpperCase()}
         </span>
-        <a 
-          href={btnState.disabled ? undefined : meetingLink} 
-          target="_blank" 
-          rel="noopener noreferrer"
+        <button 
+          disabled={btnState.disabled}
+          onClick={() => {
+            if (!btnState.disabled && meetingLink) {
+              window.open(meetingLink, '_blank', 'noopener,noreferrer');
+            }
+          }}
+          className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${btnState.style}`}
         >
-          <button 
-            disabled={btnState.disabled}
-            className={`px-4 py-1.5 rounded-lg text-sm font-bold transition-all ${btnState.style}`}
-          >
-            {btnState.text}
-          </button>
-        </a>
+          {btnState.text}
+        </button>
       </div>
       {countdown && <span className="text-[10px] text-[#4A5568] font-medium px-1">{countdown}</span>}
     </div>

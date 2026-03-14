@@ -37,3 +37,10 @@ export const unreadCount = async (req, res) => {
     res.json({ success: true, data: { count } });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 };
+
+export const searchUsers = async (req, res) => {
+  try {
+    const users = await service.searchUsers(req.user.id, req.query.query);
+    res.json({ success: true, data: { users } });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+};

@@ -37,17 +37,17 @@ const ApprovalsPage = () => {
   const handleApprove = async (id) => {
     try {
       await http.put(`admin/users/${id}/approve`);
-      showToast('success', 'User approved successfully');
+      showToast('User approved successfully', 'success');
       refresh();
-    } catch { showToast('error', 'Failed to approve user'); }
+    } catch { showToast('Failed to approve user', 'error'); }
   };
 
   const handleReject = async (id) => {
     try {
       await http.put(`admin/users/${id}/reject`);
-      showToast('success', 'User rejected');
+      showToast('User rejected', 'success');
       refresh();
-    } catch { showToast('error', 'Failed to reject user'); }
+    } catch { showToast('Failed to reject user', 'error'); }
   };
 
   return (
@@ -76,6 +76,7 @@ const ApprovalsPage = () => {
           <option value="">All Roles</option>
           <option value="student">Student</option>
           <option value="teacher">Teacher</option>
+          <option value="parent">Parent</option>
         </select>
       </div>
       
