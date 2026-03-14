@@ -8,6 +8,11 @@ import { createClassSchema, updateClassSchema, updateStatusSchema } from './clas
 const router = Router();
 
 router.get('/teacher/my-classes', auth, role('teacher'), ctrl.getByTeacher);
+router.get('/teacher/my-schedule', auth, role('teacher'), ctrl.getByTeacher);
+router.post('/teacher/schedule', auth, role('teacher'), ctrl.teacherSchedule);
+router.put('/teacher/:id/reschedule', auth, role('teacher'), ctrl.teacherReschedule);
+router.delete('/teacher/:id/cancel', auth, role('teacher'), ctrl.teacherCancel);
+
 router.get('/student/my-classes', auth, role('student'), ctrl.getByStudent);
 router.get('/', auth, role('admin'), ctrl.getAll);
 router.get('/:id', auth, ctrl.getById);

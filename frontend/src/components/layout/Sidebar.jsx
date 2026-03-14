@@ -7,6 +7,7 @@ import http from '../../services/http';
 
 const adminMenu = [
   { label: 'Dashboard', path: ROUTES.ADMIN_DASHBOARD, icon: '📊' },
+  { label: 'Enrollment Requests', path: ROUTES.ADMIN_ENROLLMENT_REQUESTS, icon: '📩', isBadge: true, badgeKey: 'enrollments' },
   { label: 'Approvals', path: ROUTES.ADMIN_APPROVALS, icon: '⏳', isBadge: true, badgeKey: 'pending' },
   { label: 'Trial Requests', path: ROUTES.ADMIN_TRIAL_REQUESTS, icon: '🎯', isBadge: true, badgeKey: 'trial' },
   { label: 'All Users', path: ROUTES.ADMIN_USERS, icon: '👥' },
@@ -15,7 +16,8 @@ const adminMenu = [
   { label: 'Parents', path: ROUTES.ADMIN_PARENTS, icon: '👨‍👩‍👧' },
   { label: 'Courses', path: ROUTES.ADMIN_COURSES, icon: '📚' },
   { label: 'Classes', path: ROUTES.ADMIN_CLASSES, icon: '🕐' },
-  { label: 'Payments', path: ROUTES.ADMIN_PAYMENTS, icon: '💰' },
+  { label: 'Payments', path: ROUTES.ADMIN_PAYMENTS, icon: '💰', isBadge: true, badgeKey: 'payments' },
+  { label: 'Messages', path: ROUTES.ADMIN_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
   { label: 'Settings', path: ROUTES.ADMIN_SETTINGS, icon: '⚙️' },
 ];
 
@@ -23,23 +25,32 @@ const teacherMenu = [
   { label: 'Dashboard', path: ROUTES.TEACHER_DASHBOARD, icon: '📊' },
   { label: 'My Students', path: ROUTES.TEACHER_STUDENTS, icon: '🎓' },
   { label: 'Schedule', path: ROUTES.TEACHER_SCHEDULE, icon: '🕐' },
+  { label: 'Attendance', path: ROUTES.TEACHER_ATTENDANCE, icon: '📋' },
   { label: 'Progress', path: ROUTES.TEACHER_PROGRESS, icon: '📈' },
+  { label: 'Daily Sabaq', path: ROUTES.TEACHER_DAILY_PROGRESS, icon: '📝' },
+  { label: 'Monthly Feedback', path: ROUTES.TEACHER_FEEDBACK, icon: '🌟' },
   { label: 'Materials', path: ROUTES.TEACHER_MATERIALS, icon: '📄' },
+  { label: 'Messages', path: ROUTES.TEACHER_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
   { label: 'Profile', path: ROUTES.TEACHER_PROFILE, icon: '⚙️' },
 ];
 
 const studentMenu = [
   { label: 'Dashboard', path: ROUTES.STUDENT_DASHBOARD, icon: '📊' },
+  { label: 'Browse Courses', path: ROUTES.STUDENT_BROWSE_COURSES, icon: '🔍' },
   { label: 'My Courses', path: ROUTES.STUDENT_COURSES, icon: '📚' },
+  { label: 'My Attendance', path: ROUTES.STUDENT_ATTENDANCE, icon: '📋' },
   { label: 'Progress', path: ROUTES.STUDENT_PROGRESS, icon: '📈' },
+  { label: 'Daily Sabaq', path: ROUTES.STUDENT_DAILY_PROGRESS, icon: '📝' },
   { label: 'Exams', path: ROUTES.STUDENT_EXAMS, icon: '📝' },
   { label: 'Payments', path: ROUTES.STUDENT_PAYMENTS, icon: '💰' },
+  { label: 'Messages', path: ROUTES.STUDENT_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
   { label: 'Profile', path: ROUTES.STUDENT_PROFILE, icon: '⚙️' },
 ];
 
 const parentMenu = [
   { label: 'Dashboard', path: ROUTES.PARENT_DASHBOARD, icon: '📊' },
   { label: 'My Children', path: ROUTES.PARENT_CHILDREN, icon: '👨‍👩‍👧' },
+  { label: 'Messages', path: ROUTES.PARENT_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
 ];
 
 const getMenu = (role) => {
@@ -56,19 +67,31 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const menu = getMenu(user?.role);
-  const [badges, setBadges] = useState({ pending: 0, trial: 0 });
+  const [badges, setBadges] = useState({ pending: 0, trial: 0, enrollments: 0, messages: 0, payments: 0 });
 
   useEffect(() => {
     if (user?.role === ROLES.ADMIN) {
       Promise.all([
         http.get('/admin/pending-users').catch(() => ({ data: { users: [] } })),
         http.get('/trial/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
-      ]).then(([pRes, tRes]) => {
-        setBadges({
+        http.get('/enrollments/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
+        http.get('/stats/admin').catch(() => ({ data: { data: { pendingPayments: 0 } } })),
+      ]).then(([pRes, tRes, eRes, sRes]) => {
+        setBadges(prev => ({
+          ...prev,
           pending: pRes.data?.users?.length || 0,
           trial: tRes.data?.data?.pendingCount || 0,
-        });
+          enrollments: eRes.data?.data?.pendingCount || 0,
+          payments: sRes.data?.data?.pendingPayments || 0,
+        }));
       });
+    }
+    
+    // Fetch unread messages count for everyone
+    if (user) {
+      http.get('/messages/unread-count')
+        .then(res => setBadges(prev => ({ ...prev, messages: res.data?.data?.count || 0 })))
+        .catch(() => {});
     }
   }, [user]);
 

@@ -1,4 +1,5 @@
 import AppBadge from '../../common/AppBadge';
+import SmartJoinButton from '../../common/SmartJoinButton';
 
 const UpcomingClasses = ({ classes = [] }) => (
   <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
@@ -18,7 +19,7 @@ const UpcomingClasses = ({ classes = [] }) => (
               <p className="text-sm font-medium text-[#1A1A2E] truncate">{c.studentName || 'Student'} — {c.courseName || 'Course'}</p>
               <p className="text-xs text-[#4A5568]">{c.teacherName || 'Teacher'} • {c.time || '—'}</p>
             </div>
-            <AppBadge status={c.status === 'completed' || c.status === 'Completed' ? 'Active' : 'Pending'} />
+            <SmartJoinButton meetingLink={c.meetingLink} meetingPlatform={c.meetingPlatform} date={c.date} time={c.time} status={c.status} />
           </div>
         ))
       )}

@@ -5,8 +5,11 @@ import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import DashboardLoadingSkeleton from '../common/DashboardLoadingSkeleton';
 
+import { useSocket } from '../../hooks/useSocket';
+
 const DashboardLayout = () => {
   const { user } = useAuth();
+  useSocket(); // Initialize real-time connection
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);

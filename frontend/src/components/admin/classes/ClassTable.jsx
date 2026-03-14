@@ -1,6 +1,7 @@
 import AppTable from '../../common/AppTable';
 import AppBadge from '../../common/AppBadge';
 import { formatDate } from '../../../utils/formatDate';
+import SmartJoinButton from '../../common/SmartJoinButton';
 
 const ClassTable = ({ classes, loading, onEdit, onDelete }) => {
   const columns = [
@@ -17,10 +18,15 @@ const ClassTable = ({ classes, loading, onEdit, onDelete }) => {
     { key: 'status', label: 'Status', render: (r) => (
       <AppBadge status={r.status === 'scheduled' ? 'Pending' : r.status === 'completed' ? 'Active' : 'Inactive'} />
     )},
-    { key: 'meetingLink', label: 'Link', render: (r) => r.meetingLink ? (
-      <a href={r.meetingLink} target="_blank" rel="noopener noreferrer"
-        className="text-[#00B4D8] text-xs hover:underline">Join</a>
-    ) : '—' },
+    { key: 'meetingLink', label: 'Link', render: (r) => (
+      <SmartJoinButton 
+        meetingLink={r.meetingLink} 
+        meetingPlatform={r.meetingPlatform} 
+        date={r.date} 
+        time={r.time} 
+        status={r.status} 
+      />
+    ) },
     { key: 'actions', label: 'Actions', render: (r) => (
       <div className="flex items-center gap-2">
         <button onClick={() => onEdit(r)} className="p-1.5 rounded-lg hover:bg-[#00B4D8]/10 text-[#00B4D8] transition-colors cursor-pointer">✏️</button>

@@ -2,10 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../constants/routes';
 
 const actions = [
-  { icon: '👨‍🎓', label: 'Add Student', path: ROUTES.ADMIN_STUDENTS, color: 'bg-[#1B3A5C]/10 hover:bg-[#1B3A5C]/20' },
-  { icon: '👨‍🏫', label: 'Add Teacher', path: ROUTES.ADMIN_TEACHERS, color: 'bg-[#1B4332]/10 hover:bg-[#1B4332]/20' },
-  { icon: '📅', label: 'Schedule Class', path: ROUTES.ADMIN_CLASSES, color: 'bg-[#00B4D8]/10 hover:bg-[#00B4D8]/20' },
-  { icon: '💰', label: 'View Payments', path: ROUTES.ADMIN_PAYMENTS, color: 'bg-green-100 hover:bg-green-200' },
+  { icon: '👨‍🎓', label: 'Add Student', path: ROUTES.ADMIN_STUDENTS, color: 'bg-[#1B3A5C]/10 hover:bg-[#1B3A5C]/20 text-[#1B3A5C]' },
+  { icon: '👨‍🏫', label: 'Add Teacher', path: ROUTES.ADMIN_TEACHERS, color: 'bg-[#1B4332]/10 hover:bg-[#1B4332]/20 text-[#1B4332]' },
+  { icon: '📩', label: 'Approve Enrollment', path: ROUTES.ADMIN_ENROLLMENT_REQUESTS, color: 'bg-purple-100 hover:bg-purple-200 text-purple-700' },
+  { icon: '💸', label: 'Verify Payment', path: ROUTES.ADMIN_PAYMENTS, color: 'bg-orange-100 hover:bg-orange-200 text-orange-700' },
 ];
 
 const QuickActions = () => {

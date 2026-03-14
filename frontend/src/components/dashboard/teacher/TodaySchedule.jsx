@@ -1,5 +1,5 @@
 import AppBadge from '../../common/AppBadge';
-import AppButton from '../../common/AppButton';
+import SmartJoinButton from '../../common/SmartJoinButton';
 import TableSkeleton from '../../common/TableSkeleton';
 
 const TodaySchedule = ({ classes, loading }) => (
@@ -24,11 +24,13 @@ const TodaySchedule = ({ classes, loading }) => (
             </div>
             <div className="flex items-center gap-2">
               <AppBadge status={c.status === 'completed' || c.status === 'Completed' ? 'Active' : c.status === 'cancelled' || c.status === 'Cancelled' ? 'Inactive' : 'Pending'} />
-              {c.meetingLink && (
-                <a href={c.meetingLink} target="_blank" rel="noopener noreferrer">
-                  <AppButton variant="accent" size="sm">Join</AppButton>
-                </a>
-              )}
+              <SmartJoinButton 
+                meetingLink={c.meetingLink} 
+                meetingPlatform={c.meetingPlatform} 
+                date={c.date} 
+                time={c.time} 
+                status={c.status} 
+              />
             </div>
           </div>
         ))

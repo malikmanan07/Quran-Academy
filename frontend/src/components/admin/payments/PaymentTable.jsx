@@ -4,19 +4,41 @@ import AppButton from '../../common/AppButton';
 import { formatPKR } from '../../../utils/formatCurrency';
 import { formatDate } from '../../../utils/formatDate';
 
-const PaymentTable = ({ payments, loading, onMarkPaid }) => {
+const PaymentTable = ({ payments, loading, onMarkPaid, onVerify, onReject }) => {
   const columns = [
     { key: 'studentName', label: 'Student', render: (r) => r.studentName || '—' },
     { key: 'month', label: 'Month' },
     { key: 'amount', label: 'Amount', render: (r) => (
       <span className="font-semibold text-[#1A1A2E]">{formatPKR(r.amount)}</span>
     )},
-    { key: 'paidAt', label: 'Paid Date', render: (r) => r.paidAt ? formatDate(r.paidAt) : '—' },
-    { key: 'status', label: 'Status', render: (r) => <AppBadge status={r.status} /> },
+    { key: 'details', label: 'Method / ID', render: (r) => r.paymentMethod ? (
+      <div className="text-xs">
+        <p className="font-medium">{r.paymentMethod}</p>
+        <p className="text-[#4A5568]">{r.transactionId}</p>
+      </div>
+    ) : '—' },
+    { key: 'submittedAt', label: 'Submitted', render: (r) => r.submittedAt ? formatDate(r.submittedAt) : '—' },
+    { key: 'status', label: 'Status', render: (r) => {
+      let variant = 'cancelled';
+      let text = 'Unpaid';
+      if (r.status === 'verified' || r.status === 'Paid') { variant = 'success'; text = 'Verified ✓'; }
+      else if (r.status === 'submitted') { variant = 'pending'; text = 'Verification Pending'; }
+      else if (r.status === 'rejected') { variant = 'danger'; text = 'Rejected'; }
+      
+      return <AppBadge variant={variant}>{text}</AppBadge>;
+    } },
     { key: 'actions', label: 'Actions', render: (r) => (
-      r.status !== 'Paid' ? (
-        <AppButton variant="accent" size="sm" onClick={() => onMarkPaid(r)}>Mark Paid</AppButton>
-      ) : <span className="text-xs text-[#4A5568]">—</span>
+      <div className="flex items-center gap-2">
+        {r.status === 'submitted' && (
+          <>
+            <AppButton variant="primary" size="sm" onClick={() => onVerify(r)}>Verify</AppButton>
+            <AppButton variant="danger" size="sm" onClick={() => onReject(r)}>Reject</AppButton>
+          </>
+        )}
+        {(r.status === 'Unpaid' || r.status === 'rejected') && (
+          <AppButton variant="accent" size="sm" onClick={() => onMarkPaid(r)}>Mark Paid</AppButton>
+        )}
+      </div>
     )},
   ];
 

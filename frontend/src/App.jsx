@@ -31,6 +31,8 @@ const UsersPage = lazy(() => import('./pages/admin/UsersPage'));
 const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
 const ParentsPage = lazy(() => import('./pages/admin/ParentsPage'));
 const TrialRequestsPage = lazy(() => import('./pages/admin/TrialRequestsPage'));
+const EnrollmentRequestsPage = lazy(() => import('./pages/admin/EnrollmentRequestsPage'));
+const MessagesPage = lazy(() => import('./pages/common/MessagesPage'));
 
 // Teacher Pages
 const TeacherDashboard = lazy(() => import('./pages/teacher/DashboardPage'));
@@ -39,6 +41,9 @@ const SchedulePage = lazy(() => import('./pages/teacher/SchedulePage'));
 const TeacherProgress = lazy(() => import('./pages/teacher/ProgressPage'));
 const MaterialsPage = lazy(() => import('./pages/teacher/MaterialsPage'));
 const TeacherProfilePage = lazy(() => import('./pages/teacher/ProfilePage'));
+const TeacherDailyProgress = lazy(() => import('./pages/teacher/DailyProgressPage'));
+const TeacherAttendance = lazy(() => import('./pages/teacher/AttendancePage'));
+const TeacherFeedbackPage = lazy(() => import('./pages/teacher/TeacherFeedbackPage'));
 
 // Student Pages
 const StudentDashboard = lazy(() => import('./pages/student/DashboardPage'));
@@ -47,11 +52,15 @@ const StudentProgress = lazy(() => import('./pages/student/ProgressPage'));
 const ExamsPage = lazy(() => import('./pages/student/ExamsPage'));
 const StudentPayments = lazy(() => import('./pages/student/PaymentsPage'));
 const StudentProfilePage = lazy(() => import('./pages/student/ProfilePage'));
+const StudentDailyProgress = lazy(() => import('./pages/student/DailyProgressPage'));
+const BrowseCoursesPage = lazy(() => import('./pages/student/CoursesPage'));
+const StudentAttendance = lazy(() => import('./pages/student/AttendancePage'));
 
 // Parent Pages
 const ParentDashboard = lazy(() => import('./pages/parent/DashboardPage'));
 const ChildProgressPage = lazy(() => import('./pages/parent/ChildProgressPage'));
 const ChildPaymentsPage = lazy(() => import('./pages/parent/ChildPaymentsPage'));
+const ChildAttendancePage = lazy(() => import('./pages/student/AttendancePage')); // Reuse student attendance view
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
@@ -95,6 +104,8 @@ function App() {
           <Route path={ROUTES.ADMIN_SETTINGS} element={<SettingsPage />} />
           <Route path={ROUTES.ADMIN_PARENTS} element={<ParentsPage />} />
           <Route path={ROUTES.ADMIN_TRIAL_REQUESTS} element={<TrialRequestsPage />} />
+          <Route path={ROUTES.ADMIN_ENROLLMENT_REQUESTS} element={<EnrollmentRequestsPage />} />
+          <Route path={ROUTES.ADMIN_MESSAGES} element={<MessagesPage />} />
         </Route>
 
         {/* Teacher Routes */}
@@ -107,7 +118,11 @@ function App() {
           <Route path={ROUTES.TEACHER_STUDENTS} element={<MyStudentsPage />} />
           <Route path={ROUTES.TEACHER_SCHEDULE} element={<SchedulePage />} />
           <Route path={ROUTES.TEACHER_PROGRESS} element={<TeacherProgress />} />
+          <Route path={ROUTES.TEACHER_DAILY_PROGRESS} element={<TeacherDailyProgress />} />
           <Route path={ROUTES.TEACHER_MATERIALS} element={<MaterialsPage />} />
+          <Route path={ROUTES.TEACHER_ATTENDANCE} element={<TeacherAttendance />} />
+          <Route path={ROUTES.TEACHER_FEEDBACK} element={<TeacherFeedbackPage />} />
+          <Route path={ROUTES.TEACHER_MESSAGES} element={<MessagesPage />} />
           <Route path={ROUTES.TEACHER_PROFILE} element={<TeacherProfilePage />} />
         </Route>
 
@@ -121,7 +136,11 @@ function App() {
           <Route path={ROUTES.STUDENT_COURSES} element={<MyCoursesPage />} />
           <Route path={ROUTES.STUDENT_PROGRESS} element={<StudentProgress />} />
           <Route path={ROUTES.STUDENT_EXAMS} element={<ExamsPage />} />
+          <Route path={ROUTES.STUDENT_DAILY_PROGRESS} element={<StudentDailyProgress />} />
           <Route path={ROUTES.STUDENT_PAYMENTS} element={<StudentPayments />} />
+          <Route path={ROUTES.STUDENT_BROWSE_COURSES} element={<BrowseCoursesPage />} />
+          <Route path={ROUTES.STUDENT_ATTENDANCE} element={<StudentAttendance />} />
+          <Route path={ROUTES.STUDENT_MESSAGES} element={<MessagesPage />} />
           <Route path={ROUTES.STUDENT_PROFILE} element={<StudentProfilePage />} />
         </Route>
 
@@ -134,7 +153,9 @@ function App() {
           <Route path={ROUTES.PARENT_DASHBOARD} element={<ParentDashboard />} />
           <Route path={ROUTES.PARENT_CHILDREN} element={<ParentDashboard />} />
           <Route path="/parent/progress/:id" element={<ChildProgressPage />} />
+          <Route path="/parent/attendance/:id" element={<ChildAttendancePage />} />
           <Route path="/parent/payments/:id" element={<ChildPaymentsPage />} />
+          <Route path={ROUTES.PARENT_MESSAGES} element={<MessagesPage />} />
         </Route>
 
             {/* 404 */}

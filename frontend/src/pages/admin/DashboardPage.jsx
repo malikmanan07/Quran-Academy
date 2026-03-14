@@ -6,6 +6,7 @@ import RecentStudents from '../../components/dashboard/admin/RecentStudents';
 import RecentPayments from '../../components/dashboard/admin/RecentPayments';
 import UpcomingClasses from '../../components/dashboard/admin/UpcomingClasses';
 import QuickActions from '../../components/dashboard/admin/QuickActions';
+import DashboardCharts from '../../components/dashboard/admin/DashboardCharts';
 import StatCardSkeleton from '../../components/common/StatCardSkeleton';
 import TableSkeleton from '../../components/common/TableSkeleton';
 
@@ -44,9 +45,18 @@ const DashboardPage = () => {
       </div>
 
       {loading ? (
-        <StatCardSkeleton />
+        <>
+          <StatCardSkeleton />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <div className="h-64 bg-white animate-pulse rounded-2xl" />
+            <div className="h-64 bg-white animate-pulse rounded-2xl" />
+          </div>
+        </>
       ) : (
-        <StatsCards data={stats} />
+        <>
+          <StatsCards data={stats} />
+          <DashboardCharts stats={stats} />
+        </>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">

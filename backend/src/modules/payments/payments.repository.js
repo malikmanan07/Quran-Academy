@@ -18,7 +18,8 @@ export const findAll = async ({ status, search, page = 1, limit = 20 } = {}) => 
   const data = await db.select({
     id: payments.id, studentId: payments.studentId, studentName: users.name,
     courseName: courses.name, amount: payments.amount, status: payments.status,
-    month: payments.month,
+    month: payments.month, paymentMethod: payments.paymentMethod, transactionId: payments.transactionId,
+    submittedAt: payments.submittedAt, verifiedAt: payments.verifiedAt, notes: payments.notes,
     dueDate: payments.dueDate, paidAt: payments.paidAt, createdAt: payments.createdAt
   }).from(payments)
     .leftJoin(users, eq(payments.studentId, users.id))
@@ -44,7 +45,9 @@ export const findByStudentId = async (studentId) => {
     id: payments.id, studentId: payments.studentId, studentName: users.name,
     courseId: payments.courseId, courseName: courses.name, amount: payments.amount, 
     month: payments.month,
-    status: payments.status, dueDate: payments.dueDate, paidAt: payments.paidAt, 
+    status: payments.status, paymentMethod: payments.paymentMethod, transactionId: payments.transactionId,
+    submittedAt: payments.submittedAt, verifiedAt: payments.verifiedAt, notes: payments.notes,
+    dueDate: payments.dueDate, paidAt: payments.paidAt, 
     createdAt: payments.createdAt
   }).from(payments)
     .leftJoin(users, eq(payments.studentId, users.id))
@@ -58,10 +61,42 @@ export const create = async (data) => {
   return result[0];
 };
 
-export const updateStatus = async (id, status) => {
-  const update = { status };
-  if (status === 'Paid') update.paidAt = new Date();
+export const updateStatus = async (id, status, extra = {}) => {
+  const update = { status, ...extra };
+  if (status === 'verified') {
+    update.paidAt = new Date();
+    update.verifiedAt = new Date();
+  }
   const result = await db.update(payments).set(update).where(eq(payments.id, id)).returning();
+  return result[0];
+};
+
+export const submitPayment = async (id, data) => {
+  const result = await db.update(payments).set({
+    ...data,
+    status: 'submitted',
+    submittedAt: new Date()
+  }).where(eq(payments.id, id)).returning();
+  return result[0];
+};
+
+export const findPendingVerification = async () => {
+  return db.select({
+    id: payments.id, studentId: payments.studentId, studentName: users.name,
+    courseName: courses.name, amount: payments.amount, status: payments.status,
+    month: payments.month, paymentMethod: payments.paymentMethod, transactionId: payments.transactionId,
+    submittedAt: payments.submittedAt, notes: payments.notes,
+    createdAt: payments.createdAt
+  }).from(payments)
+    .leftJoin(users, eq(payments.studentId, users.id))
+    .leftJoin(courses, eq(payments.courseId, courses.id))
+    .where(eq(payments.status, 'submitted'))
+    .orderBy(desc(payments.submittedAt));
+};
+
+export const findByStudentAndMonth = async (studentId, month) => {
+  const result = await db.select().from(payments)
+    .where(and(eq(payments.studentId, studentId), eq(payments.month, month)));
   return result[0];
 };
 

@@ -24,6 +24,9 @@ export const API = {
   CLASSES_BY_STUDENT: () => `classes/student/my-classes`,
   CLASS_STATUS: (id) => `classes/${id}/status`,
   CLASS_BY_ID: (id) => `classes/${id}`,
+  TEACHER_SCHEDULE_CLASS: 'classes/teacher/schedule',
+  TEACHER_RESCHEDULE_CLASS: (id) => `classes/teacher/${id}/reschedule`,
+  TEACHER_CANCEL_CLASS: (id) => `classes/teacher/${id}/cancel`,
 
   // Payments
   PAYMENTS: 'payments',
@@ -73,4 +76,24 @@ export const API = {
   QURAN_PROGRESS_MY: 'quran-progress/my-progress',
   QURAN_PROGRESS_UPDATE: (studentId, paraNumber) =>
     `quran-progress/${studentId}/para/${paraNumber}`,
+
+  // Daily Progress (Sabaq, Sabqi, Manzil)
+  DAILY_PROGRESS: 'daily-progress',
+  MY_DAILY_PROGRESS: 'daily-progress/my-progress',
+  DAILY_PROGRESS_BY_STUDENT: (studentId) => `daily-progress/student/${studentId}`,
+  DAILY_PROGRESS_BY_ID: (id) => `daily-progress/${id}`,
+
+  // Enrollments
+  ENROLLMENT_REQUEST: 'enrollments/request',
+  MY_ENROLLMENT_REQUESTS: 'enrollments/my-requests',
+  ALL_ENROLLMENT_REQUESTS: 'enrollments/requests',
+  APPROVE_ENROLLMENT: (id) => `enrollments/${id}/approve`,
+  REJECT_ENROLLMENT: (id) => `enrollments/${id}/reject`,
+
+  // Attendance
+  MARK_ATTENDANCE: 'attendance/mark',
+  MY_ATTENDANCE: 'attendance/my-attendance',
+  ATTENDANCE_BY_STUDENT: (id) => `attendance/student/${id}`,
+  ATTENDANCE_BY_CLASS: (id) => `attendance/class/${id}`,
+  ATTENDANCE_STATS: (studentId) => `attendance/stats/${studentId}`,
 };

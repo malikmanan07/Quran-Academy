@@ -1,5 +1,4 @@
-import AppBadge from '../../common/AppBadge';
-import AppButton from '../../common/AppButton';
+import SmartJoinButton from '../../common/SmartJoinButton';
 import { formatDate } from '../../../utils/formatDate';
 import TableSkeleton from '../../common/TableSkeleton';
 
@@ -23,11 +22,13 @@ const UpcomingClasses = ({ classes, loading }) => (
               <p className="text-sm font-medium text-[#1A1A2E] truncate">{c.courseName || 'Course'}</p>
               <p className="text-xs text-[#4A5568]">{c.teacherName || 'Teacher'} • {formatDate(c.date)} {c.time || ''}</p>
             </div>
-            {c.meetingLink && (
-              <a href={c.meetingLink} target="_blank" rel="noopener noreferrer">
-                <AppButton variant="accent" size="sm">Join</AppButton>
-              </a>
-            )}
+            <SmartJoinButton 
+              meetingLink={c.meetingLink} 
+              meetingPlatform={c.meetingPlatform} 
+              date={c.date} 
+              time={c.time} 
+              status={c.status} 
+            />
           </div>
         ))
       )}

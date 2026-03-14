@@ -1,3 +1,5 @@
+import NotificationBell from '../common/NotificationBell';
+
 const Navbar = ({ onToggleSidebar, user }) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 h-16 bg-[#1B3A5C] text-white flex items-center justify-between px-4 sm:px-6 lg:px-8 shadow-md w-full">
@@ -22,6 +24,7 @@ const Navbar = ({ onToggleSidebar, user }) => {
           <p className="text-sm font-medium">{user?.name || 'User'}</p>
           <p className="text-xs text-white/70 capitalize">{user?.role || 'Guest'}</p>
         </div>
+        <NotificationBell />
         <div className="w-9 h-9 rounded-full bg-[#00B4D8] flex items-center justify-center text-sm font-bold">
           {user?.name?.charAt(0)?.toUpperCase() || 'U'}
         </div>

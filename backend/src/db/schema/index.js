@@ -10,3 +10,7 @@ export { parentStudent } from './parentStudent.js';
 export { trialRequests } from './trialRequests.js';
 export { quranProgress } from './quranProgress.js';
 export { certificates } from './certificates.js';
+export { dailyProgress } from './dailyProgress.js';
+export { enrollmentRequests } from './enrollmentRequests.js';
+export { messages } from './messages.js';
+export { feedbackReports } from './feedbackReports.js';

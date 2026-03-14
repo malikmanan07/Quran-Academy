@@ -11,7 +11,9 @@ const schema = z.object({
   date: z.string().min(1, 'Date is required'),
   time: z.string().min(1, 'Time is required'),
   duration: z.string().optional(),
+  meetingPlatform: z.string().optional().default('other'),
   meetingLink: z.string().optional(),
+  meetingId: z.string().optional(),
   notes: z.string().optional(),
   status: z.string().optional(),
 });
@@ -19,7 +21,7 @@ const schema = z.object({
 const ClassForm = ({ defaultValues, onSubmit, loading, isEdit, students, teachers, courses }) => {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: defaultValues || { studentId: '', teacherId: '', courseId: '', date: '', time: '', duration: '45min', meetingLink: '', notes: '', status: 'scheduled' },
+    defaultValues: defaultValues || { studentId: '', teacherId: '', courseId: '', date: '', time: '', duration: '45min', meetingPlatform: 'other', meetingLink: '', meetingId: '', notes: '', status: 'scheduled' },
   });
 
   const sel = "w-full rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm text-[#1A1A2E] focus:outline-none focus:ring-2 focus:ring-[#00B4D8]/40 mb-4";
@@ -69,7 +71,22 @@ const ClassForm = ({ defaultValues, onSubmit, loading, isEdit, students, teacher
           </select>
         </div>
       </div>
-      <AppInput label="Meeting Link" placeholder="https://zoom.us/j/..." {...register('meetingLink')} />
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div>
+          <label className="block text-sm font-medium text-[#1A1A2E] mb-1.5">Platform</label>
+          <select {...register('meetingPlatform')} className={sel}>
+            <option value="zoom">🎥 Zoom</option>
+            <option value="meet">📹 Google Meet</option>
+            <option value="teams">🔵 Microsoft Teams</option>
+            <option value="whereby">🟣 Whereby</option>
+            <option value="other">📞 Other</option>
+          </select>
+        </div>
+        <AppInput label="Meeting Link" placeholder="https://..." {...register('meetingLink')} />
+      </div>
+      <div className="mb-4">
+        <AppInput label="Meeting ID / Passcode (Optional)" placeholder="e.g. 123 456 7890" {...register('meetingId')} />
+      </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-[#1A1A2E] mb-1.5">Notes</label>
         <textarea {...register('notes')} rows={3} placeholder="Additional notes..."

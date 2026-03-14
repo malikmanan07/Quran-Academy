@@ -23,6 +23,11 @@ import certificatesRoutes from './modules/certificates/certificates.routes.js';
 import parentRoutes from './modules/parent/parent.routes.js';
 import trialRoutes from './modules/trial/trial.routes.js';
 import quranProgressRoutes from './modules/quran-progress/quran-progress.routes.js';
+import dailyProgressRoutes from './modules/daily-progress/daily-progress.routes.js';
+import enrollmentRoutes from './modules/enrollments/enrollments.routes.js';
+import attendanceRoutes from './modules/attendance/attendance.routes.js';
+import messagesRoutes from './modules/messages/messages.routes.js';
+import feedbackRoutes from './modules/feedback/feedback.routes.js';
 
 const app = express();
 
@@ -62,6 +67,11 @@ app.use('/api/certificates', certificatesRoutes);
 app.use('/api/parent', parentRoutes);
 app.use('/api/trial', trialRoutes);
 app.use('/api/quran-progress', quranProgressRoutes);
+app.use('/api/daily-progress', dailyProgressRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/attendance', attendanceRoutes);
+app.use('/api/messages', messagesRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Error Handling
 app.use(notFound);
