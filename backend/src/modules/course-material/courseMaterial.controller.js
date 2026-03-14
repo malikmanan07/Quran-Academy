@@ -16,13 +16,25 @@ export const getById = asyncHandler(async (req, res) => {
 });
 
 export const create = asyncHandler(async (req, res) => {
-  const material = await service.create({ ...req.body, uploadedBy: req.user.id });
-  sendCreated(res, 'Material created', { material });
+  try {
+    console.log('Creating Material. Body keys:', Object.keys(req.body));
+    const material = await service.create({ ...req.body, uploadedBy: req.user.id });
+    sendCreated(res, 'Material created', { material });
+  } catch (error) {
+    console.error('Create Material Error:', error);
+    res.status(422).json({ success: false, message: error.message, errors: error.errors });
+  }
 });
 
 export const update = asyncHandler(async (req, res) => {
-  const material = await service.update(parseInt(req.params.id), req.body);
-  sendSuccess(res, 'Material updated', { material });
+  try {
+    console.log('Updating Material ID:', req.params.id, 'Body keys:', Object.keys(req.body));
+    const material = await service.update(parseInt(req.params.id), req.body);
+    sendSuccess(res, 'Material updated', { material });
+  } catch (error) {
+    console.error('Update Material Error:', error);
+    res.status(422).json({ success: false, message: error.message, errors: error.errors });
+  }
 });
 
 export const remove = asyncHandler(async (req, res) => {

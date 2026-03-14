@@ -1,6 +1,6 @@
 import db from '../../config/db.js';
 import { users } from '../../db/schema/index.js';
-import { eq, and, sql, desc, or, ilike, ne } from 'drizzle-orm';
+import { eq, and, sql, desc, or, ilike, ne, isNull } from 'drizzle-orm';
 
 export const findAll = async ({ search, status, role, page = 1, limit = 20 } = {}) => {
   const conditions = [ne(users.role, 'admin')]; // Exclude admins
@@ -38,5 +38,12 @@ export const updateStatus = async (id, status) => {
 
 export const findById = async (id) => {
   const result = await db.select().from(users).where(eq(users.id, id));
+  return result[0] || null;
+};
+
+export const findByEmail = async (email) => {
+  const result = await db.select().from(users).where(
+    and(eq(users.email, email), isNull(users.deletedAt))
+  );
   return result[0] || null;
 };

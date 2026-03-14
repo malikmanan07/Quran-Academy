@@ -10,6 +10,7 @@ export const courseMaterial = pgTable('course_material', {
   description: text('description'),
   type: varchar('type', { length: 20 }),
   url: text('url'),
+  fileName: varchar('file_name', { length: 255 }),
   visibleToStudents: boolean('visible_to_students').default(true),
   createdAt: timestamp('created_at').defaultNow(),
 });

@@ -32,21 +32,21 @@ const ClassForm = ({ defaultValues, onSubmit, loading, isEdit, students, teacher
         <label className="block text-sm font-medium text-[#1A1A2E] mb-1.5">Student *</label>
         <select {...register('studentId')} className={`${sel} ${errors.studentId ? '!border-red-500' : ''}`}>
           <option value="">Select student</option>
-          {(students || []).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          {(students || []).map(s => <option key={`${s.id}-${s.name}`} value={s.id}>{s.name}</option>)}
         </select>
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-[#1A1A2E] mb-1.5">Teacher *</label>
         <select {...register('teacherId')} className={`${sel} ${errors.teacherId ? '!border-red-500' : ''}`}>
           <option value="">Select teacher</option>
-          {(teachers || []).map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+          {(teachers || []).map(t => <option key={`${t.id}-${t.name}`} value={t.id}>{t.name}</option>)}
         </select>
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium text-[#1A1A2E] mb-1.5">Course *</label>
         <select {...register('courseId')} className={`${sel} ${errors.courseId ? '!border-red-500' : ''}`}>
           <option value="">Select course</option>
-          {(courses || []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+          {(courses || []).map(c => <option key={`${c.id}-${c.name}`} value={c.id}>{c.name}</option>)}
         </select>
       </div>
       <div className="grid grid-cols-2 gap-3">

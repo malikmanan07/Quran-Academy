@@ -1,1 +1,3 @@
-export { default } from '../config/db.js';
+import db from '../config/db.js';
+export { db };
+export default db;

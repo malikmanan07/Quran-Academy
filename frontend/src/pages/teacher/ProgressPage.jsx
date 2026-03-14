@@ -8,7 +8,7 @@ import AppModal from '../../components/common/AppModal';
 import AppButton from '../../components/common/AppButton';
 import QuranProgressMap from '../../components/common/QuranProgressMap';
 import { getAllProgress, createProgress, updateProgress, deleteProgress } from '../../features/progress/api';
-import { getAllStudents } from '../../features/students/api';
+import { getMyStudents } from '../../features/teachers/api';
 import { getQuranProgress, updateQuranPara } from '../../features/quranProgress/api';
 import handleApiError from '../../utils/handleApiError';
 import { useSearch } from '../../hooks/useSearch';
@@ -42,9 +42,17 @@ const ProgressPage = () => {
 
   const fetchStudents = async () => {
     try {
-      const s = await getAllStudents({ limit: 1000 });
-      setStudents(s.data.students || []);
-    } catch { /* silent */ }
+      const response = await getMyStudents();
+      const list = response.data?.data?.students || response.data?.students || response.data || [];
+      
+      // Deduplicate by id:
+      const unique = list.filter((s, i, arr) =>
+        arr.findIndex(x => x.id === s.id) === i
+      );
+      setStudents(unique);
+    } catch (err) {
+      console.error('Students error:', err);
+    }
   };
 
   useEffect(() => { fetchStudents(); }, []);
@@ -98,7 +106,7 @@ const ProgressPage = () => {
             className="rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 outline-none"
           >
             <option value="">Select Student</option>
-            {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+            {students.map(s => <option key={`${s.id}-${s.name}`} value={s.id}>{s.name}</option>)}
           </select>
         </div>
         {selectedStudent ? (

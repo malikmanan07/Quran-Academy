@@ -3,6 +3,7 @@ import { sendSuccess, sendCreated } from '../../utils/apiResponse.js';
 import * as service from './trial.service.js';
 
 export const book = asyncHandler(async (req, res) => {
+  console.log('Trial request body:', req.body);
   const trial = await service.book(req.body);
   sendCreated(res, 'Trial class booked successfully', { trial });
 });

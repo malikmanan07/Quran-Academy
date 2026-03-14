@@ -35,7 +35,7 @@ const AppSelect = ({
       >
         <option value="">{placeholder}</option>
         {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
+          <option key={`${opt.value}-${opt.label}`} value={opt.value}>
             {opt.label}
           </option>
         ))}

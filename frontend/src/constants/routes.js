@@ -42,6 +42,9 @@ export const ROUTES = {
   STUDENT_PROFILE: '/student/profile',
   STUDENT_DAILY_PROGRESS: '/student/daily-progress',
   STUDENT_MESSAGES: '/student/messages',
+  STUDENT_CLASSES: '/student/classes',
+  STUDENT_CERTIFICATES: '/student/certificates',
+  STUDENT_MATERIALS: '/student/materials',
 
   // Parent
   PARENT_DASHBOARD: '/parent/dashboard',

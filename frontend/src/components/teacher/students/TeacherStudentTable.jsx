@@ -13,6 +13,11 @@ const TeacherStudentTable = ({ students, loading, onViewProgress }) => {
       </div>
     )},
     { key: 'email', label: 'Email' },
+    { key: 'classes', label: 'Classes', render: (r) => (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[#F0F4F8] text-[#1B3A5C] border border-[#E2E8F0]">
+        {r.classCount || 1} {r.classCount === 1 ? 'Class' : 'Classes'}
+      </span>
+    )},
     { key: 'courseName', label: 'Course', render: (r) => r.courseName || '—' },
     { key: 'progress', label: 'Progress', render: (r) => (
       <div className="w-20">

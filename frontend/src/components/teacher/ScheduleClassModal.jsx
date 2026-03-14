@@ -59,7 +59,8 @@ const ScheduleClassModal = ({ show, onClose, students, onSubmit, loading, initia
     });
   };
 
-  const studentOptions = students.map(s => ({ value: s.id, label: s.name }));
+  const uniqueStudents = students.filter((s, i, self) => i === self.findIndex(x => x.id === s.id));
+  const studentOptions = uniqueStudents.map(s => ({ value: String(s.id), label: s.name }));
   
   const platformOptions = [
     { value: 'zoom', label: '🎥 Zoom' },
@@ -82,7 +83,7 @@ const ScheduleClassModal = ({ show, onClose, students, onSubmit, loading, initia
         <AppSelect
           label="Student"
           name="studentId"
-          value={formData.studentId}
+          value={String(formData.studentId)}
           onChange={handleStudentChange}
           options={studentOptions}
           required

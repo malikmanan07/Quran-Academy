@@ -25,7 +25,9 @@ const TeacherFeedbackPage = () => {
         http.get('teachers/my-students'),
         http.get('feedback/my-students-feedback')
       ]);
-      setStudents(studentsRes.data?.data?.students || []);
+      const list = studentsRes.data?.data?.students || studentsRes.data?.students || [];
+      const unique = list.filter((s, i, arr) => arr.findIndex(x => x.id === s.id) === i);
+      setStudents(unique);
       setReports(reportsRes.data?.data?.feedback || []);
     } catch (err) {
       handleApiError(err);

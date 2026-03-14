@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
 import TeacherStudentFilters from '../../components/teacher/students/TeacherStudentFilters';
 import TeacherStudentTable from '../../components/teacher/students/TeacherStudentTable';
-import { getAllStudents } from '../../features/students/api';
+import { getMyStudents } from '../../features/teachers/api';
 import { ROUTES } from '../../constants/routes';
 
 const MyStudentsPage = () => {
@@ -18,10 +18,15 @@ const MyStudentsPage = () => {
     const fetch = async () => {
       setLoading(true);
       try {
-        const res = await getAllStudents({ teacherId: user?.id });
-        // Extract from response.data (axios) -> .data (backend) -> .students
+        const res = await getMyStudents();
         const list = res.data?.data?.students || res.data?.students || [];
-        setStudents(list);
+        
+        // Remove duplicates by student id
+        const unique = list.filter((student, index, arr) =>
+          arr.findIndex(s => s.id === student.id) === index
+        );
+        
+        setStudents(unique);
       } catch (err) {
         console.error('MyStudentsPage fetch error:', err);
       } finally {

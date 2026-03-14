@@ -2,6 +2,8 @@ import db from '../../config/db.js';
 import { courseMaterial } from '../../db/schema/index.js';
 import { eq, and, desc, sql, ilike, or } from 'drizzle-orm';
 
+import { courses } from '../../db/schema/index.js';
+
 export const findAll = async ({ courseId, type, search, page = 1, limit = 20 } = {}) => {
   const conditions = [];
   if (courseId) conditions.push(eq(courseMaterial.courseId, Number(courseId)));
@@ -15,8 +17,24 @@ export const findAll = async ({ courseId, type, search, page = 1, limit = 20 } =
   const where = conditions.length ? and(...conditions) : undefined;
   const offset = (page - 1) * limit;
 
-  const data = await db.select().from(courseMaterial).where(where)
+  const data = await db.select({
+    id: courseMaterial.id,
+    courseId: courseMaterial.courseId,
+    uploadedBy: courseMaterial.uploadedBy,
+    title: courseMaterial.title,
+    description: courseMaterial.description,
+    type: courseMaterial.type,
+    url: courseMaterial.url,
+    fileName: courseMaterial.fileName,
+    visibleToStudents: courseMaterial.visibleToStudents,
+    createdAt: courseMaterial.createdAt,
+    courseName: courses.name
+  })
+    .from(courseMaterial)
+    .leftJoin(courses, eq(courseMaterial.courseId, courses.id))
+    .where(where)
     .orderBy(desc(courseMaterial.createdAt)).limit(limit).offset(offset);
+    
   const [{ count }] = await db.select({ count: sql`count(*)` }).from(courseMaterial).where(where);
   return { data, total: Number(count) };
 };
@@ -27,7 +45,21 @@ export const findById = async (id) => {
 };
 
 export const findVisibleToStudents = async () =>
-  db.select().from(courseMaterial).where(eq(courseMaterial.visibleToStudents, true))
+  db.select({
+    id: courseMaterial.id,
+    courseId: courseMaterial.courseId,
+    uploadedBy: courseMaterial.uploadedBy,
+    title: courseMaterial.title,
+    description: courseMaterial.description,
+    type: courseMaterial.type,
+    url: courseMaterial.url,
+    fileName: courseMaterial.fileName,
+    visibleToStudents: courseMaterial.visibleToStudents,
+    createdAt: courseMaterial.createdAt,
+    courseName: courses.name
+  }).from(courseMaterial)
+    .leftJoin(courses, eq(courseMaterial.courseId, courses.id))
+    .where(eq(courseMaterial.visibleToStudents, true))
     .orderBy(desc(courseMaterial.createdAt));
 
 export const create = async (data) => {

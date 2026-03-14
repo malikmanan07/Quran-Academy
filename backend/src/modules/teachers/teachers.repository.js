@@ -53,19 +53,21 @@ export const softDelete = async (id) => {
 };
 
 export const findMyStudents = async (teacherId) => {
-  // Find distinct students from the teacher's classes
+  // Find students who have classes with this teacher
   const results = await db
-    .selectDistinctOn([classes.studentId], {
+    .select({
       id: users.id,
       name: users.name,
       email: users.email,
       phone: users.phone,
-      courseName: courses.name,
-      courseId: classes.courseId,
+      courseName: sql`MAX(${courses.name})`,
+      classCount: sql`(SELECT count(*) FROM ${classes} WHERE ${classes.studentId} = ${users.id} AND ${classes.teacherId} = ${teacherId})::int`,
     })
-    .from(classes)
-    .innerJoin(users, eq(classes.studentId, users.id))
+    .from(users)
+    .innerJoin(classes, eq(users.id, classes.studentId))
     .leftJoin(courses, eq(classes.courseId, courses.id))
-    .where(eq(classes.teacherId, teacherId));
+    .where(eq(classes.teacherId, teacherId))
+    .groupBy(users.id);
+    
   return results;
 };

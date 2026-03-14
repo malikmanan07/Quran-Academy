@@ -55,6 +55,9 @@ const StudentProfilePage = lazy(() => import('./pages/student/ProfilePage'));
 const StudentDailyProgress = lazy(() => import('./pages/student/DailyProgressPage'));
 const BrowseCoursesPage = lazy(() => import('./pages/student/CoursesPage'));
 const StudentAttendance = lazy(() => import('./pages/student/AttendancePage'));
+const StudentClassesPage = lazy(() => import('./pages/student/ClassesPage'));
+const StudentCertificatesPage = lazy(() => import('./pages/student/CertificatesPage'));
+const StudentMaterialsPage = lazy(() => import('./pages/student/MaterialsPage'));
 
 // Parent Pages
 const ParentDashboard = lazy(() => import('./pages/parent/DashboardPage'));
@@ -142,6 +145,9 @@ function App() {
           <Route path={ROUTES.STUDENT_ATTENDANCE} element={<StudentAttendance />} />
           <Route path={ROUTES.STUDENT_MESSAGES} element={<MessagesPage />} />
           <Route path={ROUTES.STUDENT_PROFILE} element={<StudentProfilePage />} />
+          <Route path={ROUTES.STUDENT_CLASSES} element={<StudentClassesPage />} />
+          <Route path={ROUTES.STUDENT_CERTIFICATES} element={<StudentCertificatesPage />} />
+          <Route path={ROUTES.STUDENT_MATERIALS} element={<StudentMaterialsPage />} />
         </Route>
 
         {/* Parent Routes */}

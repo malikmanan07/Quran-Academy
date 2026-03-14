@@ -14,3 +14,5 @@ export { dailyProgress } from './dailyProgress.js';
 export { enrollmentRequests } from './enrollmentRequests.js';
 export { messages } from './messages.js';
 export { feedbackReports } from './feedbackReports.js';
+export { users as students } from './users.js';
+export { users as teachers } from './users.js';

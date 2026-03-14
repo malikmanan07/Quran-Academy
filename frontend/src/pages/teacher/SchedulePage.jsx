@@ -6,7 +6,7 @@ import ScheduleFilters from '../../components/teacher/schedule/ScheduleFilters';
 import ScheduleTable from '../../components/teacher/schedule/ScheduleTable';
 import ScheduleClassModal from '../../components/teacher/ScheduleClassModal';
 import { getClassesByTeacher, updateClassStatus, teacherScheduleClass, teacherRescheduleClass } from '../../features/classes/api';
-import { getAllStudents } from '../../features/students/api';
+import { getMyStudents } from '../../features/teachers/api';
 import handleApiError from '../../utils/handleApiError';
 
 const SchedulePage = () => {
@@ -26,10 +26,13 @@ const SchedulePage = () => {
     try {
       const [resClasses, resStudents] = await Promise.all([
         getClassesByTeacher(),
-        getAllStudents({ limit: 100 }) // Fetch teacher's students
+        getMyStudents()
       ]);
-      setClasses(resClasses.data?.data?.classes || resClasses.data?.classes || []);
-      setStudents(resStudents.data?.data?.students || resStudents.data?.students || []);
+      const classList = resClasses.data?.data?.classes || resClasses.data?.classes || [];
+      const studentList = resStudents.data?.data?.students || resStudents.data?.students || [];
+      
+      setClasses(classList.filter((c, i, self) => i === self.findIndex(x => x.id === c.id)));
+      setStudents(studentList.filter((s, i, self) => i === self.findIndex(x => x.id === s.id)));
     } catch (err) {
       console.error('SchedulePage fetch error:', err);
     } finally {

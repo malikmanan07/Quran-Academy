@@ -26,12 +26,10 @@ export const findAll = async ({ search, status, teacherId, page = 1, limit = 20 
     isActive: users.isActive, 
     createdAt: users.createdAt, 
     status: users.status,
-    courseName: courses.name,
+    courseName: sql`MAX(${courses.name})`, // Take one course name if multiple exist
+    classCount: sql`count(${classes.id})::int`, // Count of classes for this student/teacher
   }).from(users);
 
-  // Use a left join with classes to get course association
-  // We use a subquery/distinct join strategy to avoid getting multiple rows per student
-  // For simplicity here, we'll join and use a group by or just take the first one found
   query.leftJoin(classes, eq(users.id, classes.studentId))
        .leftJoin(courses, eq(classes.courseId, courses.id));
 
@@ -43,6 +41,9 @@ export const findAll = async ({ search, status, teacherId, page = 1, limit = 20 
   const where = and(...finalConditions);
 
   const data = await query.where(where)
+    .groupBy(users.id, courses.id) // Grouping by both to avoid ambiguous SQL but practically we want per user
+    // Actually, grouping just by users.id is enough if we use MAX/agg for other fields
+    .groupBy(users.id)
     .orderBy(desc(users.createdAt))
     .limit(limit)
     .offset(offset);

@@ -18,14 +18,38 @@ const DailySabaqModal = ({ show, onClose, onSubmit, record, loading, students })
   });
 
   useEffect(() => {
-    if (show) setForm(record ? { ...record, date: record.date.split('T')[0] } : {
-      studentId: '', date: new Date().toISOString().split('T')[0],
-      sabaqSurah: '', sabaqAyatFrom: '', sabaqAyatTo: '',
-      sabaqGrade: 'Good', sabqiGrade: 'Good', manzilGrade: 'Good', notes: ''
-    });
+    if (show) {
+      if (record) {
+        const dateStr = record.date ? (typeof record.date === 'string' ? record.date : new Date(record.date).toISOString()).split('T')[0] : '';
+        setForm({ ...record, date: dateStr });
+      } else {
+        setForm({
+          studentId: '', date: new Date().toISOString().split('T')[0],
+          sabaqSurah: '', sabaqAyatFrom: '', sabaqAyatTo: '',
+          sabaqGrade: 'Good', sabqiGrade: 'Good', manzilGrade: 'Good', notes: ''
+        });
+      }
+    }
   }, [record, show]);
 
-  const handleSubmit = (e) => { e.preventDefault(); onSubmit(form); };
+  const handleSubmit = (e) => { 
+    e.preventDefault(); 
+    
+    const payload = {
+      studentId: parseInt(form.studentId),
+      date: form.date || new Date().toISOString().split('T')[0],
+      sabaqSurah: form.sabaqSurah,
+      sabaqAyatFrom: (form.sabaqAyatFrom || '').toString(),
+      sabaqAyatTo: (form.sabaqAyatTo || '').toString(),
+      sabaqGrade: form.sabaqGrade,
+      sabqiGrade: form.sabqiGrade,
+      manzilGrade: form.manzilGrade,
+      notes: form.notes || '',
+    };
+    
+    console.log('Submitting Daily Sabaq:', payload);
+    onSubmit(payload); 
+  };
   const onChange = (f) => (e) => setForm(o => ({ ...o, [f]: e.target.value }));
 
   return (
@@ -34,10 +58,10 @@ const DailySabaqModal = ({ show, onClose, onSubmit, record, loading, students })
         {!record && (
           <div>
             <label className="block text-sm font-medium text-[#1A1A2E] mb-1">Student</label>
-            <select value={form.studentId} onChange={onChange('studentId')} required
+            <select value={String(form.studentId)} onChange={onChange('studentId')} required
               className="w-full rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 outline-none">
               <option value="">Select Student</option>
-              {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              {students.map(s => <option key={`${s.id}-${s.name}`} value={String(s.id)}>{s.name}</option>)}
             </select>
           </div>
         )}

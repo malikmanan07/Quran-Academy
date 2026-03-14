@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useCurrency } from '../../hooks/useCurrency';
 import AppModal from '../common/AppModal';
 import AppSelect from '../common/AppSelect';
@@ -14,10 +14,14 @@ const PAYMENT_METHODS = [
   { value: 'PayPal', label: 'PayPal' },
 ];
 
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const currentYear = new Date().getFullYear();
+const YEAR_MONTH_OPTIONS = MONTHS.map(m => ({ value: `${m} ${currentYear}`, label: `${m} ${currentYear}` }));
+
 const inputClass = "w-full rounded-lg border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm text-[#1A1A2E] focus:outline-none focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]";
 const labelClass = "block text-sm font-medium text-[#1A1A2E] mb-1.5";
 
-const PaymentSubmitModal = ({ isOpen, onClose, studentId, month, amount, onSuccess }) => {
+const PaymentSubmitModal = ({ isOpen, onClose, studentId, month: initialMonth, amount: initialAmount, onSuccess }) => {
   const { formatCurrency } = useCurrency();
   const [loading, setLoading] = useState(false);
   const { toast, showToast } = useToast();
@@ -25,16 +29,33 @@ const PaymentSubmitModal = ({ isOpen, onClose, studentId, month, amount, onSucce
     paymentMethod: 'JazzCash',
     transactionId: '',
     notes: '',
+    month: initialMonth || `${MONTHS[new Date().getMonth()]} ${currentYear}`,
+    amount: initialAmount || '',
   });
+
+  // Sync state with props when modal opens or props change
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(prev => ({
+        ...prev,
+        month: initialMonth || `${MONTHS[new Date().getMonth()]} ${currentYear}`,
+        amount: initialAmount || '',
+        transactionId: '',
+        notes: ''
+      }));
+    }
+  }, [isOpen, initialMonth, initialAmount]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.transactionId) { showToast('Transaction ID is required', 'error'); return; }
+    if (!formData.month) { showToast('Month is required', 'error'); return; }
+    if (!formData.amount) { showToast('Amount is required', 'error'); return; }
 
     setLoading(true);
     try {
       const endpoint = studentId ? '/payments/parent/submit' : '/payments/student/submit';
-      const payload = { ...formData, month, amount };
+      const payload = { ...formData };
       if (studentId) payload.studentId = studentId;
 
       await http.post(endpoint, payload);
@@ -52,16 +73,39 @@ const PaymentSubmitModal = ({ isOpen, onClose, studentId, month, amount, onSucce
     <AppModal show={isOpen} onClose={onClose} title="Submit Payment Proof">
       <Toast toast={toast} />
       <form onSubmit={handleSubmit} className="space-y-4 pt-2">
-        <div className="bg-[#00B4D8]/5 p-4 rounded-xl border border-[#00B4D8]/20 mb-4">
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-[#4A5568]">Month:</span>
-            <span className="font-bold text-[#1A1A2E]">{month}</span>
+        {initialMonth && initialAmount ? (
+          <div className="bg-[#00B4D8]/5 p-4 rounded-xl border border-[#00B4D8]/20 mb-4">
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-[#4A5568]">Month:</span>
+              <span className="font-bold text-[#1A1A2E]">{initialMonth}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-[#4A5568]">Amount:</span>
+              <span className="font-bold text-[#1A1A2E]">{formatCurrency(initialAmount)}</span>
+            </div>
           </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-[#4A5568]">Amount:</span>
-            <span className="font-bold text-[#1A1A2E]">{formatCurrency(amount)}</span>
-          </div>
-        </div>
+        ) : (
+          <>
+            <AppSelect
+              label="Select Month"
+              value={formData.month}
+              onChange={(e) => setFormData(prev => ({ ...prev, month: e.target.value }))}
+              options={YEAR_MONTH_OPTIONS}
+              required
+            />
+            <div className="mb-4">
+              <label className={labelClass}>Amount Paid *</label>
+              <input
+                type="number"
+                placeholder="Enter amount"
+                value={formData.amount}
+                onChange={(e) => setFormData(prev => ({ ...prev, amount: e.target.value }))}
+                required
+                className={inputClass}
+              />
+            </div>
+          </>
+        )}
 
         <AppSelect
           label="Payment Method"

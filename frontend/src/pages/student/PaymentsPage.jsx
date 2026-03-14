@@ -49,7 +49,14 @@ const PaymentsPage = () => {
   };
 
   return (
-    <div>
+    <div className="space-y-6">
+      <PageHeader 
+        title="💰 My Payments" 
+        subtitle="Track your tuition fees and submit payment proofs"
+        actionLabel="+ Submit Payment"
+        onAction={() => { setSelectedPayment(null); setIsModalOpen(true); }}
+      />
+      
       <PaymentSummaryCard payments={payments} />
       <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">
         <PaymentHistoryTable 
@@ -59,15 +66,13 @@ const PaymentsPage = () => {
         />
       </div>
 
-      {selectedPayment && (
-        <PaymentSubmitModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          month={selectedPayment.month}
-          amount={selectedPayment.amount}
-          onSuccess={fetchPayments}
-        />
-      )}
+      <PaymentSubmitModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        month={selectedPayment?.month}
+        amount={selectedPayment?.amount}
+        onSuccess={fetchPayments}
+      />
     </div>
   );
 };

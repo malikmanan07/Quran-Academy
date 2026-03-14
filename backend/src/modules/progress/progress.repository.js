@@ -15,7 +15,16 @@ export const findAll = async ({ search, page = 1, limit = 20 } = {}) => {
   const offset = (page - 1) * limit;
   
   const data = await db.select({
-    ...progress,
+    id: progress.id,
+    studentId: progress.studentId,
+    teacherId: progress.teacherId,
+    lesson: progress.lesson,
+    lessonCovered: progress.lessonCovered,
+    tajweedNotes: progress.tajweedNotes,
+    homework: progress.homework,
+    rating: progress.rating,
+    remarks: progress.remarks,
+    createdAt: progress.createdAt,
     studentName: users.name
   }).from(progress)
     .leftJoin(users, eq(progress.studentId, users.id))
@@ -26,7 +35,7 @@ export const findAll = async ({ search, page = 1, limit = 20 } = {}) => {
     .leftJoin(users, eq(progress.studentId, users.id))
     .where(where);
 
-  return { data, total: Number(count) };
+  return { data: data || [], total: Number(count) };
 };
 
 export const findById = async (id) => {
@@ -35,12 +44,36 @@ export const findById = async (id) => {
 };
 
 export const findByStudentId = async (studentId) =>
-  db.select({ ...progress, studentName: users.name }).from(progress)
+  db.select({
+    id: progress.id,
+    studentId: progress.studentId,
+    teacherId: progress.teacherId,
+    lesson: progress.lesson,
+    lessonCovered: progress.lessonCovered,
+    tajweedNotes: progress.tajweedNotes,
+    homework: progress.homework,
+    rating: progress.rating,
+    remarks: progress.remarks,
+    createdAt: progress.createdAt,
+    studentName: users.name
+  }).from(progress)
     .leftJoin(users, eq(progress.studentId, users.id))
     .where(eq(progress.studentId, studentId)).orderBy(desc(progress.createdAt));
 
 export const findByTeacherId = async (teacherId) =>
-  db.select({ ...progress, studentName: users.name }).from(progress)
+  db.select({
+    id: progress.id,
+    studentId: progress.studentId,
+    teacherId: progress.teacherId,
+    lesson: progress.lesson,
+    lessonCovered: progress.lessonCovered,
+    tajweedNotes: progress.tajweedNotes,
+    homework: progress.homework,
+    rating: progress.rating,
+    remarks: progress.remarks,
+    createdAt: progress.createdAt,
+    studentName: users.name
+  }).from(progress)
     .leftJoin(users, eq(progress.studentId, users.id))
     .where(eq(progress.teacherId, teacherId)).orderBy(desc(progress.createdAt));
 

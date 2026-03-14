@@ -13,6 +13,7 @@ export const API = {
   // Teachers
   TEACHERS: 'teachers',
   TEACHER_BY_ID: (id) => `teachers/${id}`,
+  MY_STUDENTS: 'teachers/my-students',
 
   // Courses
   COURSES: 'courses',

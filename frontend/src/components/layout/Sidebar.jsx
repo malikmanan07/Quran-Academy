@@ -35,14 +35,17 @@ const teacherMenu = [
 
 const studentMenu = [
   { label: 'Dashboard', path: ROUTES.STUDENT_DASHBOARD, icon: '📊' },
-  { label: 'Browse Courses', path: ROUTES.STUDENT_BROWSE_COURSES, icon: '🔍' },
-  { label: 'My Courses', path: ROUTES.STUDENT_COURSES, icon: '📚' },
-  { label: 'Attendance', path: ROUTES.STUDENT_ATTENDANCE, icon: '📋' },
-  { label: 'Progress', path: ROUTES.STUDENT_PROGRESS, icon: '📈' },
-  { label: 'Daily Sabaq', path: ROUTES.STUDENT_DAILY_PROGRESS, icon: '📝' },
-  { label: 'Exams', path: ROUTES.STUDENT_EXAMS, icon: '📝' },
+  { label: 'My Classes', path: ROUTES.STUDENT_CLASSES, icon: '📅' },
+  { label: 'Browse Courses', path: ROUTES.STUDENT_BROWSE_COURSES, icon: '📚' },
+  { label: 'Daily Progress', path: ROUTES.STUDENT_DAILY_PROGRESS, icon: '📖' },
+  { label: 'Quran Progress', path: ROUTES.STUDENT_PROGRESS, icon: '🗺️' },
+  { label: 'Attendance', path: ROUTES.STUDENT_ATTENDANCE, icon: '✅' },
   { label: 'Payments', path: ROUTES.STUDENT_PAYMENTS, icon: '💰' },
+  { label: 'Exams', path: ROUTES.STUDENT_EXAMS, icon: '📝' },
+  { label: 'Certificates', path: ROUTES.STUDENT_CERTIFICATES, icon: '🏆' },
+  { label: 'Materials', path: ROUTES.STUDENT_MATERIALS, icon: '📄' },
   { label: 'Messages', path: ROUTES.STUDENT_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
+  { label: 'Profile', path: ROUTES.STUDENT_PROFILE, icon: '👤' },
 ];
 
 const parentMenu = [

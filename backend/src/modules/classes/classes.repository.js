@@ -56,7 +56,7 @@ export const findById = async (id) => {
 };
 
 export const findByTeacherId = async (teacherId) => {
-  return db.select(baseSelect).from(classes)
+  return db.selectDistinct(baseSelect).from(classes)
     .leftJoin(teacher, eq(classes.teacherId, teacher.id))
     .leftJoin(student, eq(classes.studentId, student.id))
     .leftJoin(courses, eq(classes.courseId, courses.id))
@@ -64,7 +64,7 @@ export const findByTeacherId = async (teacherId) => {
 };
 
 export const findByStudentId = async (studentId) => {
-  return db.select(baseSelect).from(classes)
+  return db.selectDistinct(baseSelect).from(classes)
     .leftJoin(teacher, eq(classes.teacherId, teacher.id))
     .leftJoin(student, eq(classes.studentId, student.id))
     .leftJoin(courses, eq(classes.courseId, courses.id))

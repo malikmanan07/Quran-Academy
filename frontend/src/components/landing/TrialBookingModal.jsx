@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
 import Select from 'react-select';
 import AppModal from '../common/AppModal';
 import AppButton from '../common/AppButton';
@@ -9,27 +7,33 @@ import { useCurrency } from '../../hooks/useCurrency';
 import { TIMEZONE_CURRENCY } from '../../context/CurrencyContext';
 
 const countries = [
-  { value: 'PK', label: '🇵🇰 Pakistan', timezone: 'Asia/Karachi', dialCode: '+92' },
-  { value: 'US', label: '🇺🇸 United States', timezone: 'America/New_York', dialCode: '+1' },
-  { value: 'GB', label: '🇬🇧 United Kingdom', timezone: 'Europe/London', dialCode: '+44' },
-  { value: 'SA', label: '🇸🇦 Saudi Arabia', timezone: 'Asia/Riyadh', dialCode: '+966' },
-  { value: 'AE', label: '🇦🇪 UAE', timezone: 'Asia/Dubai', dialCode: '+971' },
-  { value: 'CA', label: '🇨🇦 Canada', timezone: 'America/Toronto', dialCode: '+1' },
-  { value: 'AU', label: '🇦🇺 Australia', timezone: 'Australia/Sydney', dialCode: '+61' },
-  { value: 'DE', label: '🇩🇪 Germany', timezone: 'Europe/Berlin', dialCode: '+49' },
-  { value: 'FR', label: '🇫🇷 France', timezone: 'Europe/Paris', dialCode: '+33' },
-  { value: 'TR', label: '🇹🇷 Turkey', timezone: 'Europe/Istanbul', dialCode: '+90' },
-  { value: 'MY', label: '🇲🇾 Malaysia', timezone: 'Asia/Kuala_Lumpur', dialCode: '+60' },
-  { value: 'ID', label: '🇮🇩 Indonesia', timezone: 'Asia/Jakarta', dialCode: '+62' },
-  { value: 'BD', label: '🇧🇩 Bangladesh', timezone: 'Asia/Dhaka', dialCode: '+880' },
-  { value: 'IN', label: '🇮🇳 India', timezone: 'Asia/Kolkata', dialCode: '+91' },
-  { value: 'EG', label: '🇪🇬 Egypt', timezone: 'Africa/Cairo', dialCode: '+20' },
-  { value: 'JO', label: '🇯🇴 Jordan', timezone: 'Asia/Amman', dialCode: '+962' },
-  { value: 'NG', label: '🇳🇬 Nigeria', timezone: 'Africa/Lagos', dialCode: '+234' },
-  { value: 'ZA', label: '🇿🇦 South Africa', timezone: 'Africa/Johannesburg', dialCode: '+27' },
-  { value: 'SG', label: '🇸🇬 Singapore', timezone: 'Asia/Singapore', dialCode: '+65' },
-  { value: 'NZ', label: '🇳🇿 New Zealand', timezone: 'Pacific/Auckland', dialCode: '+64' },
+  { value: 'PK', label: 'Pakistan', timezone: 'Asia/Karachi', dialCode: '+92' },
+  { value: 'US', label: 'United States', timezone: 'America/New_York', dialCode: '+1' },
+  { value: 'GB', label: 'United Kingdom', timezone: 'Europe/London', dialCode: '+44' },
+  { value: 'SA', label: 'Saudi Arabia', timezone: 'Asia/Riyadh', dialCode: '+966' },
+  { value: 'AE', label: 'UAE', timezone: 'Asia/Dubai', dialCode: '+971' },
+  { value: 'CA', label: 'Canada', timezone: 'America/Toronto', dialCode: '+1' },
+  { value: 'AU', label: 'Australia', timezone: 'Australia/Sydney', dialCode: '+61' },
+  { value: 'DE', label: 'Germany', timezone: 'Europe/Berlin', dialCode: '+49' },
+  { value: 'FR', label: 'France', timezone: 'Europe/Paris', dialCode: '+33' },
+  { value: 'TR', label: 'Turkey', timezone: 'Europe/Istanbul', dialCode: '+90' },
+  { value: 'MY', label: 'Malaysia', timezone: 'Asia/Kuala_Lumpur', dialCode: '+60' },
+  { value: 'ID', label: 'Indonesia', timezone: 'Asia/Jakarta', dialCode: '+62' },
+  { value: 'BD', label: 'Bangladesh', timezone: 'Asia/Dhaka', dialCode: '+880' },
+  { value: 'IN', label: 'India', timezone: 'Asia/Kolkata', dialCode: '+91' },
+  { value: 'EG', label: 'Egypt', timezone: 'Africa/Cairo', dialCode: '+20' },
+  { value: 'JO', label: 'Jordan', timezone: 'Asia/Amman', dialCode: '+962' },
+  { value: 'NG', label: 'Nigeria', timezone: 'Africa/Lagos', dialCode: '+234' },
+  { value: 'ZA', label: 'South Africa', timezone: 'Africa/Johannesburg', dialCode: '+27' },
+  { value: 'SG', label: 'Singapore', timezone: 'Asia/Singapore', dialCode: '+65' },
+  { value: 'QA', label: 'Qatar', timezone: 'Asia/Qatar', dialCode: '+974' },
+  { value: 'KW', label: 'Kuwait', timezone: 'Asia/Kuwait', dialCode: '+965' },
+  { value: 'OM', label: 'Oman', timezone: 'Asia/Muscat', dialCode: '+968' },
+  { value: 'BH', label: 'Bahrain', timezone: 'Asia/Bahrain', dialCode: '+973' },
 ];
+
+const getFlagUrl = (countryCode) =>
+  `https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`;
 
 const dayOptions = [
   'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
@@ -154,7 +158,8 @@ const TrialBookingModal = ({ show, onClose }) => {
     try {
       await http.post('/trial/book', {
         ...form,
-        country: form.country?.label.split(' ').slice(1).join(' '), // strip flag
+        phone: `${form.country?.dialCode || '+92'}${form.phone || ''}`,
+        country: form.country?.label,
         courseId: parseInt(form.courseId),
         preferredDays: form.preferredDays.join(', '),
       });
@@ -233,16 +238,47 @@ const TrialBookingModal = ({ show, onClose }) => {
         {/* Row 3: Phone */}
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number*</label>
-          <div className={`international-phone-container ${errors.phone ? 'phone-error' : ''}`}>
-             <PhoneInput
-              international
-              defaultCountry={form.country?.value || 'PK'}
-              value={form.phone}
-              onChange={(val) => setForm({ ...form, phone: val })}
-              numberInputProps={{ id: 'phone' }}
-              className={`flex w-full bg-white border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus-within:ring-2 focus-within:ring-[#00B4D8]/40 focus-within:border-[#00B4D8]`}
-            />
-          </div>
+          {(() => {
+            const selectedCountry = form.country || countries[0];
+            const selectedDialCode = selectedCountry?.dialCode || '+92';
+            const countryCode = selectedCountry?.value || 'PK';
+            return (
+              <div
+                className={`flex border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg overflow-hidden bg-white focus-within:ring-2 focus-within:ring-[#00B4D8]/40 focus-within:border-[#00B4D8]`}
+              >
+                <div className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border-r border-gray-300 min-w-[80px]">
+                  <img
+                    src={getFlagUrl(countryCode)}
+                    alt={selectedCountry?.label}
+                    width="24"
+                    height="18"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) {
+                        e.target.nextSibling.classList.remove('hidden');
+                      }
+                    }}
+                  />
+                  <span className="hidden bg-[#00B4D8] text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                    {countryCode}
+                  </span>
+                  <span className="text-gray-700 font-medium text-sm">
+                    {selectedDialCode}
+                  </span>
+                </div>
+                <input
+                  id="phone"
+                  type="tel"
+                  placeholder="300 1234567"
+                  value={form.phone}
+                  onChange={(e) =>
+                    setForm({ ...form, phone: e.target.value.replace(/[^\d\s]/g, '') })
+                  }
+                  className="flex-1 px-3 py-2.5 outline-none text-gray-900 placeholder-gray-400 bg-white"
+                />
+              </div>
+            );
+          })()}
           {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
         </div>
 
@@ -257,6 +293,29 @@ const TrialBookingModal = ({ show, onClose }) => {
               onChange={handleCountryChange}
               styles={customStyles}
               placeholder="Select country"
+              formatOptionLabel={(country) => (
+                <div className="flex items-center gap-2">
+                  <img
+                    src={getFlagUrl(country.value)}
+                    width="24"
+                    height="18"
+                    alt={country.label}
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      if (e.target.nextSibling) {
+                        e.target.nextSibling.classList.remove('hidden');
+                      }
+                    }}
+                  />
+                  <span className="hidden bg-[#00B4D8] text-white text-xs font-bold px-1.5 py-0.5 rounded">
+                    {country.value}
+                  </span>
+                  <span>{country.label}</span>
+                  <span className="text-gray-400 text-sm ml-1">
+                    {country.dialCode}
+                  </span>
+                </div>
+              )}
             />
           </div>
           <div>
@@ -362,27 +421,6 @@ const TrialBookingModal = ({ show, onClose }) => {
         </AppButton>
       </form>
 
-      <style jsx="true">{`
-        .international-phone-container .PhoneInputInput {
-          outline: none;
-          background: transparent;
-          border: none;
-          color: #111827;
-          width: 100%;
-          font-size: 0.875rem;
-        }
-        .international-phone-container .PhoneInput {
-          gap: 0.75rem;
-        }
-        .international-phone-container .PhoneInputCountry {
-          border-right: 1px solid #E5E7EB;
-          padding-right: 0.75rem;
-          margin-right: 0.25rem;
-        }
-        .international-phone-container .PhoneInputCountrySelect {
-          cursor: pointer;
-        }
-      `}</style>
     </AppModal>
   );
 };

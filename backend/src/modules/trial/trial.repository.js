@@ -20,6 +20,11 @@ export const findAll = async () =>
     .leftJoin(courses, eq(trialRequests.courseId, courses.id))
     .orderBy(desc(trialRequests.createdAt));
 
+export const findById = async (id) => {
+  const result = await db.select().from(trialRequests).where(eq(trialRequests.id, id));
+  return result[0] || null;
+};
+
 export const create = async (data) => {
   const result = await db.insert(trialRequests).values(data).returning();
   return result[0];
@@ -29,12 +34,6 @@ export const updateStatus = async (id, status) => {
   const result = await db.update(trialRequests)
     .set({ status }).where(eq(trialRequests.id, id)).returning();
   return result[0];
-};
-
-export const findById = async (id) => {
-  const result = await db.select().from(trialRequests)
-    .where(eq(trialRequests.id, id));
-  return result[0] || null;
 };
 
 export const countPending = async () => {

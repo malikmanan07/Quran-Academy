@@ -104,7 +104,7 @@ const DailyProgressPage = () => {
         <select value={selectedStudent} onChange={handleStudentChange} 
           className="w-full sm:max-w-xs rounded-lg border border-[#E2E8F0] px-3 py-2 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 outline-none">
           <option value="">-- Choose a student --</option>
-          {students.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+          {students.map(s => <option key={`${s.id}-${s.name}`} value={s.id}>{s.name}</option>)}
         </select>
       </div>
 

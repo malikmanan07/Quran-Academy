@@ -38,9 +38,15 @@ const MaterialsPage = () => {
 
   const fetchCourses = async () => {
     try {
-      const c = await getAllCourses({ limit: 1000 });
-      setCourses(c.data.courses || []);
-    } catch { /* silent */ }
+      const response = await getAllCourses({ limit: 1000 });
+      const list = response.data?.data?.courses ||
+                   response.data?.courses ||
+                   response.data?.data ||
+                   response.data || [];
+      setCourses(Array.isArray(list) ? list : []);
+    } catch { 
+      setCourses([]);
+    }
   };
 
   useEffect(() => { fetchCourses(); }, []);
