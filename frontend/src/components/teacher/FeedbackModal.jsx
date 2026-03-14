@@ -41,7 +41,7 @@ const FeedbackModal = ({ isOpen, onClose, student, onSuccess }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await http.post('/feedback/create', formData);
+      await http.post('feedback/create', formData);
       showToast('Monthly report submitted successfully');
       onSuccess?.();
       onClose();

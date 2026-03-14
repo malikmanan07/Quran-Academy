@@ -18,7 +18,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await http.get('/stats/admin');
+        const response = await http.get('stats/admin');
         // Extract data correctly: axios response has .data (body), 
         // backend body has .data (actual stats payload)
         setStats(response.data?.data || response.data);

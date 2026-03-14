@@ -7,7 +7,7 @@ export const useCurrency = () => {
   const context = useContext(CurrencyContext);
   if (!context) {
     // This can happen if used outside Provider, but here we already have it in main.jsx
-    return { rates: null, currency: 'USD', setCurrency: () => {} };
+    return { rates: null, currency: 'USD', setCurrency: () => {}, formatAmount: (v) => `$${v}` };
   }
   return context;
 };

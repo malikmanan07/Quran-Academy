@@ -1,0 +1,27 @@
+﻿curl.exe :   % Total    % Received % Xferd  
+Average Speed  Time    Time    Time   Current
+At line:1 char:1
++ curl.exe -X POST 
+http://localhost:5000/api/auth/login -H 
+"Content-Typ ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  %  
+   Total    % ... Time   Current:String) [], Rem  
+  oteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+                                 Dload  Upload  
+Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0    
+                          0
+100    906 100    904 100      2  41788     92    
+                          0
+100    906 100    904 100      2  41441     91    
+                          0
+100    906 100    904 100      2  41188     91    
+                          0
+curl: (3) URL rejected: Port number was not a 
+decimal number between 0 and 65535
+{"success":false,"message":"Internal Server Error","stack":"SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)\n    at JSON.parse (<anonymous>)\n    at parse (D:\\Quran Academy\\backend\\node_modules\\body-parser\\lib\\types\\json.js:92:19)\n    at D:\\Quran Academy\\backend\\node_modules\\body-parser\\lib\\read.js:128:18\n    at AsyncResource.runInAsyncScope (node:async_hooks:214:14)\n    at invokeCallback (D:\\Quran Academy\\backend\\node_modules\\raw-body\\index.js:238:16)\n    at done (D:\\Quran Academy\\backend\\node_modules\\raw-body\\index.js:227:7)\n    at IncomingMessage.onEnd (D:\\Quran Academy\\backend\\node_modules\\raw-body\\index.js:287:7)\n    at IncomingMessage.emit (node:events:508:28)\n    at endReadableNT (node:internal/streams/readable:1701:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)","errors":{}}

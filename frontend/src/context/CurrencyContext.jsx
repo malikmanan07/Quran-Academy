@@ -52,8 +52,25 @@ export const CurrencyProvider = ({ children }) => {
     localStorage.setItem(CACHE_CURRENCY, c);
   };
 
+  const formatAmount = useCallback((amount) => {
+    if (amount === undefined || amount === null) return '';
+    const rate = rates[currency] || 1;
+    const value = amount * rate;
+    
+    try {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: currency,
+        minimumFractionDigits: currency === 'PKR' ? 0 : 2,
+        maximumFractionDigits: currency === 'PKR' ? 0 : 2,
+      }).format(value);
+    } catch (e) {
+      return `${currency} ${value.toFixed(2)}`;
+    }
+  }, [rates, currency]);
+
   return (
-    <CurrencyContext.Provider value={{ rates, currency, setCurrency }}>
+    <CurrencyContext.Provider value={{ rates, currency, setCurrency, formatAmount }}>
       {children}
     </CurrencyContext.Provider>
   );

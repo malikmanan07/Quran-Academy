@@ -10,7 +10,7 @@ import { getDailyProgressByStudent, createDailyProgress, updateDailyProgress, de
 import { getAllStudents } from '../../features/students/api';
 import { formatDate } from '../../utils/formatDate';
 import handleApiError from '../../utils/handleApiError';
-import Loader from '../../components/common/Loader';
+import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
 
 const DailyProgressPage = () => {
   const { user } = useAuth();
@@ -109,7 +109,7 @@ const DailyProgressPage = () => {
       </div>
 
       {loading ? (
-        <Loader />
+        <DashboardLoadingSkeleton />
       ) : selectedStudent && progressData.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] p-8 text-center text-[#4A5568]">
           <span className="text-4xl block mb-2">📝</span>

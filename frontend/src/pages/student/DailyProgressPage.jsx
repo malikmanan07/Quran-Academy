@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import Toast, { useToast } from '../../components/common/Toast';
 import AppBadge from '../../components/common/AppBadge';
-import Loader from '../../components/common/Loader';
+import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
 import { getMyDailyProgress } from '../../features/dailyProgress/api';
 import { formatDate } from '../../utils/formatDate';
 import handleApiError from '../../utils/handleApiError';
@@ -40,7 +40,7 @@ const DailyProgressPage = () => {
       <PageHeader title="My Sabaq Diary" subtitle="Review your daily lessons, sabqi, and manzil" />
 
       {loading ? (
-        <Loader />
+        <DashboardLoadingSkeleton />
       ) : progressData.length === 0 ? (
         <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] p-8 text-center text-[#4A5568]">
           <span className="text-4xl block mb-2">📝</span>

@@ -15,7 +15,7 @@ const CoursesPage = () => {
   const [loading, setLoading] = useState(true);
   const [requestLoading, setRequestLoading] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  
+
   const { toast, showToast } = useToast();
   const { formatAmount } = useCurrency();
 
@@ -28,7 +28,7 @@ const CoursesPage = () => {
       ]);
       setCourses(crsRes.data?.data?.courses || crsRes.data?.courses || []);
       setRequests(reqRes.data?.data?.requests || reqRes.data?.requests || []);
-    } catch { 
+    } catch {
       // silent fail
     }
     setLoading(false);
@@ -59,11 +59,11 @@ const CoursesPage = () => {
   return (
     <div>
       <Toast toast={toast} />
-      <PageHeader 
-        title="Browse Courses" 
-        subtitle="Explore and request enrollment in our available courses." 
+      <PageHeader
+        title="Browse Courses"
+        subtitle="Explore and request enrollment in our available courses."
       />
-      
+
       {courses.length === 0 ? (
         <EmptyState title="No Courses Available" message="There are currently no active courses to browse." />
       ) : (
@@ -81,11 +81,11 @@ const CoursesPage = () => {
                     {reqStatus === 'approved' && <AppBadge type="success" text="Enrolled" />}
                     {reqStatus === 'rejected' && <AppBadge type="error" text="Rejected" />}
                   </div>
-                  
+
                   <p className="text-sm text-[#4A5568] flex-1 mb-6">
                     {course.description || "No description provided."}
                   </p>
-                  
+
                   <div className="flex flex-col gap-2 mb-6">
                     <div className="flex items-center gap-2 text-sm text-[#4A5568]">
                       <span className="w-5 text-center">⏱️</span>
@@ -100,7 +100,7 @@ const CoursesPage = () => {
                       <strong className="text-[#1A1A2E]">{formatAmount(course.price)}</strong> / month
                     </div>
                   </div>
-                  
+
                   <div className="pt-4 border-t border-[#E2E8F0] mt-auto">
                     {reqStatus === 'approved' ? (
                       <button className="w-full py-2.5 rounded-xl font-bold bg-[#F0F4F8] text-[#1B3A5C] opacity-80 cursor-not-allowed">
@@ -111,7 +111,7 @@ const CoursesPage = () => {
                         Request Pending
                       </button>
                     ) : (
-                      <button 
+                      <button
                         onClick={() => setSelectedCourse(course)}
                         className="w-full py-2.5 rounded-xl font-bold bg-[#00B4D8] text-white hover:bg-[#0096B4] transition-colors cursor-pointer"
                       >
@@ -126,7 +126,7 @@ const CoursesPage = () => {
         </div>
       )}
 
-      <EnrollmentRequestModal 
+      <EnrollmentRequestModal
         show={!!selectedCourse}
         course={selectedCourse}
         onClose={() => setSelectedCourse(null)}

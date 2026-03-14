@@ -11,7 +11,7 @@ const useMessages = (partnerId = null) => {
 
   const fetchInbox = useCallback(async () => {
     try {
-      const res = await http.get('/messages/inbox');
+      const res = await http.get('messages/inbox');
       setConversations(res.data?.data?.conversations || []);
     } catch (err) {
       console.error('Failed to fetch inbox:', err);
@@ -22,7 +22,7 @@ const useMessages = (partnerId = null) => {
     if (!id) return;
     setLoading(true);
     try {
-      const res = await http.get(`/messages/conversation/${id}`);
+      const res = await http.get(`messages/conversation/${id}`);
       setMessages(res.data?.data?.messages || []);
       fetchUnreadCount();
     } catch (err) {
@@ -34,7 +34,7 @@ const useMessages = (partnerId = null) => {
 
   const fetchUnreadCount = useCallback(async () => {
     try {
-      const res = await http.get('/messages/unread-count');
+      const res = await http.get('messages/unread-count');
       setUnreadCount(res.data?.data?.count || 0);
     } catch (err) {
       console.error('Failed to fetch unread count:', err);
@@ -43,7 +43,7 @@ const useMessages = (partnerId = null) => {
 
   const sendMessage = async (receiverId, text) => {
     try {
-      const res = await http.post('/messages/send', { receiverId, message: text });
+      const res = await http.post('messages/send', { receiverId, message: text });
       if (receiverId === partnerId) {
         setMessages(prev => [...prev, res.data.data]);
       }

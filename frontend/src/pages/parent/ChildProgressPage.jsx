@@ -18,7 +18,7 @@ const ChildProgressPage = () => {
       try {
         const [progRes, feedRes] = await Promise.all([
           getChildProgress(id),
-          http.get(`/feedback/student/${id}`).catch(() => ({ data: { data: { feedback: [] } } }))
+          http.get(`feedback/student/${id}`).catch(() => ({ data: { data: { feedback: [] } } }))
         ]);
         setProgress(progRes.data?.data?.progress || []);
         setFeedback(feedRes.data?.data?.feedback || []);

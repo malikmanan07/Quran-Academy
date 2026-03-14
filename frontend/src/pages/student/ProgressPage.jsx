@@ -24,7 +24,7 @@ const ProgressPage = () => {
         const [res, qRes, fRes] = await Promise.all([
           getProgressByStudent(),
           getMyQuranProgress().catch(() => ({ data: { data: { progress: [] } } })),
-          http.get('/feedback/my-feedback').catch(() => ({ data: { data: { feedback: [] } } })),
+          http.get('feedback/my-feedback').catch(() => ({ data: { data: { feedback: [] } } })),
         ]);
         const list = res.data?.data?.progress || res.data?.progress || [];
         setProgress(list);

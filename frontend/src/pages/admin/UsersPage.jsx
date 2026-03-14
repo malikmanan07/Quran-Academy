@@ -12,7 +12,7 @@ import TableSkeleton from '../../components/common/TableSkeleton';
 
 const UsersPage = () => {
   const fetchUsers = useCallback(async (params) => {
-    return http.get('/admin/users', { params });
+    return http.get('admin/users', { params });
   }, []);
 
   const { 
@@ -34,7 +34,7 @@ const UsersPage = () => {
 
   const handleApprove = async (id) => {
     try {
-      await http.put(`/admin/users/${id}/approve`);
+      await http.put(`admin/users/${id}/approve`);
       showToast('success', 'User approved');
       refresh();
     } catch { showToast('error', 'Failed to approve'); }
@@ -42,7 +42,7 @@ const UsersPage = () => {
 
   const handleReject = async (id) => {
     try {
-      await http.put(`/admin/users/${id}/reject`);
+      await http.put(`admin/users/${id}/reject`);
       showToast('success', 'User rejected');
       refresh();
     } catch { showToast('error', 'Failed to reject'); }

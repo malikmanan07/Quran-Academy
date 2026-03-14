@@ -22,8 +22,8 @@ const TeacherFeedbackPage = () => {
     try {
       setLoading(true);
       const [studentsRes, reportsRes] = await Promise.all([
-        http.get('/teachers/my-students'),
-        http.get('/feedback/my-students-feedback')
+        http.get('teachers/my-students'),
+        http.get('feedback/my-students-feedback')
       ]);
       setStudents(studentsRes.data?.data?.students || []);
       setReports(reportsRes.data?.data?.feedback || []);

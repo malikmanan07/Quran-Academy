@@ -72,10 +72,10 @@ const Sidebar = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (user?.role === ROLES.ADMIN) {
       Promise.all([
-        http.get('/admin/pending-users').catch(() => ({ data: { users: [] } })),
-        http.get('/trial/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
-        http.get('/enrollments/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
-        http.get('/stats/admin').catch(() => ({ data: { data: { pendingPayments: 0 } } })),
+        http.get('admin/pending-users').catch(() => ({ data: { users: [] } })),
+        http.get('trial/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
+        http.get('enrollments/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
+        http.get('stats/admin').catch(() => ({ data: { data: { pendingPayments: 0 } } })),
       ]).then(([pRes, tRes, eRes, sRes]) => {
         setBadges(prev => ({
           ...prev,
@@ -89,7 +89,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     
     // Fetch unread messages count for everyone
     if (user) {
-      http.get('/messages/unread-count')
+      http.get('messages/unread-count')
         .then(res => setBadges(prev => ({ ...prev, messages: res.data?.data?.count || 0 })))
         .catch(() => {});
     }

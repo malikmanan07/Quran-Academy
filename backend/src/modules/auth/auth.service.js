@@ -37,7 +37,7 @@ export const loginUser = async ({ email, password }) => {
   if (user.status === 'pending') throw new AppError('Your account is pending approval', 403);
   if (user.status === 'rejected') throw new AppError('Your account has been rejected. Contact support.', 403);
 
-  await authRepo.updateUser(user.id, { lastLoginAt: new Date() });
+    await authRepo.updateUser(user.id, { lastLoginAt: new Date() });
 
   const token = generateToken(user);
   return {
