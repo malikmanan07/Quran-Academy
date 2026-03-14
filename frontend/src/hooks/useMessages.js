@@ -41,7 +41,7 @@ const useMessages = (partnerId = null) => {
     }
   }, []);
 
-  const searchUsers = async (query) => {
+  const searchUsers = useCallback(async (query) => {
     try {
       const res = await http.get('messages/search-users', { params: { query } });
       return res.data?.data?.users || [];
@@ -49,9 +49,9 @@ const useMessages = (partnerId = null) => {
       console.error('Failed to search users:', err);
       return [];
     }
-  };
+  }, []);
 
-  const sendMessage = async (receiverId, text) => {
+  const sendMessage = useCallback(async (receiverId, text) => {
     try {
       const res = await http.post('messages/send', { receiverId, message: text });
       if (receiverId === partnerId) {
@@ -63,7 +63,7 @@ const useMessages = (partnerId = null) => {
       console.error('Failed to send message:', err);
       throw err;
     }
-  };
+  }, [partnerId, fetchInbox]);
 
   useEffect(() => {
     fetchUnreadCount();

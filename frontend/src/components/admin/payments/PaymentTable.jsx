@@ -1,15 +1,16 @@
 import AppTable from '../../common/AppTable';
 import AppBadge from '../../common/AppBadge';
 import AppButton from '../../common/AppButton';
-import { formatPKR } from '../../../utils/formatCurrency';
+import { useCurrency } from '../../../hooks/useCurrency';
 import { formatDate } from '../../../utils/formatDate';
 
 const PaymentTable = ({ payments, loading, onMarkPaid, onVerify, onReject }) => {
+  const { formatCurrency } = useCurrency();
   const columns = [
     { key: 'studentName', label: 'Student', render: (r) => r.studentName || '—' },
     { key: 'month', label: 'Month' },
     { key: 'amount', label: 'Amount', render: (r) => (
-      <span className="font-semibold text-[#1A1A2E]">{formatPKR(r.amount)}</span>
+      <span className="font-semibold text-[#1A1A2E]">{formatCurrency(r.amount)}</span>
     )},
     { key: 'details', label: 'Method / ID', render: (r) => r.paymentMethod ? (
       <div className="text-xs">

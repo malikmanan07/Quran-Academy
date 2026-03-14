@@ -39,10 +39,13 @@ const AppModal = ({
         onClick={onClose}
       />
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
         className={`relative w-full ${sizeClasses[size]} bg-white rounded-xl shadow-lg transform transition-all duration-300 scale-100 opacity-100 max-h-[90vh] flex flex-col`}
       >
         <div className="flex items-center justify-between px-6 py-4 border-b border-[#E2E8F0]">
-          <h3 className="text-lg font-semibold text-[#1A1A2E]">{title}</h3>
+          <h3 id="modal-title" className="text-lg font-semibold text-[#1A1A2E]">{title}</h3>
           <button
             onClick={onClose}
             className="p-1 rounded-lg text-[#4A5568] hover:bg-gray-100 hover:text-[#1A1A2E] transition-colors cursor-pointer"

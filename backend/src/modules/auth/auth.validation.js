@@ -13,7 +13,10 @@ export const signupSchema = z.object({
     .regex(/[A-Z]/, 'Must contain at least one uppercase letter')
     .regex(/[0-9]/, 'Must contain at least one number'),
   phone: z.string().optional(),
-  role: z.enum(['student', 'teacher', 'parent'], { required_error: 'Role must be student, teacher, or parent' }),
+  role: z.enum(['student', 'teacher', 'parent'], { 
+    required_error: 'Role is required',
+    invalid_type_error: 'Invalid role selected' 
+  }),
 });
 
 export const forgotPasswordSchema = z.object({

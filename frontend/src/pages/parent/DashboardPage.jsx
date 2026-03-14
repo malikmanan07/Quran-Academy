@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { getMyChildren } from '../../features/parent/api';
@@ -10,16 +10,23 @@ const DashboardPage = () => {
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetch = async () => {
-      try {
-        const res = await getMyChildren();
-        setChildren(res.data?.data?.children || []);
-      } catch { setChildren([]); }
+  const fetchChildren = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getMyChildren();
+      const data = res?.data?.data?.children || res?.data?.children || res?.data?.data || res?.data || [];
+      setChildren(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error('Children fetch error:', err);
+      setChildren([]);
+    } finally {
       setLoading(false);
-    };
-    fetch();
+    }
   }, []);
+
+  useEffect(() => {
+    fetchChildren();
+  }, [fetchChildren]);
 
   const today = new Date().toLocaleDateString('en-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 

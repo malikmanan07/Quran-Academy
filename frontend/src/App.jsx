@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth, AuthProvider } from './context/AuthContext';
+import { useAuth } from './context/AuthContext';
 import { ROUTES } from './constants/routes';
 import { ROLES } from './constants/roles';
 import Loader from './components/common/Loader';

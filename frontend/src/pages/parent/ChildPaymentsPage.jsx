@@ -6,6 +6,7 @@ import EmptyState from '../../components/common/EmptyState';
 import AppBadge from '../../components/common/AppBadge';
 import AppButton from '../../components/common/AppButton';
 import PaymentSubmitModal from '../../components/student/PaymentSubmitModal';
+import { useCurrency } from '../../hooks/useCurrency';
 import { getChildPayments } from '../../features/parent/api';
 
 const getStatusProps = (status) => {
@@ -16,6 +17,7 @@ const getStatusProps = (status) => {
 };
 
 const ChildPaymentsPage = () => {
+  const { formatCurrency } = useCurrency();
   const { id } = useParams();
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,7 +70,7 @@ const ChildPaymentsPage = () => {
                   return (
                     <tr key={p.id} className="hover:bg-[#F0F4F8]/50">
                       <td className="px-4 py-3 font-medium text-[#1A1A2E]">{p.month}</td>
-                      <td className="px-4 py-3 text-[#4A5568]">PKR {p.amount?.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-[#4A5568]">{formatCurrency(p.amount)}</td>
                       <td className="px-4 py-3">
                         <AppBadge status={badgeProps.status}>{badgeProps.label}</AppBadge>
                       </td>

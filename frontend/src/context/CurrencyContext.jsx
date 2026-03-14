@@ -2,75 +2,151 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 
 export const CurrencyContext = createContext();
 
-const CACHE_KEY = 'qa_exchange_rates';
-const CACHE_CURRENCY = 'qa_selected_currency';
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+const CURRENCIES = {
+  PKR: { symbol: 'Rs.', name: 'Pakistani Rupee', flag: '🇵🇰' },
+  USD: { symbol: '$', name: 'US Dollar', flag: '🇺🇸' },
+  GBP: { symbol: '£', name: 'British Pound', flag: '🇬🇧' },
+  SAR: { symbol: 'SR', name: 'Saudi Riyal', flag: '🇸🇦' },
+  AED: { symbol: 'AED', name: 'UAE Dirham', flag: '🇦🇪' },
+  EUR: { symbol: '€', name: 'Euro', flag: '🇪🇺' },
+  CAD: { symbol: 'C$', name: 'Canadian Dollar', flag: '🇨🇦' },
+  AUD: { symbol: 'A$', name: 'Australian Dollar', flag: '🇦🇺' },
+  MYR: { symbol: 'RM', name: 'Malaysian Ringgit', flag: '🇲🇾' },
+  IDR: { symbol: 'Rp', name: 'Indonesian Rupiah', flag: '🇮🇩' },
+  BDT: { symbol: '৳', name: 'Bangladeshi Taka', flag: '🇧🇩' },
+  INR: { symbol: '₹', name: 'Indian Rupee', flag: '🇮🇳' },
+  EGP: { symbol: 'E£', name: 'Egyptian Pound', flag: '🇪🇬' },
+  JOD: { symbol: 'JD', name: 'Jordanian Dinar', flag: '🇯🇴' },
+  NGN: { symbol: '₦', name: 'Nigerian Naira', flag: '🇳🇬' },
+  ZAR: { symbol: 'R', name: 'South African Rand', flag: '🇿🇦' },
+  SGD: { symbol: 'S$', name: 'Singapore Dollar', flag: '🇸🇬' },
+  TRY: { symbol: '₺', name: 'Turkish Lira', flag: '🇹🇷' },
+  NZD: { symbol: 'NZ$', name: 'New Zealand Dollar', flag: '🇳🇿' },
+  KWD: { symbol: 'KD', name: 'Kuwaiti Dinar', flag: '🇰🇼' },
+  QAR: { symbol: 'QR', name: 'Qatari Riyal', flag: '🇶🇦' },
+  OMR: { symbol: 'OMR', name: 'Omani Rial', flag: '🇴🇲' },
+  BHD: { symbol: 'BD', name: 'Bahraini Dinar', flag: '🇧🇭' },
+};
 
-const tzToCurrency = (tz) => {
-  if (tz?.startsWith('Asia/Karachi')) return 'PKR';
-  if (tz?.startsWith('America/')) return 'USD';
-  if (tz?.startsWith('Europe/London')) return 'GBP';
-  if (tz?.startsWith('Asia/Riyadh')) return 'SAR';
-  if (tz?.startsWith('Asia/Dubai')) return 'AED';
-  if (tz?.startsWith('Europe/')) return 'EUR';
+const COUNTRY_CURRENCY = {
+  PK: 'PKR', US: 'USD', GB: 'GBP',
+  SA: 'SAR', AE: 'AED', DE: 'EUR',
+  FR: 'EUR', IT: 'EUR', ES: 'EUR',
+  CA: 'CAD', AU: 'AUD', MY: 'MYR',
+  ID: 'IDR', BD: 'BDT', IN: 'INR',
+  EG: 'EGP', JO: 'JOD', NG: 'NGN',
+  ZA: 'ZAR', SG: 'SGD', TR: 'TRY',
+  NZ: 'NZD', KW: 'KWD', QA: 'QAR',
+  OM: 'OMR', BH: 'BHD',
+};
+
+export const TIMEZONE_CURRENCY = {
+  'Asia/Karachi': 'PKR',
+  'America/New_York': 'USD',
+  'America/Chicago': 'USD',
+  'America/Los_Angeles': 'USD',
+  'Europe/London': 'GBP',
+  'Asia/Riyadh': 'SAR',
+  'Asia/Dubai': 'AED',
+  'Europe/Berlin': 'EUR',
+  'Europe/Paris': 'EUR',
+  'America/Toronto': 'CAD',
+  'Australia/Sydney': 'AUD',
+  'Asia/Kuala_Lumpur': 'MYR',
+  'Asia/Jakarta': 'IDR',
+  'Asia/Dhaka': 'BDT',
+  'Asia/Kolkata': 'INR',
+  'Africa/Cairo': 'EGP',
+  'Asia/Amman': 'JOD',
+  'Africa/Lagos': 'NGN',
+  'Africa/Johannesburg': 'ZAR',
+  'Asia/Singapore': 'SGD',
+  'Europe/Istanbul': 'TRY',
+  'Pacific/Auckland': 'NZD',
+  'Asia/Kuwait': 'KWD',
+  'Asia/Qatar': 'QAR',
+  'Asia/Muscat': 'OMR',
+  'Asia/Bahrain': 'BHD',
+};
+
+const getDefaultCurrency = () => {
+  // 1. FIRST check timezone (most accurate)
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if (TIMEZONE_CURRENCY[tz]) return TIMEZONE_CURRENCY[tz];
+  
+  // 2. Then check localStorage
+  const saved = localStorage.getItem('qa_currency');
+  if (saved && CURRENCIES[saved]) return saved;
+  
+  // 3. Default USD
   return 'USD';
 };
 
 export const CurrencyProvider = ({ children }) => {
-  const [rates, setRates] = useState({ PKR: 1, USD: 0.0036, GBP: 0.0028, SAR: 0.013, AED: 0.013, EUR: 0.0033 });
-  const [currency, setCurrencyState] = useState(() => {
-    const saved = localStorage.getItem(CACHE_CURRENCY);
-    if (saved) return saved;
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    return tzToCurrency(tz);
-  });
+  const [currency, setCurrencyState] = useState(getDefaultCurrency());
+  const [rates, setRates] = useState(null);
 
-  const fetchRates = useCallback(async () => {
+  const fetchRates = async () => {
     try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_DURATION) {
-          setRates(data);
-          return;
-        }
-      }
       const res = await fetch('https://api.exchangerate-api.com/v4/latest/PKR');
-      const json = await res.json();
-      const data = json.rates || {};
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
-      setRates(data);
+      const data = await res.json();
+      setRates(data.rates);
+      localStorage.setItem('qa_rates', JSON.stringify(data.rates));
+      localStorage.setItem('qa_rates_time', Date.now().toString());
     } catch {
-      setRates({ PKR: 1, USD: 0.0036, GBP: 0.0028, SAR: 0.013, AED: 0.013, EUR: 0.0033 });
+      const cached = localStorage.getItem('qa_rates');
+      if (cached) setRates(JSON.parse(cached));
+    }
+  };
+
+  useEffect(() => {
+    const lastFetch = localStorage.getItem('qa_rates_time');
+    const sixHours = 6 * 60 * 60 * 1000;
+    if (!lastFetch || Date.now() - Number(lastFetch) > sixHours) {
+      fetchRates();
+    } else {
+      const cached = localStorage.getItem('qa_rates');
+      if (cached) setRates(JSON.parse(cached));
     }
   }, []);
 
-  useEffect(() => { fetchRates(); }, [fetchRates]);
-
-  const setCurrency = (c) => {
-    setCurrencyState(c);
-    localStorage.setItem(CACHE_CURRENCY, c);
-  };
-
-  const formatAmount = useCallback((amount) => {
-    if (amount === undefined || amount === null) return '';
-    const rate = rates[currency] || 1;
-    const value = amount * rate;
+  const formatCurrency = useCallback((amountPKR) => {
+    if (amountPKR === undefined || amountPKR === null) return '';
+    if (!rates) return `Rs. ${amountPKR}`;
     
-    try {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: currency,
-        minimumFractionDigits: currency === 'PKR' ? 0 : 2,
-        maximumFractionDigits: currency === 'PKR' ? 0 : 2,
-      }).format(value);
-    } catch (e) {
-      return `${currency} ${value.toFixed(2)}`;
-    }
-  }, [rates, currency]);
+    const pkrRate = rates['PKR'] || 1;
+    const targetRate = rates[currency] || 1;
+    const converted = (amountPKR / pkrRate) * targetRate;
+    
+    const info = CURRENCIES[currency];
+    const formatted = new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: 0,
+    }).format(Math.round(converted));
+    
+    return `${info.symbol} ${formatted}`;
+  }, [currency, rates]);
+
+  const updateCurrency = useCallback((newCurrency) => {
+    if (!CURRENCIES[newCurrency]) return;
+    setCurrencyState(newCurrency);
+    localStorage.setItem('qa_currency', newCurrency);
+  }, []);
+
+  const setCurrencyByCountry = useCallback((countryCode) => {
+    const matchedCurrency = COUNTRY_CURRENCY[countryCode] || 'USD';
+    updateCurrency(matchedCurrency);
+  }, [updateCurrency]);
 
   return (
-    <CurrencyContext.Provider value={{ rates, currency, setCurrency, formatAmount }}>
+    <CurrencyContext.Provider value={{
+      currency,
+      currencies: CURRENCIES,
+      rates,
+      formatCurrency,
+      setCurrency: updateCurrency,
+      setCurrencyByCountry,
+      currencyInfo: CURRENCIES[currency],
+    }}>
       {children}
     </CurrencyContext.Provider>
   );

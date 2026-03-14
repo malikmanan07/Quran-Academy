@@ -1,13 +1,14 @@
-import { formatPKR } from '../../../utils/formatCurrency';
+import { useCurrency } from '../../../hooks/useCurrency';
 
 const PaymentSummaryCard = ({ payments }) => {
+  const { formatCurrency } = useCurrency();
   const paid = payments.filter(p => p.status === 'Paid').reduce((a, p) => a + (Number(p.amount) || 0), 0);
   const pending = payments.filter(p => p.status !== 'Paid').reduce((a, p) => a + (Number(p.amount) || 0), 0);
   const nextDue = payments.find(p => p.status !== 'Paid');
 
   const cards = [
-    { label: 'Total Paid', value: formatPKR(paid), icon: '✅', color: 'bg-green-100 text-green-700' },
-    { label: 'Pending Amount', value: formatPKR(pending), icon: '⏳', color: 'bg-amber-100 text-amber-700' },
+    { label: 'Total Paid', value: formatCurrency(paid), icon: '✅', color: 'bg-green-100 text-green-700' },
+    { label: 'Pending Amount', value: formatCurrency(pending), icon: '⏳', color: 'bg-amber-100 text-amber-700' },
     { label: 'Next Due Date', value: nextDue?.dueDate || 'None', icon: '📅', color: 'bg-[#00B4D8]/10 text-[#00B4D8]' },
   ];
 

@@ -14,11 +14,12 @@ const AppInput = forwardRef(({
   disabled = false,
   className = '',
 }, ref) => {
+  const inputId = name || label?.replace(/\s+/g, '-').toLowerCase();
   return (
     <div className={`mb-4 ${className}`}>
       {label && (
         <label
-          htmlFor={name}
+          htmlFor={inputId}
           className="block text-sm font-medium text-[#1A1A2E] mb-1.5"
         >
           {label}
@@ -32,7 +33,7 @@ const AppInput = forwardRef(({
           </span>
         )}
         <input
-          id={name}
+          id={inputId}
           name={name}
           type={type}
           placeholder={placeholder}

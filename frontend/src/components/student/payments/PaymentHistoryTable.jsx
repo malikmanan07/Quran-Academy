@@ -1,14 +1,15 @@
 import AppTable from '../../common/AppTable';
 import AppBadge from '../../common/AppBadge';
 import AppButton from '../../common/AppButton';
-import { formatPKR } from '../../../utils/formatCurrency';
+import { useCurrency } from '../../../hooks/useCurrency';
 import { formatDate } from '../../../utils/formatDate';
 
 const PaymentHistoryTable = ({ payments, loading, onSubmitProof }) => {
+  const { formatCurrency } = useCurrency();
   const columns = [
     { key: 'month', label: 'Month', render: (r) => r.month || '—' },
     { key: 'amount', label: 'Amount', render: (r) => (
-      <span className="font-semibold text-[#1A1A2E]">{formatPKR(r.amount)}</span>
+      <span className="font-semibold text-[#1A1A2E]">{formatCurrency(r.amount)}</span>
     )},
     { key: 'dueDate', label: 'Due Date', render: (r) => r.dueDate || '—' },
     { key: 'paidAt', label: 'Paid Date', render: (r) => r.paidAt ? formatDate(r.paidAt) : '—' },

@@ -2,7 +2,7 @@ import { Link, useOutletContext } from 'react-router-dom';
 import AppButton from '../common/AppButton';
 import { ROUTES } from '../../constants/routes';
 import { useCurrency } from '../../hooks/useCurrency';
-import { convertPrice, formatCurrency } from '../../utils/convertCurrency';
+// Removed local utils imports to use context-based formatting
 
 const courses = [
   {
@@ -28,7 +28,7 @@ const courses = [
 ];
 
 const CoursesSection = () => {
-  const { rates, currency } = useCurrency();
+  const { formatCurrency } = useCurrency();
 
   return (
     <section id="courses" className="py-16 sm:py-24 bg-white scroll-mt-16">
@@ -54,7 +54,7 @@ const CoursesSection = () => {
                 </div>
                 <p className="text-sm text-[#4A5568] leading-relaxed mb-4 flex-1">{c.desc}</p>
                 <p className="text-2xl font-extrabold text-[#00B4D8] mb-4">
-                  {formatCurrency(convertPrice(c.price, currency, rates), currency)}
+                  {formatCurrency(c.price)}
                   <span className="text-sm font-normal text-[#4A5568]">/month</span>
                 </p>
                 <Link to={ROUTES.SIGNUP}>

@@ -6,33 +6,38 @@ import { useNotification } from '../context/NotificationContext';
 export const useSocket = () => {
   const { user } = useAuth();
   const { addNotification } = useNotification();
+  const notificationRef = useRef(addNotification);
+  useEffect(() => { notificationRef.current = addNotification; }, [addNotification]);
   const socketRef = useRef(null);
 
   useEffect(() => {
     if (!user?.id) return;
 
-    // Use baseURL for socket server (removing /api from end if present)
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
     const serverUrl = apiUrl.replace(/\/api$/, '');
 
-    socketRef.current = io(serverUrl, {
+    const socket = io(serverUrl, {
       transports: ['websocket'],
+      reconnection: true,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 2000,
     });
 
-    socketRef.current.on('connect', () => {
-      socketRef.current.emit('register', user.id);
+    socketRef.current = socket;
+
+    socket.on('connect', () => {
+      socket.emit('register', user.id);
     });
 
-    socketRef.current.on('notification', (data) => {
-      addNotification(data);
+    socket.on('notification', (data) => {
+      if (notificationRef.current) notificationRef.current(data);
     });
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
+      socket.disconnect();
+      socketRef.current = null;
     };
-  }, [user, addNotification]);
+  }, [user?.id]); // Minimal dependencies to prevent loops
 
   return socketRef.current;
 };

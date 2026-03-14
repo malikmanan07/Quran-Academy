@@ -7,7 +7,7 @@ import AppBadge from '../../components/common/AppBadge';
 import { getAllCourses } from '../../features/courses/api';
 import { getMyEnrollmentRequests, createEnrollmentRequest } from '../../features/enrollments/api';
 import EnrollmentRequestModal from '../../components/student/EnrollmentRequestModal';
-import { useCurrency } from '../../context/CurrencyContext';
+import { useCurrency } from '../../hooks/useCurrency';
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
@@ -17,7 +17,7 @@ const CoursesPage = () => {
   const [selectedCourse, setSelectedCourse] = useState(null);
 
   const { toast, showToast } = useToast();
-  const { formatAmount } = useCurrency();
+  const { formatCurrency } = useCurrency();
 
   const fetch = async () => {
     setLoading(true);
@@ -97,7 +97,7 @@ const CoursesPage = () => {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#4A5568]">
                       <span className="w-5 text-center">💰</span>
-                      <strong className="text-[#1A1A2E]">{formatAmount(course.price)}</strong> / month
+                      <strong className="text-[#1A1A2E]">{formatCurrency(course.price)}</strong> / month
                     </div>
                   </div>
 

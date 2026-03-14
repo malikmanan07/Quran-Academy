@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useCurrency } from '../../hooks/useCurrency';
 import AppModal from '../common/AppModal';
 import AppSelect from '../common/AppSelect';
 import AppButton from '../common/AppButton';
@@ -17,6 +18,7 @@ const inputClass = "w-full rounded-lg border border-[#E2E8F0] bg-white px-4 py-2
 const labelClass = "block text-sm font-medium text-[#1A1A2E] mb-1.5";
 
 const PaymentSubmitModal = ({ isOpen, onClose, studentId, month, amount, onSuccess }) => {
+  const { formatCurrency } = useCurrency();
   const [loading, setLoading] = useState(false);
   const { toast, showToast } = useToast();
   const [formData, setFormData] = useState({
@@ -57,7 +59,7 @@ const PaymentSubmitModal = ({ isOpen, onClose, studentId, month, amount, onSucce
           </div>
           <div className="flex justify-between text-sm">
             <span className="text-[#4A5568]">Amount:</span>
-            <span className="font-bold text-[#1A1A2E]">PKR {amount?.toLocaleString()}</span>
+            <span className="font-bold text-[#1A1A2E]">{formatCurrency(amount)}</span>
           </div>
         </div>
 

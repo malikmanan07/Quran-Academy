@@ -32,7 +32,10 @@ export const signupSchema = z
       .regex(/[0-9]/, 'Must contain at least one number'),
     confirmPassword: z.string().min(1, 'Confirm your password'),
     role: z.enum(['student', 'teacher', 'parent'], {
-      errorMap: () => ({ message: 'Please select a role' }),
+      errorMap: (issue, ctx) => {
+        if (issue.code === 'invalid_enum_value') return { message: 'Please select a valid role' };
+        return { message: ctx.defaultError };
+      },
     }),
     terms: z.literal(true, {
       errorMap: () => ({ message: 'You must accept the terms' }),

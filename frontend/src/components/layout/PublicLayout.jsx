@@ -16,7 +16,7 @@ const navLinks = [
 
 const PublicLayout = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { currency, setCurrency } = useCurrency();
+  const { currency } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -78,7 +78,7 @@ const PublicLayout = () => {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
-            <CurrencySelector currency={currency} setCurrency={setCurrency} />
+            <CurrencySelector />
             <Link to={ROUTES.LOGIN}>
               <AppButton variant="outline" size="sm" className="!border-white/30 !text-white hover:!bg-white/10">Login</AppButton>
             </Link>
@@ -124,7 +124,7 @@ const PublicLayout = () => {
             </a>
           ))}
           <div className="mt-3">
-            <CurrencySelector currency={currency} setCurrency={setCurrency} />
+            <CurrencySelector />
           </div>
         </div>
         <div className="p-4 border-t border-white/10 space-y-3">

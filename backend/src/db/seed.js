@@ -86,6 +86,22 @@ const seed = async () => {
       console.log('✅ Student created');
     }
 
+    // 4. Sample Parent
+    const existingParent = await db.select().from(users).where(eq(users.email, 'parent@quranacademy.com')).limit(1);
+    if (existingParent.length === 0) {
+      const parentHash = await bcrypt.hash('Parent@123', 10);
+      await db.insert(users).values({
+        name: 'Parent User',
+        email: 'parent@quranacademy.com',
+        password: parentHash,
+        role: 'parent',
+        status: 'active'
+      });
+      console.log('✅ Parent created');
+    } else {
+      console.log('⚠️ Already seeded, skipping parent user');
+    }
+
     // 4. Sample Courses
     const existingCourses = await db.select().from(courses).limit(1);
     let courseId;

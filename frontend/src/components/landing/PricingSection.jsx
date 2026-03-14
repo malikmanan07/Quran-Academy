@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import AppButton from '../common/AppButton';
 import { ROUTES } from '../../constants/routes';
 import { useCurrency } from '../../hooks/useCurrency';
-import { convertPrice, formatCurrency } from '../../utils/convertCurrency';
+// Use context-based formatting
 
 const plans = [
   {
@@ -20,7 +20,7 @@ const plans = [
 ];
 
 const PricingSection = () => {
-  const { rates, currency } = useCurrency();
+  const { formatCurrency } = useCurrency();
 
   return (
     <section id="pricing" className="py-16 sm:py-24 bg-[#F0F4F8] scroll-mt-16">
@@ -43,7 +43,7 @@ const PricingSection = () => {
                 <h3 className={`text-xl font-bold mb-1 ${p.popular ? 'text-white' : 'text-[#1A1A2E]'}`}>{p.name}</h3>
                 <div className="mb-6">
                   <span className="text-4xl font-extrabold text-[#00B4D8]">
-                    {formatCurrency(convertPrice(p.price, currency, rates), currency)}
+                    {formatCurrency(p.price)}
                   </span>
                   <span className={`text-sm ${p.popular ? 'text-white/60' : 'text-[#4A5568]'}`}>/month</span>
                 </div>

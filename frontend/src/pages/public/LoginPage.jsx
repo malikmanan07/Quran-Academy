@@ -63,6 +63,7 @@ const LoginPage = () => {
       const role = user.role;
       if (role === ROLES.ADMIN) navigate(ROUTES.ADMIN_DASHBOARD);
       else if (role === ROLES.TEACHER) navigate(ROUTES.TEACHER_DASHBOARD);
+      else if (role === ROLES.PARENT) navigate(ROUTES.PARENT_DASHBOARD);
       else navigate(ROUTES.STUDENT_DASHBOARD);
     } catch (err) {
       if (err?.response?.data?.message === 'Your account is pending approval') {

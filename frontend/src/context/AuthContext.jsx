@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import * as authStorage from '../services/authStorage';
 
 export const AuthContext = createContext();
@@ -16,18 +16,18 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  const login = (userData, tokenData) => {
+  const login = useCallback((userData, tokenData) => {
     authStorage.setUser(userData);
     authStorage.setToken(tokenData);
     setUser(userData);
     setToken(tokenData);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     setToken(null);
     authStorage.clear();
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, token, login, logout, loading }}>

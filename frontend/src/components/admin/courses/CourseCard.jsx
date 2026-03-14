@@ -1,8 +1,10 @@
 import AppBadge from '../../common/AppBadge';
 import AppButton from '../../common/AppButton';
-import { formatPKR } from '../../../utils/formatCurrency';
+import { useCurrency } from '../../../hooks/useCurrency';
 
-const CourseCard = ({ course, onEdit, onDelete }) => (
+const CourseCard = ({ course, onEdit, onDelete }) => {
+  const { formatCurrency } = useCurrency();
+  return (
   <div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 group flex flex-col">
     <div className="bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] p-6 text-center relative">
       <span className="text-4xl group-hover:scale-110 transition-transform inline-block">📚</span>
@@ -18,7 +20,7 @@ const CourseCard = ({ course, onEdit, onDelete }) => (
         <AppBadge status={course.isActive !== false ? 'Active' : 'Inactive'} />
       </div>
       {course.price && (
-        <p className="text-xl font-bold text-[#00B4D8] mb-4">{formatPKR(course.price)}<span className="text-xs text-[#4A5568] font-normal">/month</span></p>
+        <p className="text-xl font-bold text-[#00B4D8] mb-4">{formatCurrency(course.price)}<span className="text-xs text-[#4A5568] font-normal">/month</span></p>
       )}
       <div className="flex gap-2">
         <AppButton variant="outline" size="sm" fullWidth onClick={() => onEdit(course)}>Edit</AppButton>
@@ -26,6 +28,7 @@ const CourseCard = ({ course, onEdit, onDelete }) => (
       </div>
     </div>
   </div>
-);
+  );
+};
 
 export default CourseCard;

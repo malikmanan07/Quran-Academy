@@ -1,4 +1,5 @@
 import NotificationBell from '../common/NotificationBell';
+import CurrencySelector from '../common/CurrencySelector';
 
 const Navbar = ({ onToggleSidebar, user }) => {
   return (
@@ -23,6 +24,9 @@ const Navbar = ({ onToggleSidebar, user }) => {
         <div className="hidden sm:block text-right">
           <p className="text-sm font-medium">{user?.name || 'User'}</p>
           <p className="text-xs text-white/70 capitalize">{user?.role || 'Guest'}</p>
+        </div>
+        <div className="hidden sm:block">
+          <CurrencySelector />
         </div>
         <NotificationBell />
         <div className="w-9 h-9 rounded-full bg-[#00B4D8] flex items-center justify-center text-sm font-bold">

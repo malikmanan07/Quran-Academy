@@ -1,15 +1,83 @@
 import { useState, useEffect } from 'react';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
+import Select from 'react-select';
 import AppModal from '../common/AppModal';
-import AppInput from '../common/AppInput';
 import AppButton from '../common/AppButton';
-import { bookTrial } from '../../features/trial/api';
-import { getAllCourses } from '../../features/courses/api';
+import http from '../../services/http';
+import { useCurrency } from '../../hooks/useCurrency';
+import { TIMEZONE_CURRENCY } from '../../context/CurrencyContext';
 
-const timeSlots = ['Morning (8AM-12PM)', 'Afternoon (12PM-5PM)', 'Evening (5PM-10PM)'];
+const countries = [
+  { value: 'PK', label: '🇵🇰 Pakistan', timezone: 'Asia/Karachi', dialCode: '+92' },
+  { value: 'US', label: '🇺🇸 United States', timezone: 'America/New_York', dialCode: '+1' },
+  { value: 'GB', label: '🇬🇧 United Kingdom', timezone: 'Europe/London', dialCode: '+44' },
+  { value: 'SA', label: '🇸🇦 Saudi Arabia', timezone: 'Asia/Riyadh', dialCode: '+966' },
+  { value: 'AE', label: '🇦🇪 UAE', timezone: 'Asia/Dubai', dialCode: '+971' },
+  { value: 'CA', label: '🇨🇦 Canada', timezone: 'America/Toronto', dialCode: '+1' },
+  { value: 'AU', label: '🇦🇺 Australia', timezone: 'Australia/Sydney', dialCode: '+61' },
+  { value: 'DE', label: '🇩🇪 Germany', timezone: 'Europe/Berlin', dialCode: '+49' },
+  { value: 'FR', label: '🇫🇷 France', timezone: 'Europe/Paris', dialCode: '+33' },
+  { value: 'TR', label: '🇹🇷 Turkey', timezone: 'Europe/Istanbul', dialCode: '+90' },
+  { value: 'MY', label: '🇲🇾 Malaysia', timezone: 'Asia/Kuala_Lumpur', dialCode: '+60' },
+  { value: 'ID', label: '🇮🇩 Indonesia', timezone: 'Asia/Jakarta', dialCode: '+62' },
+  { value: 'BD', label: '🇧🇩 Bangladesh', timezone: 'Asia/Dhaka', dialCode: '+880' },
+  { value: 'IN', label: '🇮🇳 India', timezone: 'Asia/Kolkata', dialCode: '+91' },
+  { value: 'EG', label: '🇪🇬 Egypt', timezone: 'Africa/Cairo', dialCode: '+20' },
+  { value: 'JO', label: '🇯🇴 Jordan', timezone: 'Asia/Amman', dialCode: '+962' },
+  { value: 'NG', label: '🇳🇬 Nigeria', timezone: 'Africa/Lagos', dialCode: '+234' },
+  { value: 'ZA', label: '🇿🇦 South Africa', timezone: 'Africa/Johannesburg', dialCode: '+27' },
+  { value: 'SG', label: '🇸🇬 Singapore', timezone: 'Asia/Singapore', dialCode: '+65' },
+  { value: 'NZ', label: '🇳🇿 New Zealand', timezone: 'Pacific/Auckland', dialCode: '+64' },
+];
+
+const dayOptions = [
+  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
+];
+
+const customStyles = {
+  control: (base, state) => ({
+    ...base,
+    backgroundColor: 'white',
+    borderColor: state.isFocused ? '#00B4D8' : '#D1D5DB',
+    boxShadow: state.isFocused ? '0 0 0 2px rgba(0, 180, 216, 0.4)' : null,
+    '&:hover': {
+      borderColor: state.isFocused ? '#00B4D8' : '#9CA3AF',
+    },
+    minHeight: '44px',
+    borderRadius: '0.5rem',
+  }),
+  option: (base, state) => ({
+    ...base,
+    color: '#111827',
+    backgroundColor: state.isFocused ? '#F3F4F6' : 'white',
+    cursor: 'pointer',
+    '&:active': {
+      backgroundColor: '#E5E7EB',
+    }
+  }),
+  singleValue: (base) => ({
+    ...base,
+    color: '#111827',
+  }),
+  placeholder: (base) => ({
+    ...base,
+    color: '#9CA3AF',
+  }),
+};
 
 const TrialBookingModal = ({ show, onClose }) => {
+  const { rates, currency, formatCurrency, setCurrency, setCurrencyByCountry } = useCurrency();
   const [form, setForm] = useState({
-    fullName: '', email: '', phone: '', country: '', timezone: '', courseId: '', preferredTime: '', message: '',
+    fullName: '',
+    email: '',
+    phone: '',
+    country: null,
+    timezone: '',
+    courseId: '',
+    preferredTime: '',
+    preferredDays: [],
+    message: '',
   });
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,20 +86,63 @@ const TrialBookingModal = ({ show, onClose }) => {
 
   useEffect(() => {
     if (show) {
+      const fetchCourses = async () => {
+        try {
+          const response = await http.get('/courses');
+          console.log('Courses fetched:', response.data);
+          setCourses(response.data.data.courses || []);
+        } catch (error) {
+          console.error("Failed to fetch courses:", error);
+          setCourses([]);
+        }
+      };
+      fetchCourses();
+
+      // Detect timezone and country
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      setForm(prev => ({ ...prev, timezone: tz }));
-      getAllCourses({ limit: 50 }).then(res => {
-        const list = res.data?.data?.courses || res.data?.courses || [];
-        setCourses(list);
-      }).catch(() => {});
+      const detectedCountry = countries.find(c => c.timezone === tz) || countries[0];
+      setForm(prev => ({ 
+        ...prev, 
+        timezone: tz, 
+        country: detectedCountry 
+      }));
+
+      // Sync currency to detected country
+      if (detectedCountry.value) {
+        setCurrencyByCountry(detectedCountry.value);
+      }
     }
   }, [show]);
 
+  const handleCountryChange = (selected) => {
+    setForm(prev => ({
+      ...prev,
+      country: selected,
+      timezone: selected.timezone,
+    }));
+    // Sync currency globally
+    if (selected?.value) {
+      setCurrencyByCountry(selected.value);
+    }
+  };
+
+  const handleDayToggle = (day) => {
+    setForm(prev => ({
+      ...prev,
+      preferredDays: prev.preferredDays.includes(day)
+        ? prev.preferredDays.filter(d => d !== day)
+        : [...prev.preferredDays, day]
+    }));
+  };
+
   const validate = () => {
     const e = {};
-    if (!form.fullName.trim()) e.fullName = 'Name is required';
-    if (!form.email.trim() || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
-    if (!form.phone.trim()) e.phone = 'Phone is required';
+    if (!form.fullName.trim()) e.fullName = 'Full Name is required';
+    if (!form.email.trim()) e.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Invalid email address';
+    if (!form.phone) e.phone = 'Phone number is required';
+    if (!form.courseId) e.courseId = 'Please select a course';
+    
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -41,23 +152,46 @@ const TrialBookingModal = ({ show, onClose }) => {
     if (!validate()) return;
     setLoading(true);
     try {
-      await bookTrial({ ...form, courseId: form.courseId ? parseInt(form.courseId) : null });
+      await http.post('/trial/book', {
+        ...form,
+        country: form.country?.label.split(' ').slice(1).join(' '), // strip flag
+        courseId: parseInt(form.courseId),
+        preferredDays: form.preferredDays.join(', '),
+      });
       setSuccess(true);
-    } catch { setErrors({ form: 'Booking failed. Please try again.' }); }
-    setLoading(false);
+    } catch (err) {
+      setErrors({ form: err.response?.data?.message || 'Submission failed. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleClose = () => { setSuccess(false); setForm({ fullName: '', email: '', phone: '', country: '', timezone: '', courseId: '', preferredTime: '', message: '' }); setErrors({}); onClose(); };
-  const onChange = (field) => (e) => setForm(prev => ({ ...prev, [field]: e.target.value }));
+  const handleClose = () => {
+    // Reset to local timezone currency
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const localCurrency = TIMEZONE_CURRENCY[tz] || 'USD';
+    setCurrency(localCurrency);
+    
+    setSuccess(false);
+    setForm({
+      fullName: '', email: '', phone: '', country: null, timezone: '',
+      courseId: '', preferredTime: '', preferredDays: [], message: ''
+    });
+    setErrors({});
+    onClose();
+  };
 
   if (success) {
     return (
-      <AppModal show={show} onClose={handleClose} title="Trial Booked! 🎉" size="sm">
-        <div className="text-center py-6">
-          <span className="text-5xl block mb-4">✅</span>
-          <h3 className="text-lg font-bold text-[#1A1A2E] mb-2">Thank You!</h3>
-          <p className="text-sm text-[#4A5568] mb-6">We&apos;ll contact you within 24 hours!</p>
-          <AppButton variant="accent" onClick={handleClose}>Close</AppButton>
+      <AppModal show={show} onClose={handleClose} title="Request Submitted! 🎉" size="sm">
+        <div className="text-center py-8">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-3xl text-green-600">✅</span>
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Thank You!</h3>
+          <p className="text-gray-600 mb-1">Your request has been submitted successfully.</p>
+          <p className="text-gray-600 mb-6">We'll contact you within 24 hours at <strong className="text-gray-900">{form.email}</strong></p>
+          <AppButton variant="accent" fullWidth onClick={handleClose}>Close</AppButton>
         </div>
       </AppModal>
     );
@@ -65,46 +199,190 @@ const TrialBookingModal = ({ show, onClose }) => {
 
   return (
     <AppModal show={show} onClose={handleClose} title="📖 Book Free Trial Class" size="md">
-      <form onSubmit={handleSubmit} className="space-y-3">
-        {errors.form && <p className="text-xs text-red-500 bg-red-50 p-2 rounded">{errors.form}</p>}
-        <AppInput label="Full Name" value={form.fullName} onChange={onChange('fullName')} error={errors.fullName} required />
-        <AppInput label="Email" type="email" value={form.email} onChange={onChange('email')} error={errors.email} required />
-        <AppInput label="Phone" type="tel" value={form.phone} onChange={onChange('phone')} error={errors.phone} required placeholder="+92 300 1234567" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-[#1A1A2E] mb-1">Country</label>
-            <select value={form.country} onChange={onChange('country')} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8] outline-none">
-              <option value="">Select country</option>
-              {['Pakistan','USA','UK','Saudi Arabia','UAE','Canada','Australia','Germany','France','Turkey','Malaysia','Indonesia','Bangladesh','India','Egypt'].map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#1A1A2E] mb-1">Timezone</label>
-            <input value={form.timezone} readOnly className="w-full rounded-lg border border-[#E2E8F0] px-3 py-2.5 text-sm bg-gray-50 text-[#4A5568]" />
-          </div>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-[#1A1A2E] mb-1">Preferred Course</label>
-            <select value={form.courseId} onChange={onChange('courseId')} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8] outline-none">
-              <option value="">Select course</option>
-              {courses.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-[#1A1A2E] mb-1">Preferred Time</label>
-            <select value={form.preferredTime} onChange={onChange('preferredTime')} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8] outline-none">
-              <option value="">Select time</option>
-              {timeSlots.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-          </div>
-        </div>
+      <form onSubmit={handleSubmit} className="space-y-5 py-2">
+        {errors.form && <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">{errors.form}</div>}
+        
+        {/* Row 1: Full Name */}
         <div>
-          <label className="block text-sm font-medium text-[#1A1A2E] mb-1">Message (Optional)</label>
-          <textarea value={form.message} onChange={onChange('message')} rows={2} className="w-full rounded-lg border border-[#E2E8F0] px-3 py-2.5 text-sm focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8] outline-none resize-none" placeholder="Any specific requirements..." />
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">Full Name*</label>
+          <input
+            id="fullName"
+            type="text"
+            className={`w-full bg-white border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]`}
+            placeholder="Enter your full name"
+            value={form.fullName}
+            onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+          />
+          {errors.fullName && <p className="mt-1 text-xs text-red-500">{errors.fullName}</p>}
         </div>
-        <AppButton type="submit" variant="accent" fullWidth size="lg" loading={loading}>Book Free Trial</AppButton>
+
+        {/* Row 2: Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">Email Address*</label>
+          <input
+            id="email"
+            type="email"
+            className={`w-full bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]`}
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+          />
+          {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+        </div>
+
+        {/* Row 3: Phone */}
+        <div>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number*</label>
+          <div className={`international-phone-container ${errors.phone ? 'phone-error' : ''}`}>
+             <PhoneInput
+              international
+              defaultCountry={form.country?.value || 'PK'}
+              value={form.phone}
+              onChange={(val) => setForm({ ...form, phone: val })}
+              numberInputProps={{ id: 'phone' }}
+              className={`flex w-full bg-white border ${errors.phone ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus-within:ring-2 focus-within:ring-[#00B4D8]/40 focus-within:border-[#00B4D8]`}
+            />
+          </div>
+          {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+        </div>
+
+        {/* Row 4: Country | Timezone */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1.5">Country*</label>
+            <Select
+              inputId="country"
+              options={countries}
+              value={form.country}
+              onChange={handleCountryChange}
+              styles={customStyles}
+              placeholder="Select country"
+            />
+          </div>
+          <div>
+            <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-1.5">Timezone*</label>
+            <input
+              id="timezone"
+              type="text"
+              readOnly
+              className="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-2.5 text-gray-600 text-sm outline-none"
+              value={form.timezone}
+              placeholder="Auto-filled"
+            />
+          </div>
+        </div>
+
+        {/* Row 5: Preferred Course */}
+        <div>
+          <label htmlFor="courseId" className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Course*</label>
+          <select
+            id="courseId"
+            aria-label="Preferred Course*"
+            className={`w-full bg-white border ${errors.courseId ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]`}
+            value={form.courseId}
+            onChange={(e) => setForm({ ...form, courseId: e.target.value })}
+          >
+            <option value="">Select a course</option>
+            {courses.map(c => (
+              <option key={c.id} value={c.id}>
+                {c.name} — {formatCurrency(c.price)}/month
+              </option>
+            ))}
+          </select>
+          {errors.courseId && <p className="mt-1 text-xs text-red-500">{errors.courseId}</p>}
+        </div>
+
+        {/* Row 6: Preferred Time | Preferred Days */}
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Time</label>
+            <select
+              id="preferredTime"
+              aria-label="Preferred Time"
+              className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]"
+              value={form.preferredTime}
+              onChange={(e) => setForm({ ...form, preferredTime: e.target.value })}
+            >
+              <option value="">Select preferred time</option>
+              <option value="morning">🌅 Morning (6AM - 12PM)</option>
+              <option value="afternoon">☀️ Afternoon (12PM - 5PM)</option>
+              <option value="evening">🌆 Evening (5PM - 10PM)</option>
+              <option value="night">🌙 Night (10PM - 12AM)</option>
+              <option value="flexible">🕐 Flexible (Any Time)</option>
+            </select>
+          </div>
+
+          <div>
+             <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Days</label>
+             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+               {dayOptions.map(day => (
+                 <label key={day} className="flex items-center gap-2 cursor-pointer group">
+                   <div className="relative flex items-center">
+                     <input
+                       type="checkbox"
+                       id={`day-${day}`}
+                       className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#00B4D8] checked:bg-[#00B4D8] transition-all"
+                       checked={form.preferredDays.includes(day)}
+                       onChange={() => handleDayToggle(day)}
+                     />
+                     <svg className="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                     </svg>
+                   </div>
+                   <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{day}</span>
+                 </label>
+               ))}
+             </div>
+          </div>
+        </div>
+
+        {/* Row 7: Message */}
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1.5">Message (Optional)</label>
+          <textarea
+            id="message"
+            className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8] resize-none"
+            placeholder="Any specific requirements or questions..."
+            rows={3}
+            value={form.message}
+            onChange={(e) => setForm({ ...form, message: e.target.value })}
+          />
+        </div>
+
+        {/* Row 8: Submit */}
+        <AppButton 
+          type="submit" 
+          variant="accent" 
+          fullWidth 
+          size="lg" 
+          loading={loading}
+          className="shadow-md hover:shadow-lg transform transition-all active:scale-[0.98]"
+        >
+          {loading ? 'Submitting...' : 'Book Free Trial Now'}
+        </AppButton>
       </form>
+
+      <style jsx="true">{`
+        .international-phone-container .PhoneInputInput {
+          outline: none;
+          background: transparent;
+          border: none;
+          color: #111827;
+          width: 100%;
+          font-size: 0.875rem;
+        }
+        .international-phone-container .PhoneInput {
+          gap: 0.75rem;
+        }
+        .international-phone-container .PhoneInputCountry {
+          border-right: 1px solid #E5E7EB;
+          padding-right: 0.75rem;
+          margin-right: 0.25rem;
+        }
+        .international-phone-container .PhoneInputCountrySelect {
+          cursor: pointer;
+        }
+      `}</style>
     </AppModal>
   );
 };

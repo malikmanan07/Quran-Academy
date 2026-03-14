@@ -28,23 +28,21 @@ const teacherMenu = [
   { label: 'Attendance', path: ROUTES.TEACHER_ATTENDANCE, icon: '📋' },
   { label: 'Progress', path: ROUTES.TEACHER_PROGRESS, icon: '📈' },
   { label: 'Daily Sabaq', path: ROUTES.TEACHER_DAILY_PROGRESS, icon: '📝' },
-  { label: 'Monthly Feedback', path: ROUTES.TEACHER_FEEDBACK, icon: '🌟' },
+  { label: 'Feedback', path: ROUTES.TEACHER_FEEDBACK, icon: '🌟' },
   { label: 'Materials', path: ROUTES.TEACHER_MATERIALS, icon: '📄' },
   { label: 'Messages', path: ROUTES.TEACHER_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
-  { label: 'Profile', path: ROUTES.TEACHER_PROFILE, icon: '⚙️' },
 ];
 
 const studentMenu = [
   { label: 'Dashboard', path: ROUTES.STUDENT_DASHBOARD, icon: '📊' },
   { label: 'Browse Courses', path: ROUTES.STUDENT_BROWSE_COURSES, icon: '🔍' },
   { label: 'My Courses', path: ROUTES.STUDENT_COURSES, icon: '📚' },
-  { label: 'My Attendance', path: ROUTES.STUDENT_ATTENDANCE, icon: '📋' },
+  { label: 'Attendance', path: ROUTES.STUDENT_ATTENDANCE, icon: '📋' },
   { label: 'Progress', path: ROUTES.STUDENT_PROGRESS, icon: '📈' },
   { label: 'Daily Sabaq', path: ROUTES.STUDENT_DAILY_PROGRESS, icon: '📝' },
   { label: 'Exams', path: ROUTES.STUDENT_EXAMS, icon: '📝' },
   { label: 'Payments', path: ROUTES.STUDENT_PAYMENTS, icon: '💰' },
   { label: 'Messages', path: ROUTES.STUDENT_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
-  { label: 'Profile', path: ROUTES.STUDENT_PROFILE, icon: '⚙️' },
 ];
 
 const parentMenu = [
@@ -93,7 +91,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         .then(res => setBadges(prev => ({ ...prev, messages: res.data?.data?.count || 0 })))
         .catch(() => {});
     }
-  }, [user]);
+  }, [user?.id, user?.role]);
 
   const handleLogout = () => { logout(); navigate(ROUTES.LOGIN); };
 

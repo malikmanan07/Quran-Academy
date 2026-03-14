@@ -10,6 +10,7 @@ export const trialRequests = pgTable('trial_requests', {
   timezone: varchar('timezone', { length: 60 }),
   courseId: integer('course_id').references(() => courses.id),
   preferredTime: varchar('preferred_time', { length: 30 }),
+  preferredDays: text('preferred_days'),
   message: text('message'),
   status: varchar('status', { length: 20 }).default('pending'),
   createdAt: timestamp('created_at').defaultNow(),
