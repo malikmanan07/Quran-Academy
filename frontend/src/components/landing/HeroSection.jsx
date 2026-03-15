@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import * as React from 'react';
 import AppButton from '../common/AppButton';
 import TrialBookingModal from './TrialBookingModal';
 
 const HeroSection = () => {
-  const [showTrial, setShowTrial] = useState(false);
+  const [showTrial, setShowTrial] = React.useState(false);
 
   return (
     <section className="relative min-h-screen bg-gradient-to-br from-[#1B3A5C] to-[#1B4332] text-white overflow-hidden flex items-center w-full max-w-full">

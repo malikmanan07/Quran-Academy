@@ -13,11 +13,8 @@ export const useSocket = () => {
   useEffect(() => {
     if (!user?.id) return;
 
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-    const serverUrl = apiUrl.replace(/\/api$/, '');
-
-    const socket = io(serverUrl, {
-      transports: ['websocket'],
+    const socket = io({
+      path: '/socket.io',
       reconnection: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 2000,

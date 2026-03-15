@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getToken, clear } from './authStorage';
 
 const http = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
   },
