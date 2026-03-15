@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import PageHeader from '../../components/common/PageHeader';
-import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
+import TableSkeleton from '../../components/common/TableSkeleton';
 import EmptyState from '../../components/common/EmptyState';
 import AppBadge from '../../components/common/AppBadge';
 import AppButton from '../../components/common/AppButton';
@@ -42,14 +42,14 @@ const ChildPaymentsPage = () => {
     setIsModalOpen(true);
   };
 
-  if (loading) return <DashboardLoadingSkeleton />;
-
   return (
     <div>
       <PageHeader title="💰 Child's Payments" subtitle="Payment history and submission" />
       <Link to="/parent/dashboard" className="text-sm text-[#00B4D8] hover:underline mb-4 inline-block">← Back to Dashboard</Link>
 
-      {payments.length === 0 ? (
+      {loading ? (
+        <TableSkeleton rows={5} cols={5} />
+      ) : payments.length === 0 ? (
         <EmptyState icon="💰" title="No Payments" message="Payment records will appear here" />
       ) : (
         <div className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden">

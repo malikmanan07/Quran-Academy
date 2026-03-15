@@ -18,7 +18,11 @@ export const findByStudentId = async (studentId) =>
     .orderBy(desc(certificates.generatedAt));
 
 export const findByStudentAndCourse = async (studentId, courseId) => {
-  const result = await db.select().from(certificates)
+  const result = await db.select({
+    id: certificates.id, studentId: certificates.studentId,
+    courseId: certificates.courseId, url: certificates.url,
+    generatedAt: certificates.generatedAt
+  }).from(certificates)
     .where(and(eq(certificates.studentId, studentId), eq(certificates.courseId, courseId)));
   return result[0] || null;
 };

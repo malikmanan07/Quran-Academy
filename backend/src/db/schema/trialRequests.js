@@ -14,9 +14,8 @@ export const trialRequests = pgTable('trial_requests', {
   message: text('message'),
   status: varchar('status', { length: 20 }).default('pending'),
   createdAt: timestamp('created_at').defaultNow(),
-}, (table) => {
-  return {
-    statusIdx: index('trial_status_idx').on(table.status),
-    emailIdx: index('trial_email_idx').on(table.email),
-  };
-});
+}, (table) => ({
+  statusIdx: index('trial_requests_status_idx').on(table.status),
+  createdAtIdx: index('trial_requests_created_at_idx')
+    .on(table.createdAt),
+}));

@@ -21,7 +21,8 @@ export const findByStudent = async (studentId) => {
     .orderBy(desc(enrollmentRequests.createdAt));
 };
 
-export const findAll = async () => {
+export const findAll = async ({ page = 1, limit = 20 } = {}) => {
+  const offset = (page - 1) * limit;
   return db.select({
     id: enrollmentRequests.id, studentId: enrollmentRequests.studentId,
     courseId: enrollmentRequests.courseId,
@@ -33,11 +34,18 @@ export const findAll = async () => {
   }).from(enrollmentRequests)
     .leftJoin(users, eq(enrollmentRequests.studentId, users.id))
     .leftJoin(courses, eq(enrollmentRequests.courseId, courses.id))
-    .orderBy(desc(enrollmentRequests.createdAt));
+    .orderBy(desc(enrollmentRequests.createdAt))
+    .limit(limit).offset(offset);
 };
 
 export const findById = async (id) => {
-  const [result] = await db.select().from(enrollmentRequests).where(eq(enrollmentRequests.id, id));
+  const [result] = await db.select({
+    id: enrollmentRequests.id, studentId: enrollmentRequests.studentId,
+    courseId: enrollmentRequests.courseId, preferredTime: enrollmentRequests.preferredTime,
+    preferredDays: enrollmentRequests.preferredDays, message: enrollmentRequests.message,
+    status: enrollmentRequests.status, rejectionReason: enrollmentRequests.rejectionReason,
+    createdAt: enrollmentRequests.createdAt
+  }).from(enrollmentRequests).where(eq(enrollmentRequests.id, id));
   return result;
 };
 

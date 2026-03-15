@@ -1,9 +1,9 @@
 import MaterialCard from './MaterialCard';
 import EmptyState from '../../common/EmptyState';
-import Loader from '../../common/Loader';
+import CardSkeleton from '../../common/CardSkeleton';
 
 const MaterialGrid = ({ materials, loading, onEdit, onDelete }) => {
-  if (loading) return <Loader />;
+  if (loading) return <CardSkeleton count={4} />;
   if (!materials.length) return <EmptyState title="No Materials" message="Upload your first course material." />;
 
   return (

@@ -36,7 +36,14 @@ export const findAll = async ({ status, search, page = 1, limit = 20 } = {}) => 
 };
 
 export const findById = async (id) => {
-  const result = await db.select().from(payments).where(eq(payments.id, id));
+  const result = await db.select({
+    id: payments.id, studentId: payments.studentId, courseId: payments.courseId,
+    amount: payments.amount, month: payments.month, status: payments.status,
+    paymentMethod: payments.paymentMethod, transactionId: payments.transactionId,
+    dueDate: payments.dueDate, paidAt: payments.paidAt, submittedAt: payments.submittedAt,
+    verifiedAt: payments.verifiedAt, receiptUrl: payments.receiptUrl,
+    notes: payments.notes, createdAt: payments.createdAt
+  }).from(payments).where(eq(payments.id, id));
   return result[0] || null;
 };
 
@@ -95,7 +102,10 @@ export const findPendingVerification = async () => {
 };
 
 export const findByStudentAndMonth = async (studentId, month) => {
-  const result = await db.select().from(payments)
+  const result = await db.select({
+    id: payments.id, studentId: payments.studentId, amount: payments.amount,
+    month: payments.month, status: payments.status, createdAt: payments.createdAt
+  }).from(payments)
     .where(and(eq(payments.studentId, studentId), eq(payments.month, month)));
   return result[0];
 };

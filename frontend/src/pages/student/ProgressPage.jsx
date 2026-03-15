@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
-import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
+import StatCardSkeleton from '../../components/common/StatCardSkeleton';
+import TableSkeleton from '../../components/common/TableSkeleton';
 import ProgressStats from '../../components/student/progress/ProgressStats';
 import ProgressTimeline from '../../components/student/progress/ProgressTimeline';
 import QuranProgressMap from '../../components/common/QuranProgressMap';
@@ -39,15 +40,13 @@ const ProgressPage = () => {
     if (user?.id) fetch();
   }, [user]);
 
-  if (loading) return <DashboardLoadingSkeleton />;
-
   return (
     <div>
       <PageHeader title="My Progress" subtitle="Track your learning journey" />
       <div className="mb-6">
         <QuranProgressMap progress={quranProg} />
       </div>
-      <ProgressStats progress={progress} />
+      {loading ? <StatCardSkeleton /> : <ProgressStats progress={progress} />}
       
       <div className="mt-12 mb-8">
         <h3 className="text-xl font-bold text-[#1A1A2E] mb-6 flex items-center gap-2">
@@ -56,7 +55,7 @@ const ProgressPage = () => {
         <MonthlyFeedbackList feedback={feedback} />
       </div>
 
-      <ProgressTimeline progress={progress} />
+      {loading ? <TableSkeleton /> : <ProgressTimeline progress={progress} />}
     </div>
   );
 };

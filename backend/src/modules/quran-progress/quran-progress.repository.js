@@ -2,13 +2,19 @@ import db from '../../config/db.js';
 import { quranProgress } from '../../db/schema/index.js';
 import { eq, and } from 'drizzle-orm';
 
+const qpSelect = {
+  id: quranProgress.id, studentId: quranProgress.studentId,
+  paraNumber: quranProgress.paraNumber, status: quranProgress.status,
+  updatedAt: quranProgress.updatedAt
+};
+
 export const findByStudentId = async (studentId) =>
-  db.select().from(quranProgress)
+  db.select(qpSelect).from(quranProgress)
     .where(eq(quranProgress.studentId, studentId))
     .orderBy(quranProgress.paraNumber);
 
 export const upsertPara = async (studentId, paraNumber, status) => {
-  const existing = await db.select().from(quranProgress)
+  const existing = await db.select(qpSelect).from(quranProgress)
     .where(and(
       eq(quranProgress.studentId, studentId),
       eq(quranProgress.paraNumber, paraNumber)

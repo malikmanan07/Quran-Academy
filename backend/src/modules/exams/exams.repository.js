@@ -3,6 +3,13 @@ import { exams } from '../../db/schema/index.js';
 import { eq, desc, sql, ilike, or, and } from 'drizzle-orm';
 import { users } from '../../db/schema/index.js';
 
+const examSelect = {
+  id: exams.id, studentId: exams.studentId, teacherId: exams.teacherId,
+  courseId: exams.courseId, title: exams.title, totalMarks: exams.totalMarks,
+  obtainedMarks: exams.obtainedMarks, date: exams.date, duration: exams.duration,
+  status: exams.status, remarks: exams.remarks, createdAt: exams.createdAt
+};
+
 export const findAll = async ({ search, studentId, page = 1, limit = 20 } = {}) => {
   const conditions = [];
   if (studentId) conditions.push(eq(exams.studentId, Number(studentId)));
@@ -16,7 +23,7 @@ export const findAll = async ({ search, studentId, page = 1, limit = 20 } = {}) 
   const offset = (page - 1) * limit;
 
   const data = await db.select({
-    ...exams,
+    ...examSelect,
     studentName: users.name
   }).from(exams)
     .leftJoin(users, eq(exams.studentId, users.id))
@@ -31,12 +38,12 @@ export const findAll = async ({ search, studentId, page = 1, limit = 20 } = {}) 
 };
 
 export const findById = async (id) => {
-  const result = await db.select().from(exams).where(eq(exams.id, id));
+  const result = await db.select(examSelect).from(exams).where(eq(exams.id, id));
   return result[0] || null;
 };
 
 export const findByStudentId = async (studentId) =>
-  db.select({ ...exams, studentName: users.name }).from(exams)
+  db.select({ ...examSelect, studentName: users.name }).from(exams)
     .leftJoin(users, eq(exams.studentId, users.id))
     .where(eq(exams.studentId, studentId)).orderBy(desc(exams.date));
 

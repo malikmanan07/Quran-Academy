@@ -1,10 +1,15 @@
 import db from '../../config/db.js';
 import { users, classes, courses } from '../../db/schema/index.js';
 import { eq, and, ilike, isNull, desc, sql, or } from 'drizzle-orm';
+import { cache } from '../../services/cache.js';
 
 const teacherWhere = and(eq(users.role, 'teacher'), isNull(users.deletedAt));
 
 export const findAll = async ({ search, status, page = 1, limit = 20 } = {}) => {
+  const cacheKey = `teachers:all:${search || ''}:${status || ''}:${page}:${limit}`;
+  const cached = cache.get(cacheKey);
+  if (cached) return cached;
+
   const conditions = [teacherWhere];
   if (search) {
     conditions.push(or(
@@ -25,30 +30,41 @@ export const findAll = async ({ search, status, page = 1, limit = 20 } = {}) => 
   }).from(users).where(where).orderBy(desc(users.createdAt)).limit(limit).offset(offset);
 
   const [{ count }] = await db.select({ count: sql`count(*)` }).from(users).where(where);
-  return { data, total: Number(count) };
+  const result = { data, total: Number(count) };
+  cache.set(cacheKey, result, 600);
+  return result;
 };
 
 export const findById = async (id) => {
+  const cacheKey = `teachers:id:${id}`;
+  const cached = cache.get(cacheKey);
+  if (cached) return cached;
+
   const result = await db.select({
     id: users.id, name: users.name, email: users.email, phone: users.phone,
     isActive: users.isActive, createdAt: users.createdAt,
   }).from(users).where(and(eq(users.id, id), isNull(users.deletedAt)));
-  return result[0] || null;
+  const teacher = result[0] || null;
+  if (teacher) cache.set(cacheKey, teacher, 600);
+  return teacher;
 };
 
 export const create = async (data) => {
   const result = await db.insert(users).values({ ...data, role: 'teacher' }).returning();
+  cache.delPattern('teachers:');
   const { password, ...safe } = result[0];
   return safe;
 };
 
 export const update = async (id, data) => {
   const result = await db.update(users).set(data).where(eq(users.id, id)).returning();
+  cache.delPattern('teachers:');
   const { password, ...safe } = result[0];
   return safe;
 };
 
 export const softDelete = async (id) => {
+  cache.delPattern('teachers:');
   return db.update(users).set({ deletedAt: new Date(), isActive: false }).where(eq(users.id, id));
 };
 

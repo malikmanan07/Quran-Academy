@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, text, timestamp, date } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, varchar, text, timestamp, date, index } from 'drizzle-orm/pg-core';
 import { users } from './users.js';
 
 export const dailyProgress = pgTable('daily_progress', {
@@ -14,4 +14,10 @@ export const dailyProgress = pgTable('daily_progress', {
   manzilGrade: varchar('manzil_grade', { length: 50 }),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow()
-});
+}, (table) => ({
+  studentIdIdx: index('daily_progress_student_idx').on(table.studentId),
+  teacherIdIdx: index('daily_progress_teacher_idx').on(table.teacherId),
+  dateIdx: index('daily_progress_date_idx').on(table.date),
+  studentDateIdx: index('daily_progress_student_date_idx')
+    .on(table.studentId, table.date),
+}));

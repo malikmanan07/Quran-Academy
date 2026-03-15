@@ -40,7 +40,13 @@ export const findAll = async ({ courseId, type, search, page = 1, limit = 20 } =
 };
 
 export const findById = async (id) => {
-  const result = await db.select().from(courseMaterial).where(eq(courseMaterial.id, id));
+  const result = await db.select({
+    id: courseMaterial.id, courseId: courseMaterial.courseId,
+    uploadedBy: courseMaterial.uploadedBy, title: courseMaterial.title,
+    description: courseMaterial.description, type: courseMaterial.type,
+    url: courseMaterial.url, fileName: courseMaterial.fileName,
+    visibleToStudents: courseMaterial.visibleToStudents, createdAt: courseMaterial.createdAt
+  }).from(courseMaterial).where(eq(courseMaterial.id, id));
   return result[0] || null;
 };
 

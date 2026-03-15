@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import PageHeader from '../../components/common/PageHeader';
-import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
+import TableSkeleton from '../../components/common/TableSkeleton';
 import EmptyState from '../../components/common/EmptyState';
 import MonthlyFeedbackList from '../../components/common/MonthlyFeedbackList';
 import { getChildProgress } from '../../features/parent/api';
@@ -31,13 +31,12 @@ const ChildProgressPage = () => {
     fetch();
   }, [id]);
 
-  if (loading) return <DashboardLoadingSkeleton />;
-
   return (
     <div>
       <PageHeader title="📈 Child's Progress" subtitle="Detailed progress reports" />
       <Link to="/parent/dashboard" className="text-sm text-[#00B4D8] hover:underline mb-4 inline-block">← Back to Dashboard</Link>
       
+      {loading ? <TableSkeleton /> : (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <h3 className="text-lg font-bold text-[#1A1A2E] mb-4">Monthly Progress Reports</h3>
@@ -70,6 +69,7 @@ const ChildProgressPage = () => {
           )}
         </div>
       </div>
+      )}
     </div>
   );
 };

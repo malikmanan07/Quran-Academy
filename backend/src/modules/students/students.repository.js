@@ -1,10 +1,13 @@
 import db from '../../config/db.js';
 import { users, classes, courses } from '../../db/schema/index.js';
 import { eq, and, ilike, isNull, desc, sql, or } from 'drizzle-orm';
+import { getPagination } from '../../utils/pagination.js';
 
 const studentWhere = and(eq(users.role, 'student'), isNull(users.deletedAt));
 
-export const findAll = async ({ search, status, teacherId, page = 1, limit = 20 } = {}) => {
+export const findAll = async (queryParams = {}) => {
+  const { search, status, teacherId } = queryParams;
+  const { page, limit, offset } = getPagination(queryParams);
   const conditions = [studentWhere];
   if (search) {
     conditions.push(or(
@@ -14,8 +17,6 @@ export const findAll = async ({ search, status, teacherId, page = 1, limit = 20 
   }
   if (status === 'active') conditions.push(eq(users.isActive, true));
   if (status === 'inactive') conditions.push(eq(users.isActive, false));
-
-  const offset = (page - 1) * limit;
 
   // If teacherId is provided, only show students who have classes with this teacher
   const query = db.select({

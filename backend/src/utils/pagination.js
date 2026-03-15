@@ -1,23 +1,19 @@
-export const parsePaginationParams = (query) => {
+export const getPagination = (query) => {
   const page = Math.max(1, parseInt(query.page) || 1);
-  const pageSize = Math.min(50, Math.max(1, parseInt(query.pageSize) || 10));
-  const offset = (page - 1) * pageSize;
-
-  return { page, pageSize, offset };
+  const limit = Math.min(
+    100, 
+    Math.max(1, parseInt(query.limit) || 20)
+  );
+  const offset = (page - 1) * limit;
+  return { page, limit, offset };
 };
 
-export const buildPaginatedResponse = (data, total, page, pageSize) => {
-  const totalPages = Math.ceil(total / pageSize);
-
-  return {
-    data,
-    meta: {
-      total,
-      page,
-      pageSize,
-      totalPages,
-      hasNext: page < totalPages,
-      hasPrev: page > 1,
-    }
-  };
-};
+export const paginatedResponse = (
+  data, total, page, limit
+) => ({
+  data,
+  total,
+  page,
+  totalPages: Math.ceil(total / limit),
+  limit,
+});

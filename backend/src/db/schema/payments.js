@@ -17,9 +17,11 @@ export const payments = pgTable('payments', {
   receiptUrl: text('receipt_url'),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow(),
-}, (table) => {
-  return {
-    studentIdx: index('payment_student_idx').on(table.studentId),
-    statusIdx: index('payment_status_idx').on(table.status),
-  };
-});
+}, (table) => ({
+  studentIdIdx: index('payments_student_id_idx').on(table.studentId),
+  statusIdx: index('payments_status_idx').on(table.status),
+  monthIdx: index('payments_month_idx').on(table.month),
+  createdAtIdx: index('payments_created_at_idx').on(table.createdAt),
+  studentStatusIdx: index('payments_student_status_idx')
+    .on(table.studentId, table.status),
+}));

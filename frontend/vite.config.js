@@ -19,4 +19,28 @@ export default defineConfig({
       }
     }
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-router-dom')) return 'router';
+            if (id.includes('react') || id.includes('react-dom')) return 'vendor';
+            if (id.includes('recharts') || id.includes('lucide-react')) return 'ui';
+            if (id.includes('react-hook-form') || id.includes('zod')) return 'forms';
+            if (id.includes('axios')) return 'http';
+          }
+        }
+      }
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+  optimizeDeps: {
+    include: [
+      'react', 
+      'react-dom', 
+      'react-router-dom',
+      'axios',
+    ]
+  }
 })

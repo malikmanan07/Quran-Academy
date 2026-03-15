@@ -14,22 +14,38 @@ export const findChildrenByParent = async (parentId) =>
     .where(eq(parentStudent.parentId, parentId));
 
 export const findChildProgress = async (studentId) =>
-  db.select().from(progress)
+  db.select({
+    id: progress.id, studentId: progress.studentId, teacherId: progress.teacherId,
+    lesson: progress.lesson, rating: progress.rating, remarks: progress.remarks,
+    createdAt: progress.createdAt
+  }).from(progress)
     .where(eq(progress.studentId, studentId))
     .orderBy(desc(progress.createdAt));
 
 export const findChildPayments = async (studentId) =>
-  db.select().from(payments)
+  db.select({
+    id: payments.id, studentId: payments.studentId, amount: payments.amount,
+    month: payments.month, status: payments.status, dueDate: payments.dueDate,
+    paidAt: payments.paidAt, createdAt: payments.createdAt
+  }).from(payments)
     .where(eq(payments.studentId, studentId))
     .orderBy(desc(payments.createdAt));
 
 export const findChildClasses = async (studentId) =>
-  db.select().from(classes)
+  db.select({
+    id: classes.id, teacherId: classes.teacherId, studentId: classes.studentId,
+    date: classes.date, time: classes.time, status: classes.status,
+    duration: classes.duration, createdAt: classes.createdAt
+  }).from(classes)
     .where(eq(classes.studentId, studentId))
     .orderBy(desc(classes.createdAt));
 
 export const findChildAttendance = async (studentId) =>
-  db.select().from(attendance)
+  db.select({
+    id: attendance.id, classId: attendance.classId,
+    studentId: attendance.studentId, status: attendance.status,
+    date: attendance.date, notes: attendance.notes
+  }).from(attendance)
     .where(eq(attendance.studentId, studentId));
 
 export const linkParent = async (parentId, studentId) => {
@@ -38,7 +54,10 @@ export const linkParent = async (parentId, studentId) => {
   return result[0];
 };
 
-export const findAllParents = async () =>
-  db.select({
+export const findAllParents = async ({ page = 1, limit = 20 } = {}) => {
+  const offset = (page - 1) * limit;
+  return db.select({
     id: users.id, name: users.name, email: users.email, phone: users.phone,
-  }).from(users).where(eq(users.role, 'parent'));
+  }).from(users).where(eq(users.role, 'parent'))
+    .limit(limit).offset(offset);
+};

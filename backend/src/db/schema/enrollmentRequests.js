@@ -13,6 +13,7 @@ export const enrollmentRequests = pgTable('enrollment_requests', {
   rejectionReason: text('rejection_reason'),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
-  studentIdx: index('enroll_student_idx').on(table.studentId),
-  statusIdx: index('enroll_status_idx').on(table.status),
+  studentIdIdx: index('enrollment_student_idx').on(table.studentId),
+  courseIdIdx: index('enrollment_course_idx').on(table.courseId),
+  statusIdx: index('enrollment_status_idx').on(table.status),
 }));

@@ -9,6 +9,7 @@ import QuickActions from '../../components/dashboard/admin/QuickActions';
 import DashboardCharts from '../../components/dashboard/admin/DashboardCharts';
 import StatCardSkeleton from '../../components/common/StatCardSkeleton';
 import TableSkeleton from '../../components/common/TableSkeleton';
+import { cachedRequest } from '../../services/apiCache';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -18,7 +19,7 @@ const DashboardPage = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await http.get('stats/admin');
+        const response = await cachedRequest('admin:stats', () => http.get('stats/admin'), 300);
         // Extract data correctly: axios response has .data (body), 
         // backend body has .data (actual stats payload)
         setStats(response.data?.data || response.data);

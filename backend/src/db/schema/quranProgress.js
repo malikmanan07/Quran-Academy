@@ -7,9 +7,8 @@ export const quranProgress = pgTable('quran_progress', {
   paraNumber: integer('para_number').notNull(),
   status: varchar('status', { length: 20 }).default('not-started'),
   updatedAt: timestamp('updated_at').defaultNow(),
-}, (table) => {
-  return {
-    studentIdx: index('qp_student_idx').on(table.studentId),
-    paraIdx: index('qp_para_idx').on(table.paraNumber),
-  };
-});
+}, (table) => ({
+  studentIdIdx: index('quran_progress_student_idx')
+    .on(table.studentId),
+  paraIdx: index('quran_progress_para_idx').on(table.paraNumber),
+}));

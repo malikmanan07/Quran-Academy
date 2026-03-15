@@ -14,10 +14,11 @@ export const users = pgTable('users', {
   lastLoginAt: timestamp('last_login_at'),
   deletedAt: timestamp('deleted_at'),
   createdAt: timestamp('created_at').defaultNow(),
-}, (table) => {
-  return {
-    emailIdx: index('email_idx').on(table.email),
-    roleIdx: index('role_idx').on(table.role),
-    statusIdx: index('status_idx').on(table.status),
-  };
-});
+}, (table) => ({
+  emailIdx: index('users_email_idx').on(table.email),
+  roleIdx: index('users_role_idx').on(table.role),
+  statusIdx: index('users_status_idx').on(table.status),
+  createdAtIdx: index('users_created_at_idx').on(table.createdAt),
+  roleStatusIdx: index('users_role_status_idx')
+    .on(table.role, table.status),
+}));

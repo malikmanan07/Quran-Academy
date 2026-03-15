@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import PageHeader from '../../components/common/PageHeader';
 import EmptyState from '../../components/common/EmptyState';
-import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
+import CardSkeleton from '../../components/common/CardSkeleton';
 import AppModal from '../../components/common/AppModal';
 import ExamCard from '../../components/student/exams/ExamCard';
 import ExamResultCard from '../../components/student/exams/ExamResultCard';
@@ -34,10 +34,8 @@ const ExamsPage = () => {
     if (user?.id) fetch();
   }, [user]);
 
-  if (loading) return <DashboardLoadingSkeleton />;
-
-  const upcoming = exams.filter(e => e.status !== 'completed');
-  const completed = exams.filter(e => e.status === 'completed');
+  const upcoming = loading ? [] : exams.filter(e => e.status !== 'completed');
+  const completed = loading ? [] : exams.filter(e => e.status === 'completed');
   const current = tab === 'Upcoming' ? upcoming : completed;
 
   return (
@@ -51,7 +49,9 @@ const ExamsPage = () => {
             }`}>{t}</button>
         ))}
       </div>
-      {current.length === 0 ? (
+      {loading ? (
+        <CardSkeleton count={4} />
+      ) : current.length === 0 ? (
         <EmptyState title={`No ${tab} Exams`} message={tab === 'Upcoming' ? 'No exams scheduled.' : 'No completed exams yet.'} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

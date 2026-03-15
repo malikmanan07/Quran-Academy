@@ -32,7 +32,14 @@ export const getDailyProgressByStudent = async (studentId) => {
 };
 
 export const getDailyProgressById = async (id) => {
-  const [result] = await db.select().from(dailyProgress).where(eq(dailyProgress.id, id));
+  const [result] = await db.select({
+    id: dailyProgress.id, studentId: dailyProgress.studentId,
+    teacherId: dailyProgress.teacherId, date: dailyProgress.date,
+    sabaqSurah: dailyProgress.sabaqSurah, sabaqAyatFrom: dailyProgress.sabaqAyatFrom,
+    sabaqAyatTo: dailyProgress.sabaqAyatTo, sabaqGrade: dailyProgress.sabaqGrade,
+    sabqiGrade: dailyProgress.sabqiGrade, manzilGrade: dailyProgress.manzilGrade,
+    notes: dailyProgress.notes, createdAt: dailyProgress.createdAt
+  }).from(dailyProgress).where(eq(dailyProgress.id, id));
   return result;
 };
 

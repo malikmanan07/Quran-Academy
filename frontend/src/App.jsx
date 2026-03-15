@@ -4,6 +4,7 @@ import { ROUTES } from './constants/routes';
 import { ROLES } from './constants/roles';
 import Loader from './components/common/Loader';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import PageSkeleton from './components/common/PageSkeleton';
 import { lazy, Suspense } from 'react';
 
 // Layouts
@@ -67,7 +68,7 @@ const ChildAttendancePage = lazy(() => import('./pages/student/AttendancePage'))
 
 const ProtectedRoute = ({ children, roles }) => {
   const { user, loading } = useAuth();
-  if (loading) return <Loader />;
+  if (loading) return <PageSkeleton />;
   if (!user) return <Navigate to={ROUTES.LOGIN} replace />;
   if (user.status === 'pending') return <Navigate to="/pending-approval" replace />;
   if (roles && !roles.includes(user.role)) return <Navigate to="/unauthorized" replace />;
@@ -79,6 +80,7 @@ function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <div className="animate-fade-in">
+          <Suspense fallback={<PageSkeleton />}>
           <Routes>
             {/* Public Routes */}
         <Route element={<PublicLayout />}>
@@ -164,9 +166,9 @@ function App() {
           <Route path={ROUTES.PARENT_MESSAGES} element={<MessagesPage />} />
         </Route>
 
-            {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
+          </Suspense>
         </div>
       </BrowserRouter>
     </ErrorBoundary>

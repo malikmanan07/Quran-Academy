@@ -39,7 +39,12 @@ export const findAll = async ({ search, page = 1, limit = 20 } = {}) => {
 };
 
 export const findById = async (id) => {
-  const result = await db.select().from(progress).where(eq(progress.id, id));
+  const result = await db.select({
+    id: progress.id, studentId: progress.studentId, teacherId: progress.teacherId,
+    lesson: progress.lesson, lessonCovered: progress.lessonCovered,
+    tajweedNotes: progress.tajweedNotes, homework: progress.homework,
+    rating: progress.rating, remarks: progress.remarks, createdAt: progress.createdAt
+  }).from(progress).where(eq(progress.id, id));
   return result[0] || null;
 };
 

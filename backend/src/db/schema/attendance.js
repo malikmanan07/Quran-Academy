@@ -12,7 +12,9 @@ export const attendance = pgTable('attendance', {
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
-  studentIdx: index('att_student_idx').on(table.studentId),
-  classIdx: index('att_class_idx').on(table.classId),
-  dateIdx: index('att_date_idx').on(table.date),
+  classIdIdx: index('attendance_class_id_idx').on(table.classId),
+  studentIdIdx: index('attendance_student_id_idx').on(table.studentId),
+  dateIdx: index('attendance_date_idx').on(table.date),
+  studentDateIdx: index('attendance_student_date_idx')
+    .on(table.studentId, table.date),
 }));

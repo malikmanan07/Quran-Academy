@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PageHeader from '../../components/common/PageHeader';
 import Toast, { useToast } from '../../components/common/Toast';
-import DashboardLoadingSkeleton from '../../components/common/DashboardLoadingSkeleton';
+import GridSkeleton from '../../components/common/GridSkeleton';
 import EmptyState from '../../components/common/EmptyState';
 import AppBadge from '../../components/common/AppBadge';
 import { getAllCourses } from '../../features/courses/api';
@@ -38,7 +38,7 @@ const CoursesPage = () => {
 
   const getRequestStatus = (courseId) => {
     const req = requests.find(r => r.courseId === courseId);
-    return req ? req.status : null; // 'pending' | 'approved' | 'rejected'
+    return req ? req.status : null;
   };
 
   const handleEnrollRequest = async (data) => {
@@ -47,14 +47,12 @@ const CoursesPage = () => {
       await createEnrollmentRequest(data);
       showToast('Enrollment request submitted successfully!', 'success');
       setSelectedCourse(null);
-      fetch(); // Refresh data to get newly created request
+      fetch();
     } catch (err) {
       showToast(err.response?.data?.message || 'Failed to submit request', 'error');
     }
     setRequestLoading(false);
   };
-
-  if (loading) return <DashboardLoadingSkeleton />;
 
   return (
     <div>
@@ -64,7 +62,9 @@ const CoursesPage = () => {
         subtitle="Explore and request enrollment in our available courses."
       />
 
-      {courses.length === 0 ? (
+      {loading ? (
+        <GridSkeleton />
+      ) : courses.length === 0 ? (
         <EmptyState title="No Courses Available" message="There are currently no active courses to browse." />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

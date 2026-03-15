@@ -18,11 +18,14 @@ export const classes = pgTable('classes', {
   notes: text('notes'),
   cancellationReason: text('cancellation_reason'),
   createdAt: timestamp('created_at').defaultNow(),
-}, (table) => {
-  return {
-    teacherIdx: index('class_teacher_idx').on(table.teacherId),
-    studentIdx: index('class_student_idx').on(table.studentId),
-    dateIdx: index('class_date_idx').on(table.date),
-    statusIdx: index('class_status_idx').on(table.status),
-  };
-});
+}, (table) => ({
+  teacherIdIdx: index('classes_teacher_id_idx').on(table.teacherId),
+  studentIdIdx: index('classes_student_id_idx').on(table.studentId),
+  courseIdIdx: index('classes_course_id_idx').on(table.courseId),
+  statusIdx: index('classes_status_idx').on(table.status),
+  classTimeIdx: index('classes_time_idx').on(table.time),
+  teacherStatusIdx: index('classes_teacher_status_idx')
+    .on(table.teacherId, table.status),
+  studentStatusIdx: index('classes_student_status_idx')
+    .on(table.studentId, table.status),
+}));

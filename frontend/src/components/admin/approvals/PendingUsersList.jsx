@@ -1,9 +1,9 @@
 import PendingUserCard from './PendingUserCard';
 import EmptyState from '../../common/EmptyState';
-import Loader from '../../common/Loader';
+import CardSkeleton from '../../common/CardSkeleton';
 
 const PendingUsersList = ({ users, loading, onApprove, onReject }) => {
-  if (loading) return <div className="p-12"><Loader text="Loading pending approvals..." /></div>;
+  if (loading) return <CardSkeleton count={6} />;
   if (!users?.length) return <EmptyState icon="⏳" title="No Pending Approvals" message="All caught up! There are no users waiting for approval right now." />;
 
   return (
