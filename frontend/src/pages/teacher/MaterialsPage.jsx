@@ -27,7 +27,7 @@ const MaterialsPage = () => {
     search, 
     setSearch, 
     refresh 
-  } = useSearch(getAllMaterials);
+  } = useSearch(getAllMaterials, { cacheKey: `teacher:materials_list:${user?.id}` });
 
   const [courses, setCourses] = useState([]);
   const [saving, setSaving] = useState(false);

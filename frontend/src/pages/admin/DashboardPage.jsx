@@ -9,20 +9,24 @@ import QuickActions from '../../components/dashboard/admin/QuickActions';
 import DashboardCharts from '../../components/dashboard/admin/DashboardCharts';
 import StatCardSkeleton from '../../components/common/StatCardSkeleton';
 import TableSkeleton from '../../components/common/TableSkeleton';
-import { cachedRequest } from '../../services/apiCache';
+import { cachedRequest, getCache } from '../../services/apiCache';
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const initialCache = getCache('admin:stats');
+  const [stats, setStats] = useState(initialCache);
+  const [loading, setLoading] = useState(!initialCache);
 
   useEffect(() => {
     const fetchStats = async () => {
+      // Revalidate in background. Only show UI blockers if we have NO cached state.
+      if (!initialCache) setLoading(true);
       try {
-        const response = await cachedRequest('admin:stats', () => http.get('stats/admin'), 300);
-        // Extract data correctly: axios response has .data (body), 
-        // backend body has .data (actual stats payload)
-        setStats(response.data?.data || response.data);
+        const data = await cachedRequest('admin:stats', async () => {
+          const response = await http.get('stats/admin');
+          return response.data?.data || response.data;
+        }, 300);
+        setStats(data);
       } catch (err) {
         console.error('Failed to fetch dashboard stats:', err);
       } finally {

@@ -1,19 +1,29 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDebounce } from './useDebounce';
+import { getCache, cachedRequest } from '../services/apiCache';
 
 export const useSearch = (fetchFn, initialParams = {}) => {
-  const [data, setData] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const cacheKey = initialParams.cacheKey ? `${initialParams.cacheKey}:${initialParams.page || 1}:${initialParams.search || ''}` : null;
+  const initialCache = cacheKey ? getCache(cacheKey) : null;
+
+  const [data, setData] = useState(initialCache?.data || []);
+  const [total, setTotal] = useState(initialCache?.total || 0);
+  const [loading, setLoading] = useState(initialCache ? false : true);
   const [search, setSearch] = useState(initialParams.search || '');
   const [page, setPage] = useState(initialParams.page || 1);
   const [pageSize, setPageSize] = useState(initialParams.pageSize || 10);
   const [filters, setFilters] = useState(initialParams.filters || {});
-
+  
+  const isFirstLoad = useRef(true);
   const debouncedSearch = useDebounce(search, 300);
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    // True Stale-While-Revalidate: If we have an initial synchronous cache, 
+    // let the fetch run in the background but DO NOT trigger the UI blocker.
+    if (!initialCache || !isFirstLoad.current) {
+      setLoading(true);
+    }
+    isFirstLoad.current = false;
     try {
       const params = {
         page,
@@ -22,30 +32,32 @@ export const useSearch = (fetchFn, initialParams = {}) => {
         ...filters
       };
       
-      const response = await fetchFn(params);
+      const currentCacheKey = initialParams.cacheKey ? `${initialParams.cacheKey}:${page}:${debouncedSearch}` : null;
       
-      // Extraction logic: find the payload (usually response.data.data or response.data)
-      const body = response.data || response;
-      const payload = body.data || body;
-      const meta = body.meta || {};
+      const requestLogic = async () => {
+        const response = await fetchFn(params);
+        const body = response.data || response;
+        const payload = body.data || body;
+        const meta = body.meta || {};
+        
+        let dataArray = Array.isArray(payload) ? payload : (Object.values(payload).find(val => Array.isArray(val)) || []);
+        return { data: dataArray, total: meta.total || dataArray.length || 0 };
+      };
+
+      const result = currentCacheKey ? await cachedRequest(currentCacheKey, requestLogic, 60) : await requestLogic();
       
-      // Intelligent data finder: find the first array in the payload
-      let dataArray = [];
-      if (Array.isArray(payload)) {
-        dataArray = payload;
-      } else if (typeof payload === 'object' && payload !== null) {
-        // Find any direct array property (users, students, etc.)
-        const foundArray = Object.values(payload).find(val => Array.isArray(val));
-        dataArray = foundArray || [];
-      }
-      
-      setData(dataArray);
-      setTotal(meta.total || dataArray.length || 0);
+      setData(result.data);
+      setTotal(result.total);
     } catch (error) {
       console.error('Error fetching data:', error);
-      setData([]);
+      // Keep existing data if we have any (don't clear UI on revalidation error)
+      if (data.length === 0) setData([]);
     } finally {
-      setLoading(false);
+      if (!initialCache && !isFirstLoad.current) {
+        setLoading(false);
+      } else {
+        setLoading(false);
+      }
     }
   }, [fetchFn, page, pageSize, debouncedSearch, filters]);
 

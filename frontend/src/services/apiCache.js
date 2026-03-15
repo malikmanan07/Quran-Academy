@@ -1,10 +1,16 @@
 const cache = new Map();
 
-export const cachedRequest = async (key, requestFn, ttlSeconds = 300) => {
+export const getCache = (key) => {
   const cached = cache.get(key);
   if (cached && Date.now() < cached.expiry) {
     return cached.data;
   }
+  return null;
+};
+
+export const cachedRequest = async (key, requestFn, ttlSeconds = 300) => {
+  const cachedData = getCache(key);
+  if (cachedData) return cachedData;
 
   const data = await requestFn();
   cache.set(key, {

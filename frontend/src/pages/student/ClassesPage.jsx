@@ -3,10 +3,12 @@ import PageHeader from '../../components/common/PageHeader';
 import { getClassesByStudent as fetchStudentClasses } from '../../features/classes/api';
 import AppBadge from '../../components/common/AppBadge';
 import AppButton from '../../components/common/AppButton';
-import Loader from '../../components/common/Loader';
 import EmptyState from '../../components/common/EmptyState';
 import Toast, { useToast } from '../../components/common/Toast';
 import handleApiError from '../../utils/handleApiError';
+import { useAuth } from '../../context/AuthContext';
+import { cachedRequest, getCache } from '../../services/apiCache';
+import GridSkeleton from '../../components/common/GridSkeleton';
 
 // Vanilla date helpers
 const formatDate = (date, pattern) => {
@@ -37,8 +39,12 @@ const platformIcons = {
 };
 
 const ClassesPage = () => {
-  const [classes, setClasses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const cacheKey = `student:classes:${user?.id}`;
+  const initialCache = getCache(cacheKey);
+  
+  const [classes, setClasses] = useState(initialCache || []);
+  const [loading, setLoading] = useState(!initialCache);
   const [activeTab, setActiveTab] = useState('upcoming');
   const { toast, showToast } = useToast();
   const [now, setNow] = useState(new Date());
@@ -49,17 +55,27 @@ const ClassesPage = () => {
   }, []);
 
   const fetch = async () => {
-    setLoading(true);
+    // Only show loading if we don't have cached data
+    if (!initialCache) setLoading(true);
+    
     try {
-      const res = await fetchStudentClasses();
-      setClasses(res.data?.data?.classes || res.data?.classes || []);
+      const data = await cachedRequest(cacheKey, async () => {
+        const res = await fetchStudentClasses();
+        const body = res.data?.data || res.data;
+        return body.classes || [];
+      }, 120); // 2 min cache
+      
+      setClasses(data);
     } catch (err) {
       showToast(handleApiError(err), 'error');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { 
+    if (user?.id) fetch(); 
+  }, [user?.id]);
 
   const filteredClasses = useMemo(() => {
     const sorted = [...classes].sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
@@ -114,8 +130,8 @@ const ClassesPage = () => {
         </button>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center py-20"><Loader /></div>
+      {loading && classes.length === 0 ? (
+        <GridSkeleton items={3} />
       ) : filteredClasses.length === 0 ? (
         <EmptyState 
           icon="📅" 

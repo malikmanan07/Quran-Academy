@@ -4,17 +4,21 @@ import { useAuth } from '../../context/AuthContext';
 import { getMyChildren } from '../../features/parent/api';
 import EmptyState from '../../components/common/EmptyState';
 import StatCardSkeleton from '../../components/common/StatCardSkeleton';
+import { cachedRequest, getCache } from '../../services/apiCache';
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const [children, setChildren] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedChildren = getCache(`parent:children:${user?.id}`);
+  const [children, setChildren] = useState(Array.isArray(cachedChildren) ? cachedChildren : []);
+  const [loading, setLoading] = useState(!cachedChildren);
 
   const fetchChildren = useCallback(async () => {
+    if (!loading) return;
     try {
-      setLoading(true);
-      const res = await getMyChildren();
-      const data = res?.data?.data?.children || res?.data?.children || res?.data?.data || res?.data || [];
+      const data = await cachedRequest(`parent:children:${user?.id}`, async () => {
+        const res = await getMyChildren();
+        return res?.data?.data?.children || res?.data?.children || res?.data?.data || res?.data || [];
+      }, 120);
       setChildren(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Children fetch error:', err);
@@ -22,7 +26,7 @@ const DashboardPage = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     fetchChildren();

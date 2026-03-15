@@ -28,4 +28,5 @@ export const classes = pgTable('classes', {
     .on(table.teacherId, table.status),
   studentStatusIdx: index('classes_student_status_idx')
     .on(table.studentId, table.status),
+  dateIdx: index('classes_date_idx').on(table.date),
 }));

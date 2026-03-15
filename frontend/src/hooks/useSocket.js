@@ -30,6 +30,11 @@ export const useSocket = () => {
       if (notificationRef.current) notificationRef.current(data);
     });
 
+    socket.on('new_message', () => {
+      // Dispatch global event so Sidebar and Inbox can refresh
+      window.dispatchEvent(new Event('messages_updated'));
+    });
+
     return () => {
       socket.disconnect();
       socketRef.current = null;

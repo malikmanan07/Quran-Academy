@@ -12,7 +12,10 @@ export const getById = async (id) => {
   return m;
 };
 
-export const getVisibleToStudents = async () => repo.findVisibleToStudents();
+export const getVisibleToStudents = async (params) => {
+  const { data, total } = await repo.findVisibleToStudents(params);
+  return { materials: data, total };
+};
 export const create = async (data) => repo.create(data);
 
 export const update = async (id, data) => {

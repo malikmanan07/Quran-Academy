@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, text, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, varchar, text, boolean, timestamp, index } from 'drizzle-orm/pg-core';
 import { courses } from './courses.js';
 import { users } from './users.js';
 
@@ -13,4 +13,9 @@ export const courseMaterial = pgTable('course_material', {
   fileName: varchar('file_name', { length: 255 }),
   visibleToStudents: boolean('visible_to_students').default(true),
   createdAt: timestamp('created_at').defaultNow(),
-});
+}, (table) => ({
+  courseIdIdx: index('course_material_course_idx').on(table.courseId),
+  uploadedByIdx: index('course_material_uploaded_idx').on(table.uploadedBy),
+  visibleIdx: index('course_material_visible_idx').on(table.visibleToStudents),
+  createdAtIdx: index('course_material_created_idx').on(table.createdAt),
+}));

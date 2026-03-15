@@ -6,13 +6,21 @@ import EmptyState from '../../components/common/EmptyState';
 import AppBadge from '../../components/common/AppBadge';
 import { getAllCourses } from '../../features/courses/api';
 import { getMyEnrollmentRequests, createEnrollmentRequest } from '../../features/enrollments/api';
+import { getClassesByStudent } from '../../features/classes/api';
+import { useAuth } from '../../context/AuthContext';
+import { cachedRequest, getCache } from '../../services/apiCache';
 import EnrollmentRequestModal from '../../components/student/EnrollmentRequestModal';
 import { useCurrency } from '../../hooks/useCurrency';
 
 const CoursesPage = () => {
-  const [courses, setCourses] = useState([]);
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const cacheKey = `student:browse_courses:${user?.id}`;
+  const initialCache = getCache(cacheKey);
+
+  const [courses, setCourses] = useState(initialCache?.courses || []);
+  const [requests, setRequests] = useState(initialCache?.requests || []);
+  const [userClasses, setUserClasses] = useState(initialCache?.classes || []);
+  const [loading, setLoading] = useState(!initialCache);
   const [requestLoading, setRequestLoading] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
 
@@ -20,25 +28,46 @@ const CoursesPage = () => {
   const { formatCurrency } = useCurrency();
 
   const fetch = async () => {
-    setLoading(true);
+    if (!initialCache) setLoading(true);
     try {
-      const [crsRes, reqRes] = await Promise.all([
-        getAllCourses(),
-        getMyEnrollmentRequests()
-      ]);
-      setCourses(crsRes.data?.data?.courses || crsRes.data?.courses || []);
-      setRequests(reqRes.data?.data?.requests || reqRes.data?.requests || []);
+      const data = await cachedRequest(cacheKey, async () => {
+        const [crsRes, reqRes, clsRes] = await Promise.all([
+          getAllCourses(),
+          getMyEnrollmentRequests(),
+          getClassesByStudent()
+        ]);
+        
+        return {
+          courses: crsRes.data?.data?.courses || crsRes.data?.courses || [],
+          requests: reqRes.data?.data?.requests || reqRes.data?.requests || [],
+          classes: clsRes.data?.data?.classes || clsRes.data?.classes || []
+        };
+      }, 300); // 5 min cache
+      
+      setCourses(data.courses);
+      setRequests(data.requests);
+      setUserClasses(data.classes);
     } catch {
       // silent fail
     }
     setLoading(false);
   };
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => { 
+    if (user?.id) fetch(); 
+  }, [user?.id]);
 
-  const getRequestStatus = (courseId) => {
-    const req = requests.find(r => r.courseId === courseId);
-    return req ? req.status : null;
+  const getEnrollmentStatus = (courseId) => {
+    // 1. Manual/Active enrollment check through classes
+    if (userClasses.some(c => Number(c.courseId) === Number(courseId))) return 'approved';
+    
+    // 2. Request check (prioritize approved)
+    const courseReqs = requests.filter(r => Number(r.courseId) === Number(courseId));
+    if (courseReqs.some(r => r.status === 'approved')) return 'approved';
+    if (courseReqs.some(r => r.status === 'pending')) return 'pending';
+    
+    // Most recent status (e.g., if rejected they can try again)
+    return courseReqs[0]?.status || null;
   };
 
   const handleEnrollRequest = async (data) => {
@@ -69,7 +98,7 @@ const CoursesPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map(course => {
-            const reqStatus = getRequestStatus(course.id);
+            const reqStatus = getEnrollmentStatus(course.id);
             return (
               <div key={course.id} className="bg-white rounded-xl shadow-sm border border-[#E2E8F0] overflow-hidden flex flex-col hover:shadow-md transition-shadow">
                 <div className="p-6 flex flex-col flex-1">

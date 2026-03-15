@@ -87,13 +87,23 @@ const Sidebar = ({ isOpen, onClose }) => {
         }));
       });
     }
-    
-    // Fetch unread messages count for everyone
-    if (user) {
+    // Fetch unread messages count for everyone and listen to read events
+    const fetchUnread = () => {
       http.get('messages/unread-count')
         .then(res => setBadges(prev => ({ ...prev, messages: res.data?.data?.count || 0 })))
         .catch(() => {});
+    };
+
+    if (user) {
+      fetchUnread();
+      window.addEventListener('messages_updated', fetchUnread);
+      window.addEventListener('messages_read', fetchUnread); // Handle legacy if any
     }
+
+    return () => {
+      window.removeEventListener('messages_updated', fetchUnread);
+      window.removeEventListener('messages_read', fetchUnread);
+    };
   }, [user?.id, user?.role]);
 
   const handleLogout = () => { logout(); navigate(ROUTES.LOGIN); };

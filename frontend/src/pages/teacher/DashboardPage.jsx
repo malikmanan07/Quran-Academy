@@ -7,36 +7,45 @@ import TeacherStatsCards from '../../components/dashboard/teacher/TeacherStatsCa
 import TodaySchedule from '../../components/dashboard/teacher/TodaySchedule';
 import MyStudentsList from '../../components/dashboard/teacher/MyStudentsList';
 import RecentProgress from '../../components/dashboard/teacher/RecentProgress';
+import { cachedRequest, getCache } from '../../services/apiCache';
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const [classes, setClasses] = useState([]);
-  const [students, setStudents] = useState([]);
-  const [progress, setProgress] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const cachedData = getCache(`teacher:dashboard:${user?.id}`);
+  const [classes, setClasses] = useState(cachedData?.classes || []);
+  const [students, setStudents] = useState(cachedData?.students || []);
+  const [progress, setProgress] = useState(cachedData?.progress || []);
+  const [loading, setLoading] = useState(!cachedData);
 
   useEffect(() => {
-    const fetch = async () => {
-      setLoading(true);
-      try {
+  const fetch = async () => {
+    // If not cache-loaded, show spinner. Else, revalidate silently behind scenes!
+    if (!cachedData) setLoading(true);
+    try {
+      const dashboardData = await cachedRequest(`teacher:dashboard:${user?.id}`, async () => {
         const [cRes, sRes, pRes] = await Promise.all([
           getClassesByTeacher().catch(() => ({ data: { data: { classes: [] } } })),
           getAllStudents({ teacherId: user.id }).catch(() => ({ data: { data: { students: [] } } })),
           getAllProgress().catch(() => ({ data: { data: { progress: [] } } })),
         ]);
-        
-        // Extract from response.data (axios) -> .data (backend payload)
-        setClasses(cRes.data?.data?.classes || cRes.data?.classes || []);
-        setStudents(sRes.data?.data?.students || sRes.data?.students || []);
-        setProgress(pRes.data?.data?.progress || pRes.data?.progress || []);
-      } catch (err) {
-        console.error('Teacher Dashboard fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    if (user?.id) fetch();
-  }, [user]);
+        return {
+          classes: cRes.data?.data?.classes || cRes.data?.classes || [],
+          students: sRes.data?.data?.students || sRes.data?.students || [],
+          progress: pRes.data?.data?.progress || pRes.data?.progress || []
+        };
+      }, 120);
+      
+      setClasses(dashboardData.classes);
+      setStudents(dashboardData.students);
+      setProgress(dashboardData.progress);
+    } catch (err) {
+      console.error('Teacher Dashboard fetch error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  if (user?.id) fetch();
+}, [user?.id]);
 
   const today = new Date().toISOString().split('T')[0];
   const todayClasses = classes.filter(c => c.date?.startsWith(today));

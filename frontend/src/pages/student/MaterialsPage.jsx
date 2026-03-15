@@ -1,53 +1,69 @@
-import { useState, useEffect } from 'react';
+import { useAuth } from '../../context/AuthContext';
+import { useSearch } from '../../hooks/useSearch';
 import PageHeader from '../../components/common/PageHeader';
 import EmptyState from '../../components/common/EmptyState';
 import MaterialGrid from '../../components/teacher/materials/MaterialGrid';
 import GridSkeleton from '../../components/common/GridSkeleton';
+import SearchInput from '../../components/common/SearchInput';
+import AppPagination from '../../components/common/AppPagination';
 import { getMaterialsByStudent } from '../../features/materials/api';
 import Toast, { useToast } from '../../components/common/Toast';
-import handleApiError from '../../utils/handleApiError';
 
 const MaterialsPage = () => {
-  const [materials, setMaterials] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const { toast, showToast } = useToast();
-
-  const fetchMaterials = async () => {
-    try {
-      setLoading(true);
-      const response = await getMaterialsByStudent();
-      const body = response.data || response;
-      const list = body.data?.materials || body.materials || body.data || [];
-      setMaterials(Array.isArray(list) ? list : []);
-    } catch (err) {
-      showToast(handleApiError(err), 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchMaterials();
-  }, []);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  
+  const { 
+    data: materials, 
+    loading, 
+    total, 
+    page, 
+    setPage, 
+    pageSize, 
+    setPageSize, 
+    search, 
+    setSearch 
+  } = useSearch(getMaterialsByStudent, { 
+    cacheKey: `student:materials_list:${user?.id}`,
+    pageSize: 8
+  });
 
   return (
     <div className="animate-fade-in space-y-6">
       <Toast toast={toast} />
       <PageHeader 
         title="📄 Study Materials" 
-        subtitle="Access your course content, books, and references"
+        subtitle={`${total} materials available for your courses`}
       />
       
-      {loading ? (
-        <GridSkeleton items={4} />
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <SearchInput 
+          value={search} 
+          onChange={setSearch} 
+          placeholder="Search materials..." 
+          className="w-full md:w-80"
+        />
+      </div>
+
+      {loading && materials.length === 0 ? (
+        <GridSkeleton items={pageSize} />
       ) : materials.length > 0 ? (
-        <MaterialGrid materials={materials} loading={loading} />
+        <div className="space-y-6">
+          <MaterialGrid materials={materials} loading={loading} />
+          <AppPagination 
+            total={total} 
+            page={page} 
+            pageSize={pageSize} 
+            onPageChange={setPage} 
+            onPageSizeChange={setPageSize} 
+          />
+        </div>
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] p-12 text-center">
           <EmptyState 
             icon="📚" 
-            title="No Materials Assigned" 
-            message="Once your teacher uploads study materials for your courses, they will appear here."
+            title={search ? "No matches found" : "No Materials Assigned"} 
+            message={search ? "Try a different search term" : "Once your teacher uploads study materials for your courses, they will appear here."}
           />
         </div>
       )}

@@ -13,33 +13,49 @@ import MyCertificates from '../../components/student/MyCertificates';
 import QuranProgressMap from '../../components/common/QuranProgressMap';
 import StatCardSkeleton from '../../components/common/StatCardSkeleton';
 import TableSkeleton from '../../components/common/TableSkeleton';
+import { cachedRequest, getCache } from '../../services/apiCache';
 
 const DashboardPage = () => {
   const { user } = useAuth();
-  const [classes, setClasses] = useState([]);
-  const [progress, setProgress] = useState([]);
-  const [materials, setMaterials] = useState([]);
-  const [quranProg, setQuranProg] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({ attended: 0, pendingPayments: 0, progress: 0, materials: 0 });
+  const cachedData = getCache(`student:dashboard:${user?.id}`);
+  const [classes, setClasses] = useState(cachedData?.cls || []);
+  const [progress, setProgress] = useState(cachedData?.prg || []);
+  const [materials, setMaterials] = useState(cachedData?.mats || []);
+  const [quranProg, setQuranProg] = useState(cachedData?.qp || []);
+  
+  const initialStats = cachedData ? {
+    attended: cachedData.cls.filter(x => x.status === 'completed' || x.status === 'Completed').length,
+    pendingPayments: cachedData.pays.filter(x => x.status !== 'Paid' && x.status !== 'paid').length,
+    progress: cachedData.prg.length > 0 ? Math.round(cachedData.prg.reduce((a, x) => a + (Number(x.rating) || 0), 0) / cachedData.prg.length * 20) : 0,
+    materials: cachedData.mats.length,
+  } : { attended: 0, pendingPayments: 0, progress: 0, materials: 0 };
+  
+  const [stats, setStats] = useState(initialStats);
+  const [loading, setLoading] = useState(!cachedData);
 
   useEffect(() => {
     const fetch = async () => {
-      setLoading(true);
+      // If not cache-loaded, show spinner. Else, revalidate silently behind scenes!
+      if (!cachedData) setLoading(true);
       try {
-        const [cRes, pRes, payRes, mRes, qRes] = await Promise.all([
-          getClassesByStudent().catch(() => ({ data: { data: { classes: [] } } })),
-          getProgressByStudent().catch(() => ({ data: { data: { progress: [] } } })),
-          getPaymentsByStudent().catch(() => ({ data: { data: { payments: [] } } })),
-          getMaterialsByStudent().catch(() => ({ data: { data: { materials: [] } } })),
-          getMyQuranProgress().catch(() => ({ data: { data: { progress: [] } } })),
-        ]);
+        const dashboardData = await cachedRequest(`student:dashboard:${user?.id}`, async () => {
+          const [cRes, pRes, payRes, mRes, qRes] = await Promise.all([
+            getClassesByStudent().catch(() => ({ data: { data: { classes: [] } } })),
+            getProgressByStudent().catch(() => ({ data: { data: { progress: [] } } })),
+            getPaymentsByStudent().catch(() => ({ data: { data: { payments: [] } } })),
+            getMaterialsByStudent().catch(() => ({ data: { data: { materials: [] } } })),
+            getMyQuranProgress().catch(() => ({ data: { data: { progress: [] } } })),
+          ]);
+          return {
+            cls: cRes.data?.data?.classes || cRes.data?.classes || [],
+            prg: pRes.data?.data?.progress || pRes.data?.progress || [],
+            pays: payRes.data?.data?.payments || payRes.data?.payments || [],
+            mats: mRes.data?.data?.materials || mRes.data?.data || mRes.data?.materials || [],
+            qp: qRes.data?.data?.progress || []
+          };
+        }, 120);
 
-        const cls = cRes.data?.data?.classes || cRes.data?.classes || [];
-        const prg = pRes.data?.data?.progress || pRes.data?.progress || [];
-        const pays = payRes.data?.data?.payments || payRes.data?.payments || [];
-        const mats = mRes.data?.data?.materials || mRes.data?.data || mRes.data?.materials || [];
-        const qp = qRes.data?.data?.progress || [];
+        const { cls, prg, pays, mats, qp } = dashboardData;
 
         setClasses(cls);
         setProgress(prg);
@@ -59,7 +75,7 @@ const DashboardPage = () => {
       }
     };
     if (user?.id) fetch();
-  }, [user]);
+  }, [user?.id]);
 
   const today = new Date().toLocaleDateString('en-PK', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 

@@ -43,6 +43,8 @@ export const remove = asyncHandler(async (req, res) => {
 });
 
 export const getMyMaterials = asyncHandler(async (req, res) => {
-  const materials = await service.getVisibleToStudents();
-  sendSuccess(res, 'Materials fetched', { materials });
+  const { page, pageSize } = parsePaginationParams(req.query);
+  const result = await service.getVisibleToStudents({ ...req.query, page, limit: pageSize });
+  const { data, meta } = buildPaginatedResponse(result.materials, result.total, page, pageSize);
+  sendSuccess(res, 'Materials fetched', { materials: data }, meta);
 });

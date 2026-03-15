@@ -14,15 +14,15 @@ export const getStats = async () => {
 
   // Run ALL count/aggregate queries in parallel
   const [
-    [{ studentCount }],
-    [{ teacherCount }],
-    [{ courseCount }],
-    [{ pendingApprovals }],
-    [{ pendingEnrollments }],
-    [{ pendingTrials }],
-    [{ pendingPayments }],
-    [{ pendingPaymentsAmount }],
-    [{ totalRevenue }],
+    studentCountData,
+    teacherCountData,
+    courseCountData,
+    pendingApprovalsData,
+    pendingEnrollmentsData,
+    pendingTrialsData,
+    pendingPaymentsData,
+    pendingPaymentsAmountData,
+    totalRevenueData,
     monthlyRevenue,
     studentGrowth,
     attendanceBreakdown,
@@ -85,21 +85,21 @@ export const getStats = async () => {
   };
 
   const result = {
-    totalStudents: Number(studentCount),
-    totalTeachers: Number(teacherCount),
-    totalCourses: Number(courseCount),
-    pendingApprovals: Number(pendingApprovals),
-    pendingEnrollments: Number(pendingEnrollments?.count || 0),
-    pendingTrials: Number(pendingTrials?.count || 0),
-    pendingPayments: Number(pendingPayments?.count || 0),
-    pendingPaymentsAmount: Number(pendingPaymentsAmount?.amount || 0),
-    totalRevenue: Number(totalRevenue),
+    totalStudents: Number(studentCountData[0]?.studentCount || 0),
+    totalTeachers: Number(teacherCountData[0]?.teacherCount || 0),
+    totalCourses: Number(courseCountData[0]?.courseCount || 0),
+    pendingApprovals: Number(pendingApprovalsData[0]?.pendingApprovals || 0),
+    pendingEnrollments: Number(pendingEnrollmentsData[0]?.count || 0),
+    pendingTrials: Number(pendingTrialsData[0]?.count || 0),
+    pendingPayments: Number(pendingPaymentsData[0]?.count || 0),
+    pendingPaymentsAmount: Number(pendingPaymentsAmountData[0]?.amount || 0),
+    totalRevenue: Number(totalRevenueData[0]?.revenue || 0),
     monthlyRevenue,
     studentGrowth,
     attendanceStats,
     recentStudents,
     recentPayments,
-    todayClasses: Number(todayClasses?.count || 0),
+    todayClasses: Number(todayClasses[0]?.count || 0),
   };
 
   cache.set('stats:dashboard', result, 300);
