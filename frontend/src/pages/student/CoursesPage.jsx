@@ -9,6 +9,7 @@ import { getMyEnrollmentRequests, createEnrollmentRequest } from '../../features
 import { getClassesByStudent } from '../../features/classes/api';
 import { useAuth } from '../../context/AuthContext';
 import { cachedRequest, getCache } from '../../services/apiCache';
+import { getMyCourses } from '../../features/students/api';
 import EnrollmentRequestModal from '../../components/student/EnrollmentRequestModal';
 import { useCurrency } from '../../hooks/useCurrency';
 
@@ -31,24 +32,25 @@ const CoursesPage = () => {
     if (!initialCache) setLoading(true);
     try {
       const data = await cachedRequest(cacheKey, async () => {
-        const [crsRes, reqRes, clsRes] = await Promise.all([
+        const [crsRes, reqRes, myCrsRes] = await Promise.all([
           getAllCourses(),
           getMyEnrollmentRequests(),
-          getClassesByStudent()
+          getMyCourses()
         ]);
         
+        const resData = myCrsRes.data;
         return {
           courses: crsRes.data?.data?.courses || crsRes.data?.courses || [],
           requests: reqRes.data?.data?.requests || reqRes.data?.requests || [],
-          classes: clsRes.data?.data?.classes || clsRes.data?.classes || []
+          enrolled: resData?.data?.courses || resData?.courses || resData?.data || []
         };
-      }, 300); // 5 min cache
+      }, 30);
       
       setCourses(data.courses);
       setRequests(data.requests);
-      setUserClasses(data.classes);
-    } catch {
-      // silent fail
+      setUserClasses(data.enrolled); // Using userClasses state to store enrolled courses for status check
+    } catch (err) {
+      console.error('Fetch error:', err);
     }
     setLoading(false);
   };
@@ -58,15 +60,20 @@ const CoursesPage = () => {
   }, [user?.id]);
 
   const getEnrollmentStatus = (courseId) => {
-    // 1. Manual/Active enrollment check through classes
-    if (userClasses.some(c => Number(c.courseId) === Number(courseId))) return 'approved';
+    const cid = Number(courseId);
     
-    // 2. Request check (prioritize approved)
-    const courseReqs = requests.filter(r => Number(r.courseId) === Number(courseId));
+    // 1. Check Enrolled Courses first (highest priority)
+    const enrolledArr = Array.isArray(userClasses) ? userClasses : [];
+    const isEnrolled = enrolledArr.some(c => Number(c.id) === cid || Number(c.courseId) === cid);
+    if (isEnrolled) return 'approved';
+    
+    // 2. Check Requests
+    const allRequests = Array.isArray(requests) ? requests : [];
+    const courseReqs = allRequests.filter(r => Number(r.courseId) === cid);
+    
     if (courseReqs.some(r => r.status === 'approved')) return 'approved';
     if (courseReqs.some(r => r.status === 'pending')) return 'pending';
     
-    // Most recent status (e.g., if rejected they can try again)
     return courseReqs[0]?.status || null;
   };
 
@@ -106,9 +113,9 @@ const CoursesPage = () => {
                     <h3 className="text-lg font-bold text-[#1A1A2E] leading-tight">
                       {course.name}
                     </h3>
-                    {reqStatus === 'pending' && <AppBadge type="warning" text="Pending" />}
-                    {reqStatus === 'approved' && <AppBadge type="success" text="Enrolled" />}
-                    {reqStatus === 'rejected' && <AppBadge type="error" text="Rejected" />}
+                    {reqStatus === 'pending' && <AppBadge variant="warning">Pending</AppBadge>}
+                    {reqStatus === 'approved' && <AppBadge variant="success">Enrolled</AppBadge>}
+                    {reqStatus === 'rejected' && <AppBadge variant="error">Rejected</AppBadge>}
                   </div>
 
                   <p className="text-sm text-[#4A5568] flex-1 mb-6">
@@ -132,8 +139,8 @@ const CoursesPage = () => {
 
                   <div className="pt-4 border-t border-[#E2E8F0] mt-auto">
                     {reqStatus === 'approved' ? (
-                      <button className="w-full py-2.5 rounded-xl font-bold bg-[#F0F4F8] text-[#1B3A5C] opacity-80 cursor-not-allowed">
-                        Already Enrolled
+                      <button className="w-full py-2.5 rounded-xl font-bold bg-[#00B4D8] text-white opacity-90 cursor-default flex items-center justify-center gap-2">
+                        ✅ Already Enrolled
                       </button>
                     ) : reqStatus === 'pending' ? (
                       <button className="w-full py-2.5 rounded-xl font-bold bg-[#FEF3C7] text-[#B45309] cursor-not-allowed border border-[#FDE68A]">

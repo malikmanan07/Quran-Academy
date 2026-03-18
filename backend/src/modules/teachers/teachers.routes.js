@@ -10,6 +10,7 @@ const router = Router();
 router.get('/', auth, role('admin'), ctrl.getAll);
 router.get('/my-students', auth, role('teacher'), ctrl.getMyStudents);
 router.get('/:id', auth, role('admin', 'teacher'), ctrl.getById);
+router.put('/students/:studentId/complete-course', auth, role('teacher'), ctrl.markCourseComplete);
 router.post('/', auth, role('admin'), validate(createTeacherSchema), ctrl.create);
 router.put('/:id', auth, role('admin'), validate(updateTeacherSchema), ctrl.update);
 router.delete('/:id', auth, role('admin'), ctrl.remove);

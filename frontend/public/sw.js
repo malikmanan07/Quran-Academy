@@ -34,8 +34,15 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests & API requests
-  if (!event.request.url.startsWith(self.location.origin) || event.request.url.includes('/api/')) {
+  // Skip cross-origin requests, API requests, and development modules/HMR
+  const isDevModule = event.request.url.includes('.jsx') || 
+                     event.request.url.includes('/node_modules/') ||
+                     event.request.url.includes('?v=') ||
+                     event.request.url.includes('?t=');
+
+  if (!event.request.url.startsWith(self.location.origin) || 
+      event.request.url.includes('/api/') ||
+      isDevModule) {
     return;
   }
 
@@ -56,8 +63,12 @@ self.addEventListener('fetch', (event) => {
       }).catch(() => {
         // In case of completely offline and page request, try to return index.html
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match('/index.html').then(res => res || new Response('Network error, please check connection.', { status: 408 }));
         }
+        return new Response('Network error occurred', {
+          status: 408,
+          statusText: 'Network Error'
+        });
       });
     })
   );

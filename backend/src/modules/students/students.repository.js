@@ -1,5 +1,5 @@
 import db from '../../config/db.js';
-import { users, classes, courses } from '../../db/schema/index.js';
+import { users, classes, courses, enrollmentRequests } from '../../db/schema/index.js';
 import { eq, and, ilike, isNull, desc, sql, or } from 'drizzle-orm';
 import { getPagination } from '../../utils/pagination.js';
 
@@ -79,4 +79,21 @@ export const update = async (id, data) => {
 
 export const softDelete = async (id) => {
   return db.update(users).set({ deletedAt: new Date(), isActive: false }).where(eq(users.id, id));
+};
+export const findCoursesByStudentId = async (studentId) => {
+  // Find all courses where student has an approved request OR has scheduled classes
+  const data = await db.select({
+    id: courses.id,
+    name: courses.name,
+    description: courses.description,
+    duration: courses.duration,
+    level: courses.level,
+    price: courses.price
+  }).from(courses)
+    .where(or(
+      sql`${courses.id} IN (SELECT course_id FROM enrollment_requests WHERE student_id = ${studentId} AND status = 'approved')`,
+      sql`${courses.id} IN (SELECT course_id FROM classes WHERE student_id = ${studentId} AND status NOT IN ('cancelled'))`
+    ));
+    
+  return data;
 };

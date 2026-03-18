@@ -9,11 +9,13 @@ export const API = {
   // Students
   STUDENTS: 'students',
   STUDENT_BY_ID: (id) => `students/${id}`,
+  STUDENT_COURSES: 'students/my-courses',
 
   // Teachers
   TEACHERS: 'teachers',
   TEACHER_BY_ID: (id) => `teachers/${id}`,
   MY_STUDENTS: 'teachers/my-students',
+  TEACHER_COMPLETE_COURSE: (id) => `teacher/students/${id}/complete-course`,
 
   // Courses
   COURSES: 'courses',
@@ -65,6 +67,8 @@ export const API = {
   PARENT_CHILD_CLASSES: (id) => `parent/child/${id}/classes`,
   ADMIN_LINK_PARENT: 'parent/link-parent',
   ADMIN_ALL_PARENTS: 'parent/all-parents',
+  ADMIN_COURSE_COMPLETIONS: 'admin/course-completions',
+  ALL_CERTIFICATES: 'certificates/all',
 
   // Trial
   TRIAL_BOOK: 'trial/book',

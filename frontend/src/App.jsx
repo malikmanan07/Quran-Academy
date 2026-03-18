@@ -33,6 +33,7 @@ const SettingsPage = lazy(() => import('./pages/admin/SettingsPage'));
 const ParentsPage = lazy(() => import('./pages/admin/ParentsPage'));
 const TrialRequestsPage = lazy(() => import('./pages/admin/TrialRequestsPage'));
 const EnrollmentRequestsPage = lazy(() => import('./pages/admin/EnrollmentRequestsPage'));
+const AdminCertificates = lazy(() => import('./pages/admin/CertificatesPage'));
 const MessagesPage = lazy(() => import('./pages/common/MessagesPage'));
 
 // Teacher Pages
@@ -111,6 +112,7 @@ function App() {
           <Route path={ROUTES.ADMIN_TRIAL_REQUESTS} element={<TrialRequestsPage />} />
           <Route path={ROUTES.ADMIN_ENROLLMENT_REQUESTS} element={<EnrollmentRequestsPage />} />
           <Route path={ROUTES.ADMIN_MESSAGES} element={<MessagesPage />} />
+          <Route path={ROUTES.ADMIN_CERTIFICATES} element={<AdminCertificates />} />
         </Route>
 
         {/* Teacher Routes */}

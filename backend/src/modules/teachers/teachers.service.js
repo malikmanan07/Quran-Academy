@@ -32,3 +32,5 @@ export const remove = async (id) => {
   await getById(id);
   return repo.softDelete(id);
 };
+
+export const markCourseComplete = async (data) => repo.markCourseComplete(data);

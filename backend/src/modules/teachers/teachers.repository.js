@@ -1,5 +1,5 @@
 import db from '../../config/db.js';
-import { users, classes, courses } from '../../db/schema/index.js';
+import { users, classes, courses, courseCompletions } from '../../db/schema/index.js';
 import { eq, and, ilike, isNull, desc, sql, or } from 'drizzle-orm';
 import { cache } from '../../services/cache.js';
 
@@ -86,4 +86,26 @@ export const findMyStudents = async (teacherId) => {
     .groupBy(users.id);
     
   return results;
+};
+
+export const markCourseComplete = async ({ studentId, teacherId, courseId, notes }) => {
+  return db.transaction(async (tx) => {
+    // 1. Update students table (users)
+    await tx.update(users).set({
+      courseCompleted: true,
+      courseCompletedAt: new Date(),
+      courseCompletedBy: teacherId
+    }).where(eq(users.id, studentId));
+
+    // 2. Insert into course_completions
+    const [result] = await tx.insert(courseCompletions).values({
+      studentId,
+      courseId,
+      teacherId,
+      notes,
+      status: 'pending'
+    }).returning();
+
+    return result;
+  });
 };

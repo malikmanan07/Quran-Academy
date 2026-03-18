@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getMyCertificates } from '../../features/certificates/api';
-import generateCertificate from '../../utils/generateCertificate';
+import { downloadCertificate } from '../../utils/generateCertificate';
 import AppButton from '../common/AppButton';
 import EmptyState from '../common/EmptyState';
 import Toast, { useToast } from '../common/Toast';
@@ -21,14 +21,19 @@ const MyCertificates = () => {
     fetch();
   }, []);
 
-  const handleDownload = (cert) => {
+  const handleDownload = async (cert) => {
     try {
-      const date = new Date(cert.generatedAt).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric',
+      await downloadCertificate({
+        studentName: cert.studentName,
+        courseName: cert.courseName,
+        teacherName: cert.teacherName || 'Academy Instructor',
+        completionDate: cert.completionDate || cert.generatedAt,
+        certificateNumber: cert.certificateNumber
       });
-      generateCertificate(cert.studentName, cert.courseName, date);
-      showToast('Certificate downloaded!');
-    } catch { showToast('Download failed', 'error'); }
+      showToast('Certificate downloaded! 🏆');
+    } catch (err) { 
+      showToast('Download failed', 'error'); 
+    }
   };
 
   if (loading) {

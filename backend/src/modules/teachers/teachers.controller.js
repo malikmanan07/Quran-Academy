@@ -30,6 +30,16 @@ export const remove = asyncHandler(async (req, res) => {
   sendSuccess(res, 'Teacher deleted');
 });
 
+export const markCourseComplete = asyncHandler(async (req, res) => {
+  const result = await service.markCourseComplete({
+    studentId: parseInt(req.params.studentId),
+    teacherId: req.user.id,
+    courseId: req.body.courseId,
+    notes: req.body.notes
+  });
+  sendSuccess(res, 'Course marked as complete!', result);
+});
+
 export const getMyStudents = asyncHandler(async (req, res) => {
   const result = await service.getMyStudents(req.user.id);
   sendSuccess(res, 'Students fetched', { students: result.students });

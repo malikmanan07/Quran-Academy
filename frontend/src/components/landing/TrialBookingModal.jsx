@@ -105,10 +105,10 @@ const TrialBookingModal = ({ show, onClose }) => {
       // Detect timezone and country
       const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
       const detectedCountry = countries.find(c => c.timezone === tz) || countries[0];
-      setForm(prev => ({ 
-        ...prev, 
-        timezone: tz, 
-        country: detectedCountry 
+      setForm(prev => ({
+        ...prev,
+        timezone: tz,
+        country: detectedCountry
       }));
 
       // Sync currency to detected country
@@ -146,7 +146,7 @@ const TrialBookingModal = ({ show, onClose }) => {
     else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Invalid email address';
     if (!form.phone) e.phone = 'Phone number is required';
     if (!form.courseId) e.courseId = 'Please select a course';
-    
+
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -176,7 +176,7 @@ const TrialBookingModal = ({ show, onClose }) => {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
     const localCurrency = TIMEZONE_CURRENCY[tz] || 'USD';
     setCurrency(localCurrency);
-    
+
     setSuccess(false);
     setForm({
       fullName: '', email: '', phone: '', country: null, timezone: '',
@@ -206,7 +206,7 @@ const TrialBookingModal = ({ show, onClose }) => {
     <AppModal show={show} onClose={handleClose} title="📖 Book Free Trial Class" size="md">
       <form onSubmit={handleSubmit} className="space-y-5 py-2">
         {errors.form && <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">{errors.form}</div>}
-        
+
         {/* Row 1: Full Name */}
         <div>
           <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">Full Name*</label>
@@ -311,9 +311,6 @@ const TrialBookingModal = ({ show, onClose }) => {
                     {country.value}
                   </span>
                   <span>{country.label}</span>
-                  <span className="text-gray-400 text-sm ml-1">
-                    {country.dialCode}
-                  </span>
                 </div>
               )}
             />
@@ -372,26 +369,26 @@ const TrialBookingModal = ({ show, onClose }) => {
           </div>
 
           <div>
-             <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Days</label>
-             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-               {dayOptions.map(day => (
-                 <label key={day} className="flex items-center gap-2 cursor-pointer group">
-                   <div className="relative flex items-center">
-                     <input
-                       type="checkbox"
-                       id={`day-${day}`}
-                       className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#00B4D8] checked:bg-[#00B4D8] transition-all"
-                       checked={form.preferredDays.includes(day)}
-                       onChange={() => handleDayToggle(day)}
-                     />
-                     <svg className="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                     </svg>
-                   </div>
-                   <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{day}</span>
-                 </label>
-               ))}
-             </div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Days</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {dayOptions.map(day => (
+                <label key={day} className="flex items-center gap-2 cursor-pointer group">
+                  <div className="relative flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`day-${day}`}
+                      className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#00B4D8] checked:bg-[#00B4D8] transition-all"
+                      checked={form.preferredDays.includes(day)}
+                      onChange={() => handleDayToggle(day)}
+                    />
+                    <svg className="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{day}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -409,11 +406,11 @@ const TrialBookingModal = ({ show, onClose }) => {
         </div>
 
         {/* Row 8: Submit */}
-        <AppButton 
-          type="submit" 
-          variant="accent" 
-          fullWidth 
-          size="lg" 
+        <AppButton
+          type="submit"
+          variant="accent"
+          fullWidth
+          size="lg"
           loading={loading}
           className="shadow-md hover:shadow-lg transform transition-all active:scale-[0.98]"
         >

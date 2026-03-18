@@ -27,3 +27,6 @@ export const remove = async (id) => {
   await getById(id);
   return repo.softDelete(id);
 };
+export const getMyCourses = async (userId) => {
+  return repo.findCoursesByStudentId(userId);
+};

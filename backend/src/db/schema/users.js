@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp, boolean, index } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, timestamp, boolean, index, integer } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -13,6 +13,9 @@ export const users = pgTable('users', {
   status: varchar('status', { length: 20 }).default('pending'),
   lastLoginAt: timestamp('last_login_at'),
   deletedAt: timestamp('deleted_at'),
+  courseCompleted: boolean('course_completed').default(false),
+  courseCompletedAt: timestamp('course_completed_at'),
+  courseCompletedBy: integer('course_completed_by').references(() => users.id),
   createdAt: timestamp('created_at').defaultNow(),
 }, (table) => ({
   emailIdx: index('users_email_idx').on(table.email),

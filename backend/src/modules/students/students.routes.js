@@ -8,6 +8,8 @@ import { createStudentSchema, updateStudentSchema } from './students.validation.
 const router = Router();
 
 router.get('/', auth, role('admin', 'teacher'), ctrl.getAll);
+router.get('/my-courses', auth, role('student'), ctrl.getMyCourses);
+
 router.get('/:id', auth, ctrl.getById);
 router.post('/', auth, role('admin'), validate(createStudentSchema), ctrl.create);
 router.put('/:id', auth, role('admin'), validate(updateStudentSchema), ctrl.update);

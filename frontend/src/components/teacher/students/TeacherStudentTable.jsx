@@ -28,6 +28,22 @@ const TeacherStudentTable = ({ students, loading, onViewProgress }) => {
       </div>
     )},
     { key: 'isActive', label: 'Status', render: (r) => <AppBadge status={r.isActive !== false ? 'Active' : 'Inactive'} /> },
+    { key: 'completion', label: 'Completion', render: (r) => (
+      r.courseCompleted ? (
+        <span className="text-green-600 font-bold text-xs flex items-center gap-1">
+          ✅ Completed
+        </span>
+      ) : (
+        <AppButton 
+          variant="secondary" 
+          size="sm" 
+          className="!py-1 !px-2 text-[10px]"
+          onClick={() => onViewProgress(r, 'complete')}
+        >
+          🎓 Mark Complete
+        </AppButton>
+      )
+    )},
     { key: 'actions', label: 'Actions', render: (r) => (
       <AppButton variant="outline" size="sm" onClick={() => onViewProgress(r)}>View Progress</AppButton>
     )},

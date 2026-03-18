@@ -18,6 +18,7 @@ export const ROUTES = {
   ADMIN_PARENTS: '/admin/parents',
   ADMIN_TRIAL_REQUESTS: '/admin/trial-requests',
   ADMIN_MESSAGES: '/admin/messages',
+  ADMIN_CERTIFICATES: '/admin/certificates',
 
   // Teacher
   TEACHER_DASHBOARD: '/teacher/dashboard',

@@ -1,33 +1,51 @@
 import db from '../../config/db.js';
-import { certificates, users, courses } from '../../db/schema/index.js';
-import { eq, and, desc } from 'drizzle-orm';
+import { certificates, courseCompletions, users, courses } from '../../db/schema/index.js';
+import { eq, and, desc, isNull, sql } from 'drizzle-orm';
 
-export const findByStudentId = async (studentId) =>
-  db.select({
-    id: certificates.id,
-    studentId: certificates.studentId,
-    courseId: certificates.courseId,
-    url: certificates.url,
-    generatedAt: certificates.generatedAt,
-    courseName: courses.name,
+export const findCompletions = async () => {
+  return db.select({
+    id: courseCompletions.id,
+    studentId: courseCompletions.studentId,
+    courseId: courseCompletions.courseId,
+    teacherId: courseCompletions.teacherId,
+    notes: courseCompletions.notes,
+    completedAt: courseCompletions.completedAt,
     studentName: users.name,
-  }).from(certificates)
-    .leftJoin(users, eq(certificates.studentId, users.id))
-    .leftJoin(courses, eq(certificates.courseId, courses.id))
-    .where(eq(certificates.studentId, studentId))
-    .orderBy(desc(certificates.generatedAt));
-
-export const findByStudentAndCourse = async (studentId, courseId) => {
-  const result = await db.select({
-    id: certificates.id, studentId: certificates.studentId,
-    courseId: certificates.courseId, url: certificates.url,
-    generatedAt: certificates.generatedAt
-  }).from(certificates)
-    .where(and(eq(certificates.studentId, studentId), eq(certificates.courseId, courseId)));
-  return result[0] || null;
+    courseName: courses.name,
+    teacherName: sql`(SELECT name FROM users WHERE id = ${courseCompletions.teacherId})`
+  })
+  .from(courseCompletions)
+  .innerJoin(users, eq(courseCompletions.studentId, users.id))
+  .innerJoin(courses, eq(courseCompletions.courseId, courses.id))
+  .where(eq(courseCompletions.status, 'pending'))
+  .orderBy(desc(courseCompletions.completedAt));
 };
 
-export const create = async (data) => {
-  const result = await db.insert(certificates).values(data).returning();
-  return result[0];
+export const createCertificate = async (data) => {
+  return db.transaction(async (tx) => {
+    const [result] = await tx.insert(certificates).values(data).returning();
+    
+    // Update completion status
+    await tx.update(courseCompletions)
+      .set({ status: 'certified' })
+      .where(and(
+        eq(courseCompletions.studentId, data.studentId),
+        eq(courseCompletions.courseId, data.courseId)
+      ));
+      
+    return result;
+  });
+};
+
+export const findByStudent = async (studentId) => {
+  return db.select().from(certificates).where(eq(certificates.studentId, studentId)).orderBy(desc(certificates.generatedAt));
+};
+
+export const findById = async (id) => {
+  const [result] = await db.select().from(certificates).where(eq(certificates.id, id));
+  return result;
+};
+
+export const findAllGenerated = async () => {
+  return db.select().from(certificates).orderBy(desc(certificates.generatedAt));
 };

@@ -78,15 +78,22 @@ const ClassesPage = () => {
   }, [user?.id]);
 
   const filteredClasses = useMemo(() => {
-    const sorted = [...classes].sort((a, b) => new Date(a.scheduledAt) - new Date(b.scheduledAt));
+    // Add scheduledAt fallback explicitly for filtering
+    const classesWithDate = classes.map(c => ({
+      ...c,
+      _date: new Date(c.classTime || c.scheduledAt || c.date || null)
+    }));
+    
+    const sorted = [...classesWithDate].sort((a, b) => a._date - b._date);
+    
     if (activeTab === 'upcoming') {
-      return sorted.filter(c => new Date(c.scheduledAt) > subMins(now, 60) && c.status !== 'cancelled');
+      return sorted.filter(c => c._date > subMins(now, 60) && c.status !== 'cancelled' && c.status !== 'completed');
     }
-    return sorted.filter(c => new Date(c.scheduledAt) < subMins(now, 60) || c.status === 'cancelled').reverse();
+    return sorted.filter(c => c._date < subMins(now, 60) || c.status === 'cancelled' || c.status === 'completed').reverse();
   }, [classes, activeTab, now]);
 
-  const getJoinStatus = (scheduledAt) => {
-    const startTime = new Date(scheduledAt);
+  const getJoinStatus = (classObj) => {
+    const startTime = new Date(classObj.classTime || classObj.scheduledAt || classObj.date);
     const windowStart = subMins(startTime, 10);
     const windowEnd = addMins(startTime, 60);
     
@@ -95,8 +102,9 @@ const ClassesPage = () => {
     return 'expired';
   };
 
-  const getTimeRemaining = (scheduledAt) => {
-    const diff = new Date(scheduledAt) - now;
+  const getTimeRemaining = (classObj) => {
+    const startTime = new Date(classObj.classTime || classObj.scheduledAt || classObj.date);
+    const diff = startTime - now;
     if (diff <= 0) return null;
     
     const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -141,11 +149,11 @@ const ClassesPage = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredClasses.map(c => {
-            const joinStatus = getJoinStatus(c.scheduledAt);
-            const timeRemaining = getTimeRemaining(c.scheduledAt);
-            const platform = (c.meetingUrl || '').includes('zoom.us') ? 'zoom' : 
-                            (c.meetingUrl || '').includes('google.com') ? 'meet' : 
-                            (c.meetingUrl || '').includes('microsoft.com') ? 'teams' : 'other';
+            const joinStatus = getJoinStatus(c);
+            const timeRemaining = getTimeRemaining(c);
+            const platform = (c.meetingUrl || c.meetingLink || '').includes('zoom.us') ? 'zoom' : 
+                            (c.meetingUrl || c.meetingLink || '').includes('google.com') ? 'meet' : 
+                            (c.meetingUrl || c.meetingLink || '').includes('microsoft.com') ? 'teams' : 'other';
 
             return (
               <div key={c.id} className="bg-white rounded-2xl shadow-sm border border-[#E2E8F0] overflow-hidden hover:shadow-md transition-all group">
@@ -154,9 +162,9 @@ const ClassesPage = () => {
                   <div className="flex justify-between items-start mb-4">
                     <div className="space-y-1">
                       <p className="text-xs font-bold text-[#00B4D8] uppercase tracking-wider">{c.courseName}</p>
-                      <h3 className="text-lg font-bold text-[#1A1A2E]">{formatDate(c.scheduledAt, 'EEEE, MMM do')}</h3>
+                      <h3 className="text-lg font-bold text-[#1A1A2E]">{formatDate(c._date, 'EEEE, MMM do')}</h3>
                       <p className="text-sm text-[#4A5568] font-medium flex items-center gap-1.5">
-                        <span className="text-base">🕒</span> {formatDate(c.scheduledAt, 'hh:mm a')} ({c.duration} mins)
+                        <span className="text-base">🕒</span> {formatDate(c._date, 'hh:mm a')} {c.duration ? `(${c.duration} mins)` : ''}
                       </p>
                     </div>
                     <AppBadge variant={statusMap[c.status] || 'neutral'}>{c.status}</AppBadge>

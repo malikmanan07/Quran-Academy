@@ -12,6 +12,8 @@ const statusStyles = {
   regular: 'bg-blue-100 text-blue-700 border-blue-200',
   cancelled: 'bg-gray-100 text-gray-700 border-gray-200',
   accent: 'bg-purple-100 text-purple-700 border-purple-200',
+  error: 'bg-red-100 text-red-700 border-red-200',
+  neutral: 'bg-gray-100 text-gray-700 border-gray-200',
 };
 
 const AppBadge = ({ 

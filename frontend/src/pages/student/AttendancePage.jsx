@@ -84,9 +84,10 @@ const StudentAttendancePage = () => {
                   <div className="flex items-center gap-3 mb-1">
                     <p className="font-bold text-[#1A1A2E]">{new Date(rec.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</p>
                     <AppBadge 
-                      type={rec.status === 'present' ? 'success' : rec.status === 'absent' ? 'error' : 'warning'} 
-                      text={rec.status.charAt(0).toUpperCase() + rec.status.slice(1)} 
-                    />
+                      variant={(rec.status || '').toLowerCase() === 'present' ? 'success' : (rec.status || '').toLowerCase() === 'absent' ? 'error' : 'warning'} 
+                    >
+                      {rec.status ? (rec.status.charAt(0).toUpperCase() + rec.status.slice(1)) : 'Unknown'}
+                    </AppBadge>
                   </div>
                   <p className="text-sm text-[#4A5568]">Teacher: {rec.teacherName}</p>
                   {rec.notes && <p className="text-sm text-gray-500 mt-1 italic">"{rec.notes}"</p>}

@@ -54,7 +54,8 @@ app.get('/', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/students', studentsRoutes);
-app.use('/api/teachers', teachersRoutes);
+app.use('/api/teachers', teachersRoutes); // Standard
+app.use('/api/teacher', teachersRoutes);  // Alias for course completion flow
 app.use('/api/courses', coursesRoutes);
 app.use('/api/classes', classesRoutes);
 app.use('/api/payments', paymentsRoutes);

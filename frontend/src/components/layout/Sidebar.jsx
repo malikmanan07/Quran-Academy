@@ -17,6 +17,7 @@ const adminMenu = [
   { label: 'Courses', path: ROUTES.ADMIN_COURSES, icon: '📚' },
   { label: 'Classes', path: ROUTES.ADMIN_CLASSES, icon: '🕐' },
   { label: 'Payments', path: ROUTES.ADMIN_PAYMENTS, icon: '💰', isBadge: true, badgeKey: 'payments' },
+  { label: 'Certificates', path: ROUTES.ADMIN_CERTIFICATES, icon: '🏆', isBadge: true, badgeKey: 'certificates' },
   { label: 'Messages', path: ROUTES.ADMIN_MESSAGES, icon: '💬', isBadge: true, badgeKey: 'messages' },
   { label: 'Settings', path: ROUTES.ADMIN_SETTINGS, icon: '⚙️' },
 ];
@@ -68,7 +69,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const menu = getMenu(user?.role);
-  const [badges, setBadges] = useState({ pending: 0, trial: 0, enrollments: 0, messages: 0, payments: 0 });
+  const [badges, setBadges] = useState({ pending: 0, trial: 0, enrollments: 0, messages: 0, payments: 0, certificates: 0 });
 
   useEffect(() => {
     if (user?.role === ROLES.ADMIN) {
@@ -77,13 +78,15 @@ const Sidebar = ({ isOpen, onClose }) => {
         http.get('trial/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
         http.get('enrollments/requests').catch(() => ({ data: { data: { pendingCount: 0 } } })),
         http.get('stats/admin').catch(() => ({ data: { data: { pendingPayments: 0 } } })),
-      ]).then(([pRes, tRes, eRes, sRes]) => {
+        http.get('admin/course-completions').catch(() => ({ data: { data: { completions: [] } } })),
+      ]).then(([pRes, tRes, eRes, sRes, cRes]) => {
         setBadges(prev => ({
           ...prev,
           pending: pRes.data?.users?.length || 0,
           trial: tRes.data?.data?.pendingCount || 0,
           enrollments: eRes.data?.data?.pendingCount || 0,
           payments: sRes.data?.data?.pendingPayments || 0,
+          certificates: cRes.data?.data?.completions?.length || 0,
         }));
       });
     }
