@@ -1,0 +1,217 @@
+{
+  "nav": {
+    "home": "Home",
+    "courses": "Courses",
+    "pricing": "Pricing",
+    "about": "About",
+    "login": "Login",
+    "signup": "Sign Up"
+  },
+  "hero": {
+    "trusted": "Trusted by 500+ Students",
+    "title": "Learn Quran Online With",
+    "titleHighlight": "Expert Teachers",
+    "subtitle": "Join 500+ Students From 20+ Countries Worldwide. One-on-one personalized classes for all ages.",
+    "globalStudents": "Global Students",
+    "flexibleTimezones": "Flexible Timezones",
+    "freeTrial": "Free Trial",
+    "startFreeTrial": "Start Free Trial",
+    "viewCourses": "View Courses",
+    "rating": "Rating",
+    "students": "Students",
+    "teachers": "Teachers",
+    "nextClass": "Next Class",
+    "upcoming": "Upcoming",
+    "myProgress": "My Progress",
+    "tajweedUstaz": "Tajweed — Ustaz Ahmad"
+  },
+  "stats": {
+    "globalStudents": "Global Students",
+    "expertTeachers": "Expert Teachers",
+    "countries": "Countries",
+    "satisfactionRate": "Satisfaction Rate"
+  },
+  "countries": {
+    "title": "Students From Around The World",
+    "subtitle": "Join our global community of Quran learners from 20+ countries"
+  },
+  "features": {
+    "title": "Why Choose Quran Academy?",
+    "subtitle": "Everything you need for a complete Quran learning experience",
+    "oneOnOne": "One-on-One Classes",
+    "oneOnOneDesc": "Personalized attention for every student with dedicated teacher sessions.",
+    "expertTeachers": "Expert Teachers",
+    "expertTeachersDesc": "Certified Quran teachers with years of experience in Quranic education.",
+    "flexibleSchedule": "Flexible Schedule",
+    "flexibleScheduleDesc": "Learn at your own pace with convenient class timings that suit you.",
+    "learnAnywhere": "Learn Anywhere",
+    "learnAnywhereDesc": "Access from any device, anywhere in the world with online classes.",
+    "progressTracking": "Progress Tracking",
+    "progressTrackingDesc": "Monitor your learning journey with detailed reports and milestones.",
+    "certificates": "Certificates",
+    "certificatesDesc": "Earn recognized certificates upon successful course completion."
+  },
+  "courses": {
+    "title": "Our Courses",
+    "subtitle": "Choose the perfect course for your learning journey",
+    "mostPopular": "Most Popular",
+    "month": "month",
+    "enrollNow": "Enroll Now",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "allLevels": "All Levels",
+    "allAges": "All Ages",
+    "ongoing": "Ongoing",
+    "nazraName": "Nazra Quran",
+    "nazraDesc": "Learn to read Quran with proper pronunciation and fluency.",
+    "hifzName": "Hifz ul Quran", 
+    "hifzDesc": "Memorize the complete Holy Quran with expert guidance.",
+    "tajweedName": "Tajweed ul Quran",
+    "tajweedDesc": "Master the rules of Quran recitation with perfect pronunciation.",
+    "islamicName": "Islamic Studies",
+    "islamicDesc": "Comprehensive Islamic education covering Fiqh, Hadith and Seerah.",
+    "months36": "3-6 Months",
+    "years23": "2-3 Years",
+    "months612": "6-12 Months"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Get started in 3 simple steps",
+    "step1Title": "Register",
+    "step1Desc": "Create your account and tell us your learning goals.",
+    "step2Title": "Get Matched",
+    "step2Desc": "We match you with the perfect teacher based on your needs.",
+    "step3Title": "Start Learning",
+    "step3Desc": "Begin your personalized Quran learning journey."
+  },
+  "teachers": {
+    "title": "Meet Our Teachers",
+    "subtitle": "Qualified and experienced Quran teachers",
+    "students": "Students",
+    "viewProfile": "View Profile",
+    "tajweedExpert": "Tajweed Expert",
+    "hifzSpecialist": "Hifz Specialist",
+    "nazraTeacher": "Nazra Teacher",
+    "islamicStudies": "Islamic Studies",
+    "ustazAhmad": "Ustaz Ahmad Ali",
+    "ustazaFatima": "Ustaza Fatima Khan",
+    "ustazMuhammad": "Ustaz Muhammad Hassan",
+    "ustazaAisha": "Ustaza Aisha Malik"
+  },
+  "testimonials": {
+    "title": "What Our Students Say",
+    "subtitle": "Real feedback from our beloved students",
+    "t1": "My child learned to read Quran in just 4 months. Amazing teachers and very professional approach!",
+    "t1name": "Sara Ahmed",
+    "t1city": "Karachi",
+    "t2": "The flexible schedule fits perfectly with my work routine. Highly recommended for working professionals!",
+    "t2name": "Ali Hassan",
+    "t2city": "Lahore",
+    "t3": "Best online Quran academy. My entire family is enrolled and the kids love their teachers!",
+    "t3name": "Fatima Malik",
+    "t3city": "Islamabad"
+  },
+  "pricing": {
+    "title": "Simple, Transparent Pricing",
+    "subtitle": "Choose the plan that works for you",
+    "mostPopular": "Most Popular",
+    "month": "month",
+    "getStarted": "Get Started",
+    "basic": "Basic",
+    "standard": "Standard",
+    "premium": "Premium",
+    "basicFeatures": {
+      "f1": "1 Class per week",
+      "f2": "1 Course access",
+      "f3": "Progress reports",
+      "f4": "Email support"
+    },
+    "standardFeatures": {
+      "f1": "3 Classes per week",
+      "f2": "All courses access",
+      "f3": "Progress reports",
+      "f4": "Priority support",
+      "f5": "Recorded sessions"
+    },
+    "premiumFeatures": {
+      "f1": "Daily classes",
+      "f2": "All courses access",
+      "f3": "Progress reports",
+      "f4": "24/7 support",
+      "f5": "Recorded sessions",
+      "f6": "Family plan (3 students)"
+    }
+  },
+  "cta": {
+    "title": "Start Your Quran Learning Journey Today",
+    "subtitle": "Join 500+ students already learning with us. Begin your free trial now.",
+    "enrollNow": "Enroll Now",
+    "contactUs": "Contact Us"
+  },
+  "footer": {
+    "about": "Empowering students with quality Quranic education. Learn, grow, and connect with knowledgeable teachers worldwide.",
+    "quickLinks": "Quick Links",
+    "courses": "Courses",
+    "contact": "Contact",
+    "location": "Karachi, Pakistan",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "trialModal": {
+    "modalTitle": "Book Free Trial Class",
+    "form": {
+      "fullName": "Full Name*",
+      "fullNamePlaceholder": "Enter your full name",
+      "email": "Email Address*",
+      "emailPlaceholder": "you@example.com",
+      "phone": "Phone Number*",
+      "phonePlaceholder": "300 1234567",
+      "country": "Country*",
+      "countryPlaceholder": "Select country",
+      "timezone": "Timezone*",
+      "course": "Preferred Course*",
+      "coursePlaceholder": "Select a course",
+      "month": "month",
+      "time": "Preferred Time",
+      "timePlaceholder": "Select preferred time",
+      "morning": "🌅 Morning (6AM - 12PM)",
+      "afternoon": "☀️ Afternoon (12PM - 5PM)",
+      "evening": "🌆 Evening (5PM - 10PM)",
+      "night": "🌙 Night (10PM - 12AM)",
+      "flexible": "🕐 Flexible (Any Time)",
+      "days": "Preferred Days",
+      "message": "Message (Optional)",
+      "messagePlaceholder": "Any specific requirements or questions...",
+      "submitButton": "Book Free Trial Now",
+      "submittingButton": "Submitting..."
+    },
+    "days": {
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday",
+      "sat": "Saturday",
+      "sun": "Sunday"
+    },
+    "errors": {
+      "fullName": "Full Name is required",
+      "email": "Email is required",
+      "invalidEmail": "Invalid email address",
+      "phone": "Phone number is required",
+      "course": "Please select a course",
+      "submit": "Submission failed. Please try again."
+    },
+    "success": {
+      "title": "Request Submitted! 🎉",
+      "thanks": "Thank You!",
+      "message1": "Your request has been submitted successfully.",
+      "message2": "We'll contact you within 24 hours at",
+      "close": "Close"
+    }
+  },
+  "whatsapp": {
+    "tooltip": "Chat with us on WhatsApp"
+  }
+}

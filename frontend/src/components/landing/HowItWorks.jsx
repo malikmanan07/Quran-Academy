@@ -1,8 +1,4 @@
-const steps = [
-  { num: 1, icon: '📝', title: 'Register', desc: 'Create your account and tell us your learning goals.' },
-  { num: 2, icon: '👨‍🏫', title: 'Get Matched', desc: 'We match you with the perfect teacher based on your needs.' },
-  { num: 3, icon: '🚀', title: 'Start Learning', desc: 'Begin your personalized Quran learning journey.' },
-];
+import { useTranslation } from 'react-i18next';
 
 const Arrow = () => (
   <div className="hidden lg:flex items-center justify-center">
@@ -13,12 +9,20 @@ const Arrow = () => (
 );
 
 const HowItWorks = () => {
+  const { t } = useTranslation();
+
+  const steps = [
+    { num: 1, icon: '📝', title: t('howItWorks.step1Title'), desc: t('howItWorks.step1Desc') },
+    { num: 2, icon: '👨‍🏫', title: t('howItWorks.step2Title'), desc: t('howItWorks.step2Desc') },
+    { num: 3, icon: '🚀', title: t('howItWorks.step3Title'), desc: t('howItWorks.step3Desc') },
+  ];
+
   return (
     <section className="py-16 sm:py-24 bg-[#F0F4F8]">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A2E] mb-3">How It Works</h2>
-          <p className="text-[#4A5568]">Get started in 3 simple steps</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A2E] mb-3">{t('howItWorks.title')}</h2>
+          <p className="text-[#4A5568]">{t('howItWorks.subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-0 items-start">

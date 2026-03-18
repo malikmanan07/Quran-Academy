@@ -1,24 +1,27 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../constants/routes';
 import AppButton from '../common/AppButton';
 import CurrencySelector from '../common/CurrencySelector';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import WhatsAppButton from '../common/WhatsAppButton';
 import { useCurrency } from '../../hooks/useCurrency';
 import Footer from './Footer';
 
-const navLinks = [
-  { label: 'Home', to: ROUTES.HOME, hash: '' },
-  { label: 'Courses', to: ROUTES.HOME, hash: '#courses' },
-  { label: 'Pricing', to: ROUTES.HOME, hash: '#pricing' },
-  { label: 'About', to: ROUTES.HOME, hash: '#about' },
-];
-
 const PublicLayout = () => {
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState(false);
   const { currency } = useCurrency();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const navLinks = [
+    { key: 'home', label: t('nav.home'), to: ROUTES.HOME, hash: '' },
+    { key: 'courses', label: t('nav.courses'), to: ROUTES.HOME, hash: '#courses' },
+    { key: 'pricing', label: t('nav.pricing'), to: ROUTES.HOME, hash: '#pricing' },
+    { key: 'about', label: t('nav.about'), to: ROUTES.HOME, hash: '#about' },
+  ];
 
   useEffect(() => {
     // Handle initial load with hash
@@ -69,7 +72,7 @@ const PublicLayout = () => {
 
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <a key={link.label} href={link.hash || link.to}
+              <a key={link.key} href={link.hash || link.to}
                 onClick={(e) => handleNav(e, link)}
                 className="px-4 py-2 rounded-lg text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-all duration-200">
                 {link.label}
@@ -78,12 +81,13 @@ const PublicLayout = () => {
           </nav>
 
           <div className="hidden md:flex items-center gap-3">
+            <LanguageSwitcher />
             <CurrencySelector />
             <Link to={ROUTES.LOGIN}>
-              <AppButton variant="outline" size="sm" className="!border-white/30 !text-white hover:!bg-white/10">Login</AppButton>
+              <AppButton variant="outline" size="sm" className="!border-white/30 !text-white hover:!bg-white/10">{t('nav.login')}</AppButton>
             </Link>
             <Link to={ROUTES.SIGNUP}>
-              <AppButton variant="accent" size="sm">Sign Up</AppButton>
+              <AppButton variant="accent" size="sm">{t('nav.signup')}</AppButton>
             </Link>
           </div>
 
@@ -117,22 +121,23 @@ const PublicLayout = () => {
         </div>
         <div className="p-4 flex flex-col gap-2 flex-1">
           {navLinks.map((link) => (
-            <a key={link.label} href={link.hash || link.to}
+            <a key={link.key} href={link.hash || link.to}
               onClick={(e) => handleNav(e, link)}
               className="px-4 py-3 rounded-lg text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 transition-colors">
               {link.label}
             </a>
           ))}
-          <div className="mt-3">
-            <CurrencySelector />
+          <div className="mt-3 space-y-3">
+             <LanguageSwitcher />
+             <CurrencySelector />
           </div>
         </div>
         <div className="p-4 border-t border-white/10 space-y-3">
           <Link to={ROUTES.LOGIN} onClick={() => setMenuOpen(false)} className="block">
-            <AppButton variant="outline" fullWidth className="!border-white/30 !text-white hover:!bg-white/10">Login</AppButton>
+            <AppButton variant="outline" fullWidth className="!border-white/30 !text-white hover:!bg-white/10">{t('nav.login')}</AppButton>
           </Link>
           <Link to={ROUTES.SIGNUP} onClick={() => setMenuOpen(false)} className="block">
-            <AppButton variant="accent" fullWidth>Sign Up</AppButton>
+            <AppButton variant="accent" fullWidth>{t('nav.signup')}</AppButton>
           </Link>
         </div>
       </div>

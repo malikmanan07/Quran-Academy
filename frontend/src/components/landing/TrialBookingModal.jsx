@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { useState, useEffect } from 'react';
 import Select from 'react-select';
 import AppModal from '../common/AppModal';
@@ -35,10 +36,6 @@ const countries = [
 const getFlagUrl = (countryCode) =>
   `https://flagcdn.com/24x18/${countryCode.toLowerCase()}.png`;
 
-const dayOptions = [
-  'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-];
-
 const customStyles = {
   control: (base, state) => ({
     ...base,
@@ -71,6 +68,7 @@ const customStyles = {
 };
 
 const TrialBookingModal = ({ show, onClose }) => {
+  const { t } = useTranslation();
   const { rates, currency, formatCurrency, setCurrency, setCurrencyByCountry } = useCurrency();
   const [form, setForm] = useState({
     fullName: '',
@@ -88,12 +86,21 @@ const TrialBookingModal = ({ show, onClose }) => {
   const [success, setSuccess] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const dayOptions = [
+    { key: 'mon', label: t('trialModal.days.mon'), value: 'Monday' },
+    { key: 'tue', label: t('trialModal.days.tue'), value: 'Tuesday' },
+    { key: 'wed', label: t('trialModal.days.wed'), value: 'Wednesday' },
+    { key: 'thu', label: t('trialModal.days.thu'), value: 'Thursday' },
+    { key: 'fri', label: t('trialModal.days.fri'), value: 'Friday' },
+    { key: 'sat', label: t('trialModal.days.sat'), value: 'Saturday' },
+    { key: 'sun', label: t('trialModal.days.sun'), value: 'Sunday' },
+  ];
+
   useEffect(() => {
     if (show) {
       const fetchCourses = async () => {
         try {
           const response = await http.get('/courses');
-          console.log('Courses fetched:', response.data);
           setCourses(response.data.data.courses || []);
         } catch (error) {
           console.error("Failed to fetch courses:", error);
@@ -130,22 +137,22 @@ const TrialBookingModal = ({ show, onClose }) => {
     }
   };
 
-  const handleDayToggle = (day) => {
+  const handleDayToggle = (dayValue) => {
     setForm(prev => ({
       ...prev,
-      preferredDays: prev.preferredDays.includes(day)
-        ? prev.preferredDays.filter(d => d !== day)
-        : [...prev.preferredDays, day]
+      preferredDays: prev.preferredDays.includes(dayValue)
+        ? prev.preferredDays.filter(d => d !== dayValue)
+        : [...prev.preferredDays, dayValue]
     }));
   };
 
   const validate = () => {
     const e = {};
-    if (!form.fullName.trim()) e.fullName = 'Full Name is required';
-    if (!form.email.trim()) e.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = 'Invalid email address';
-    if (!form.phone) e.phone = 'Phone number is required';
-    if (!form.courseId) e.courseId = 'Please select a course';
+    if (!form.fullName.trim()) e.fullName = t('trialModal.errors.fullName');
+    if (!form.email.trim()) e.email = t('trialModal.errors.email');
+    else if (!/\S+@\S+\.\S+/.test(form.email)) e.email = t('trialModal.errors.invalidEmail');
+    if (!form.phone.trim()) e.phone = t('trialModal.errors.phone');
+    if (!form.courseId) e.courseId = t('trialModal.errors.course');
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -165,7 +172,7 @@ const TrialBookingModal = ({ show, onClose }) => {
       });
       setSuccess(true);
     } catch (err) {
-      setErrors({ form: err.response?.data?.message || 'Submission failed. Please try again.' });
+      setErrors({ form: err.response?.data?.message || t('trialModal.errors.submit') });
     } finally {
       setLoading(false);
     }
@@ -188,33 +195,33 @@ const TrialBookingModal = ({ show, onClose }) => {
 
   if (success) {
     return (
-      <AppModal show={show} onClose={handleClose} title="Request Submitted! 🎉" size="sm">
+      <AppModal show={show} onClose={handleClose} title={t('trialModal.success.title')} size="sm">
         <div className="text-center py-8">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-3xl text-green-600">✅</span>
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Thank You!</h3>
-          <p className="text-gray-600 mb-1">Your request has been submitted successfully.</p>
-          <p className="text-gray-600 mb-6">We'll contact you within 24 hours at <strong className="text-gray-900">{form.email}</strong></p>
-          <AppButton variant="accent" fullWidth onClick={handleClose}>Close</AppButton>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{t('trialModal.success.thanks')}</h3>
+          <p className="text-gray-600 mb-1">{t('trialModal.success.message1')}</p>
+          <p className="text-gray-600 mb-6">{t('trialModal.success.message2')} <strong className="text-gray-900">{form.email}</strong></p>
+          <AppButton variant="accent" fullWidth onClick={handleClose}>{t('trialModal.success.close')}</AppButton>
         </div>
       </AppModal>
     );
   }
 
   return (
-    <AppModal show={show} onClose={handleClose} title="📖 Book Free Trial Class" size="md">
+    <AppModal show={show} onClose={handleClose} title={t('trialModal.modalTitle')} size="md">
       <form onSubmit={handleSubmit} className="space-y-5 py-2">
         {errors.form && <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">{errors.form}</div>}
 
         {/* Row 1: Full Name */}
         <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">Full Name*</label>
+          <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.fullName')}</label>
           <input
             id="fullName"
             type="text"
             className={`w-full bg-white border ${errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]`}
-            placeholder="Enter your full name"
+            placeholder={t('trialModal.form.fullNamePlaceholder')}
             value={form.fullName}
             onChange={(e) => setForm({ ...form, fullName: e.target.value })}
           />
@@ -223,12 +230,12 @@ const TrialBookingModal = ({ show, onClose }) => {
 
         {/* Row 2: Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">Email Address*</label>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.email')}</label>
           <input
             id="email"
             type="email"
             className={`w-full bg-white border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]`}
-            placeholder="you@example.com"
+            placeholder={t('trialModal.form.emailPlaceholder')}
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
@@ -237,7 +244,7 @@ const TrialBookingModal = ({ show, onClose }) => {
 
         {/* Row 3: Phone */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">Phone Number*</label>
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.phone')}</label>
           {(() => {
             const selectedCountry = form.country || countries[0];
             const selectedDialCode = selectedCountry?.dialCode || '+92';
@@ -254,14 +261,8 @@ const TrialBookingModal = ({ show, onClose }) => {
                     height="18"
                     onError={(e) => {
                       e.target.style.display = 'none';
-                      if (e.target.nextSibling) {
-                        e.target.nextSibling.classList.remove('hidden');
-                      }
                     }}
                   />
-                  <span className="hidden bg-[#00B4D8] text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                    {countryCode}
-                  </span>
                   <span className="text-gray-700 font-medium text-sm">
                     {selectedDialCode}
                   </span>
@@ -269,7 +270,7 @@ const TrialBookingModal = ({ show, onClose }) => {
                 <input
                   id="phone"
                   type="tel"
-                  placeholder="300 1234567"
+                  placeholder={t('trialModal.form.phonePlaceholder')}
                   value={form.phone}
                   onChange={(e) =>
                     setForm({ ...form, phone: e.target.value.replace(/[^\d\s]/g, '') })
@@ -285,14 +286,14 @@ const TrialBookingModal = ({ show, onClose }) => {
         {/* Row 4: Country | Timezone */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1.5">Country*</label>
+            <label htmlFor="country" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.country')}</label>
             <Select
               inputId="country"
               options={countries}
               value={form.country}
               onChange={handleCountryChange}
               styles={customStyles}
-              placeholder="Select country"
+              placeholder={t('trialModal.form.countryPlaceholder')}
               formatOptionLabel={(country) => (
                 <div className="flex items-center gap-2">
                   <img
@@ -302,21 +303,15 @@ const TrialBookingModal = ({ show, onClose }) => {
                     alt={country.label}
                     onError={(e) => {
                       e.target.style.display = 'none';
-                      if (e.target.nextSibling) {
-                        e.target.nextSibling.classList.remove('hidden');
-                      }
                     }}
                   />
-                  <span className="hidden bg-[#00B4D8] text-white text-xs font-bold px-1.5 py-0.5 rounded">
-                    {country.value}
-                  </span>
                   <span>{country.label}</span>
                 </div>
               )}
             />
           </div>
           <div>
-            <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-1.5">Timezone*</label>
+            <label htmlFor="timezone" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.timezone')}</label>
             <input
               id="timezone"
               type="text"
@@ -330,18 +325,17 @@ const TrialBookingModal = ({ show, onClose }) => {
 
         {/* Row 5: Preferred Course */}
         <div>
-          <label htmlFor="courseId" className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Course*</label>
+          <label htmlFor="courseId" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.course')}</label>
           <select
             id="courseId"
-            aria-label="Preferred Course*"
             className={`w-full bg-white border ${errors.courseId ? 'border-red-500' : 'border-gray-300'} rounded-lg px-4 py-2.5 text-gray-900 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]`}
             value={form.courseId}
             onChange={(e) => setForm({ ...form, courseId: e.target.value })}
           >
-            <option value="">Select a course</option>
+            <option value="">{t('trialModal.form.coursePlaceholder')}</option>
             {courses.map(c => (
               <option key={c.id} value={c.id}>
-                {c.name} — {formatCurrency(c.price)}/month
+                {c.name} — {formatCurrency(c.price)}/{t('trialModal.form.month')}
               </option>
             ))}
           </select>
@@ -351,41 +345,40 @@ const TrialBookingModal = ({ show, onClose }) => {
         {/* Row 6: Preferred Time | Preferred Days */}
         <div className="space-y-4">
           <div>
-            <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-1.5">Preferred Time</label>
+            <label htmlFor="preferredTime" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.time')}</label>
             <select
               id="preferredTime"
-              aria-label="Preferred Time"
               className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8]"
               value={form.preferredTime}
               onChange={(e) => setForm({ ...form, preferredTime: e.target.value })}
             >
-              <option value="">Select preferred time</option>
-              <option value="morning">🌅 Morning (6AM - 12PM)</option>
-              <option value="afternoon">☀️ Afternoon (12PM - 5PM)</option>
-              <option value="evening">🌆 Evening (5PM - 10PM)</option>
-              <option value="night">🌙 Night (10PM - 12AM)</option>
-              <option value="flexible">🕐 Flexible (Any Time)</option>
+              <option value="">{t('trialModal.form.timePlaceholder')}</option>
+              <option value="morning">{t('trialModal.form.morning')}</option>
+              <option value="afternoon">{t('trialModal.form.afternoon')}</option>
+              <option value="evening">{t('trialModal.form.evening')}</option>
+              <option value="night">{t('trialModal.form.night')}</option>
+              <option value="flexible">{t('trialModal.form.flexible')}</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Days</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">{t('trialModal.form.days')}</label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {dayOptions.map(day => (
-                <label key={day} className="flex items-center gap-2 cursor-pointer group">
+                <label key={day.key} className="flex items-center gap-2 cursor-pointer group">
                   <div className="relative flex items-center">
                     <input
                       type="checkbox"
-                      id={`day-${day}`}
+                      id={`day-${day.key}`}
                       className="peer h-5 w-5 cursor-pointer appearance-none rounded border border-gray-300 bg-white checked:border-[#00B4D8] checked:bg-[#00B4D8] transition-all"
-                      checked={form.preferredDays.includes(day)}
-                      onChange={() => handleDayToggle(day)}
+                      checked={form.preferredDays.includes(day.value)}
+                      onChange={() => handleDayToggle(day.value)}
                     />
                     <svg className="absolute h-3.5 w-3.5 text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{day}</span>
+                  <span className="text-sm text-gray-700 group-hover:text-gray-900 transition-colors">{day.label}</span>
                 </label>
               ))}
             </div>
@@ -394,11 +387,11 @@ const TrialBookingModal = ({ show, onClose }) => {
 
         {/* Row 7: Message */}
         <div>
-          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1.5">Message (Optional)</label>
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1.5">{t('trialModal.form.message')}</label>
           <textarea
             id="message"
             className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-gray-900 placeholder-gray-400 outline-none transition-all focus:ring-2 focus:ring-[#00B4D8]/40 focus:border-[#00B4D8] resize-none"
-            placeholder="Any specific requirements or questions..."
+            placeholder={t('trialModal.form.messagePlaceholder')}
             rows={3}
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -414,10 +407,9 @@ const TrialBookingModal = ({ show, onClose }) => {
           loading={loading}
           className="shadow-md hover:shadow-lg transform transition-all active:scale-[0.98]"
         >
-          {loading ? 'Submitting...' : 'Book Free Trial Now'}
+          {loading ? t('trialModal.form.submittingButton') : t('trialModal.form.submitButton')}
         </AppButton>
       </form>
-
     </AppModal>
   );
 };

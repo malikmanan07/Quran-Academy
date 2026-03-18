@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 const countries = [
   { flag: '🇵🇰', name: 'Pakistan' }, { flag: '🇺🇸', name: 'USA' },
   { flag: '🇬🇧', name: 'UK' }, { flag: '🇸🇦', name: 'Saudi Arabia' },
@@ -12,16 +14,17 @@ const countries = [
 ];
 
 const CountriesSection = () => {
+  const { t } = useTranslation();
   const doubled = [...countries, ...countries];
 
   return (
     <section className="py-12 sm:py-16 bg-white overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center mb-8">
         <h2 className="text-3xl md:text-4xl font-bold text-[#1A1A2E] mb-3">
-          Students From Around The World
+          {t('countries.title')}
         </h2>
         <p className="text-[#4A5568] max-w-xl mx-auto">
-          Join our global community of Quran learners from 20+ countries
+          {t('countries.subtitle')}
         </p>
       </div>
 

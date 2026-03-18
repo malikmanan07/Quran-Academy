@@ -1,4 +1,8 @@
+import { useTranslation } from 'react-i18next';
+
 const WhatsAppButton = () => {
+  const { t } = useTranslation();
+
   return (
     <a
       href="https://wa.me/923001234567"
@@ -6,7 +10,7 @@ const WhatsAppButton = () => {
       rel="noopener noreferrer"
       className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform duration-300 group"
       style={{ backgroundColor: '#25D366' }}
-      aria-label="Chat with us on WhatsApp"
+      aria-label={t('whatsapp.ariaLabel')}
     >
       {/* Pulse ring */}
       <span className="absolute inset-0 rounded-full animate-ping opacity-30" style={{ backgroundColor: '#25D366' }} />
@@ -17,7 +21,7 @@ const WhatsAppButton = () => {
 
       {/* Tooltip */}
       <span className="absolute right-16 top-1/2 -translate-y-1/2 bg-[#1A1A2E] text-white text-xs font-medium px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md">
-        Chat with us on WhatsApp
+        {t('whatsapp.tooltip')}
       </span>
     </a>
   );
